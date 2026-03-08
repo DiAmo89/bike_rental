@@ -19,14 +19,14 @@ export default function CatalogFilters({
     <div className="flex flex-col md:flex-row gap-6">
       <div className="flex-1">
         <label className="block text-xs font-black mb-2 uppercase tracking-widest text-gray-400">
-          Тип велосипеда
+          Bike type
         </label>
         <select
           value={activeCategory}
           onChange={(e) => onCategoryChange(e.target.value)}
           className="w-full bg-white border border-gray-200 rounded-lg p-2.5"
         >
-          <option value="all">Все категории</option>
+          <option value="all">All Category</option>
           {categories.map((cat) => (
             <option key={cat} value={cat}>
               {cat}
@@ -36,16 +36,16 @@ export default function CatalogFilters({
       </div>
       <div className="flex-1">
         <label className="block text-xs font-black mb-2 uppercase tracking-widest text-gray-400">
-          Статус
+          Status
         </label>
         <select
           value={activeStatus}
           onChange={(e) => onStatusChange(e.target.value)}
           className="w-full bg-white border border-gray-200 rounded-lg p-2.5"
         >
-          <option value="all">Любой статус</option>
-          <option value="Available">Доступен</option>
-          <option value="In Repair">В ремонте</option>
+          <option value="all">Any status</option>
+          <option value="Available">Available</option>
+          <option value="In Repair">Repair</option>
         </select>
       </div>
     </div>

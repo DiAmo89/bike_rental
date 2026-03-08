@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { getBikes } from "@/api/getBikes";
-import { Bike } from "@/types/bike";
+import { Bike } from "@/types/Bike";
 import Link from "next/link";
 
 export default function BikeDetailPage() {
@@ -28,7 +28,7 @@ export default function BikeDetailPage() {
         <span className="mr-2 transition-transform group-hover:-translate-x-1">
           ←
         </span>
-        ВЕРНУТЬСЯ В КАТАЛОГ
+        RETURN TO CATALOG
       </Link>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
         <div className="relative h-96 w-full overflow-hidden rounded-3xl bg-gray-100 shadow-lg">
@@ -40,7 +40,7 @@ export default function BikeDetailPage() {
             />
           ) : (
             <div className="flex h-full items-center justify-center text-gray-400">
-              Нет изображения
+              No Image
             </div>
           )}
         </div>

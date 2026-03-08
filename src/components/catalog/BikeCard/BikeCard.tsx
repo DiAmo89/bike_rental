@@ -1,4 +1,4 @@
-import { Bike } from "@/types/bike";
+import { Bike } from "@/types/Bike";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 

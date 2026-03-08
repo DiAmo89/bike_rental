@@ -7,7 +7,7 @@ interface Props {
   onPageChange: (p: number) => void;
   itemsPerPage: number;
   onItemsPerPageChange: (n: number) => void;
-  totalItems: number; // Общее кол-во товаров
+  totalItems: number; // Общее кол-во велосипедов
   step: number; // По сколько будет отображаться карточек на странице
 }
 export default function CatalogPagination({

@@ -1,10 +1,12 @@
 "use client";
 import React, { useEffect, useState, useMemo } from "react";
 import { getBikes } from "@/api/getBikes";
-import { Bike } from "@/types/bike";
+import { Bike } from "@/types/Bike";
 import BikeCard from "@/components/catalog/BikeCard/BikeCard";
 import CatalogMenu from "@/components/catalog/CatalogMenu/catalogMenu";
 import CatalogPagination from "@/components/catalog/CatalogPagination/CatalogPagination";
+import CategoryCard from "@/components/catalog/CategoryCard//CategoryCard";
+import { Category } from "@/types/Category";
 
 export default function CatalogPage() {
   const [allBikes, setAllBikes] = useState<Bike[]>([]);
@@ -14,6 +16,16 @@ export default function CatalogPage() {
   const [sortBy, setSortBy] = useState("default");
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(6);
+
+  /****************Карточки категорий для Димы */
+  const [categories, setCategories] = React.useState<Category[]>([]);
+
+  React.useEffect(() => {
+    import("@/api/getCategories").then((m) => {
+      m.getCategories().then(setCategories);
+    });
+  }, []);
+  /******************************************* */
 
   useEffect(() => {
     getBikes().then((data) => {
@@ -50,7 +62,7 @@ export default function CatalogPage() {
   }, [filteredBikes, currentPage, itemsPerPage]);
 
   if (loading)
-    return <div className="p-20 text-center font-bold">Загрузка...</div>;
+    return <div className="p-20 text-center font-bold">Loading...</div>;
   const handleItemsPerPageChange = (newAmount: number) => {
     setItemsPerPage(newAmount);
     setCurrentPage(1); // "сброс" на 1-ю страницу
@@ -58,7 +70,7 @@ export default function CatalogPage() {
 
   return (
     <div className="container mx-auto py-10 px-4">
-      <h1 className="text-4xl font-black mb-10">Каталог</h1>
+      <h1 className="text-4xl font-black mb-10">Catalog</h1>
       <CatalogMenu
         categories={uniqueCategories}
         activeCategory={catFilter}
@@ -81,6 +93,23 @@ export default function CatalogPage() {
         totalItems={filteredBikes.length}
         step={3}
       />
+
+      {/* карточки категорий для Димы */}
+      <div className="mb-12">
+        <h2 className="text-2xl font-black uppercase mb-6 px-4">
+          Category (Example for Home)
+        </h2>
+        <div className="flex overflow-x-auto pb-4 gap-4 px-4 scrollbar-hide md:grid md:grid-cols-4 md:overflow-visible">
+          {" "}
+          {categories.map((cat) => (
+            <div key={cat.id} className="min-w-[200px] md:min-w-full">
+              {" "}
+              <CategoryCard {...cat} />{" "}
+            </div>
+          ))}{" "}
+        </div>{" "}
+      </div>
+      {/* карточки категорий для Димы */}
     </div>
   );
 }
