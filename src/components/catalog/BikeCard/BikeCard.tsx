@@ -1,11 +1,15 @@
 import { Bike } from "@/types/bike";
+import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 
 interface BikeCardProps {
 bike: Bike;
 }
 
 export default function BikeCard({ bike }: BikeCardProps) {
+  const router = useRouter();
 return (
+<Link href={`/catalog/${bike.id}`} className="group bg-white rounded-2xl border border-gray-100 overflow-hidden hover:shadow-xl transition-all duration-300 flex flex-col h-full">
 <div className="border rounded-lg shadow-md overflow-hidden bg-white flex flex-col h-full">
 
   <div className="relative h-48 w-full bg-gray-50 p-4">
@@ -45,7 +49,8 @@ return (
         {bike.status === 'Available' ? 'Book' : 'busy'}
       </button>
 
-        <button 
+        {/* <button 
+        onClick={() => router.push(`/catalog/${bike.id}`)}
         disabled={bike.status !== 'Available'}
         className={`px-4 py-2 rounded font-semibold text-sm transition-colors ${
           bike.status === 'Available' 
@@ -54,9 +59,10 @@ return (
         }`}
       >
         {bike.status === 'Available' ? 'More...' : '...'}
-      </button>
+      </button> */}
     </div>
   </div>
 </div>
+</Link>
 );
 }
