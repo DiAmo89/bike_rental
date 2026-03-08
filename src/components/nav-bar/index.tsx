@@ -5,6 +5,7 @@ import {
   PATH_ABOUT_US,
   PATH_LOGIN,
   PATH_SIGN_UP,
+  USER_PROFILE,
 } from "@/app/path/path";
 import Logo from "@/components/nav-bar/logo-svg/Logo";
 
@@ -30,6 +31,13 @@ export default function NavBar() {
             className="text-white hover:text-[#e6ff2a] transition text-sm font-medium"
           >
             About Us
+          </Link>
+
+          <Link
+            href={USER_PROFILE}
+            className="text-white hover:text-[#e6ff2a] transition text-sm font-medium"
+          >
+            Profile
           </Link>
         </div>
         <div className="flex items-center justify-end gap-4">
