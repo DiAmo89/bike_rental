@@ -1,11 +1,13 @@
-import RegisterForm from "@/components/auth/register-form";
-import React from "react";
+import AuthWrapping from "@/components/auth/auth-wrapping";
+import RegisterFom from "@/components/auth/register-form";
 
 export default function SignUp() {
   return (
     <section>
       <div>
-        <RegisterForm />
+        <AuthWrapping>
+          <RegisterFom />
+        </AuthWrapping>
       </div>
     </section>
   );
