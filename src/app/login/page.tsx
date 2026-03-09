@@ -7,6 +7,7 @@ export default function Login() {
     <section>
       <AuthWrapping>
         <LoginForm />
+        <h1>HALLO</h1>
       </AuthWrapping>
     </section>
   );
