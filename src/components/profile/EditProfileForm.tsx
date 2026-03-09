@@ -28,7 +28,7 @@ export default function EditProfileForm({ user }: Props) {
       onSubmit={handleSubmit}
       className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm"
     >
-      <h1 className="mb-6 text-2xl font-semibold">Edit profile</h1>
+    
 
       <div className="space-y-4">
         <div>

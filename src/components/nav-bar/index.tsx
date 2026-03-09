@@ -41,12 +41,7 @@ export default function NavBar() {
             Profile
           </Link>
 
-          <Link
-            href={USER_BOOKINGS}
-            className="text-white hover:text-[#e6ff2a] transition text-sm font-medium"
-          >
-            My Bookings
-          </Link>
+      
         </div>
         <div className="flex items-center justify-end gap-4">
           <Link
