@@ -1,11 +1,13 @@
+import AuthWrapping from "@/components/auth/auth-wrapping";
+import LoginForm from "@/components/auth/login-form";
 import React from "react";
 
 export default function Login() {
   return (
     <section>
-      <div>
-        <h1>Login</h1>
-      </div>
+      <AuthWrapping>
+        <LoginForm />
+      </AuthWrapping>
     </section>
   );
 }
