@@ -2,10 +2,10 @@
 import React, { useEffect, useState, useMemo } from "react";
 import { getBikes } from "@/api/getBikes";
 import { Bike } from "@/types/Bike";
-import BikeCard from "@/components/catalog/BikeCard/BikeCard";
-import CatalogMenu from "@/components/catalog/CatalogMenu/catalogMenu";
-import CatalogPagination from "@/components/catalog/CatalogPagination/CatalogPagination";
-import CategoryCard from "@/components/catalog/CategoryCard//CategoryCard";
+import BikeCard from "@/components/catalog/bike-card";
+import CatalogMenu from "@/components/catalog/catalog-menu";
+import CatalogPagination from "@/components/catalog/catalog-pagination";
+import CategoryCard from "@/components/catalog/category-card";
 import { Category } from "@/types/Category";
 
 export default function CatalogPage() {
@@ -69,8 +69,7 @@ export default function CatalogPage() {
   };
 
   return (
-    <div className="container mx-auto py-10 px-4">
-      <h1 className="text-4xl font-black mb-10">Catalog</h1>
+    <div className="container mx-auto py-10 px-4 mt-5">
       <CatalogMenu
         categories={uniqueCategories}
         activeCategory={catFilter}
@@ -93,23 +92,6 @@ export default function CatalogPage() {
         totalItems={filteredBikes.length}
         step={3}
       />
-
-      {/* карточки категорий для Димы */}
-      <div className="mb-12">
-        <h2 className="text-2xl font-black uppercase mb-6 px-4">
-          Category (Example for Home)
-        </h2>
-        <div className="flex overflow-x-auto pb-4 gap-4 px-4 scrollbar-hide md:grid md:grid-cols-4 md:overflow-visible">
-          {" "}
-          {categories.map((cat) => (
-            <div key={cat.id} className="min-w-[200px] md:min-w-full">
-              {" "}
-              <CategoryCard {...cat} />{" "}
-            </div>
-          ))}{" "}
-        </div>{" "}
-      </div>
-      {/* карточки категорий для Димы */}
     </div>
   );
 }
