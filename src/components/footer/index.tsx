@@ -1,7 +1,6 @@
 import { FaInstagram, FaFacebookF, FaTwitter } from "react-icons/fa";
 
 import Link from "next/link";
-import Logo from "@/components/nav-bar/logo-svg/Logo";
 
 export default function Footer() {
   return (
@@ -11,7 +10,6 @@ export default function Footer() {
         <div>
           <div>
             <Link href="/" className="flex items-center gap-2">
-              <Logo />
               <span className="text-[#e6ff2a] font-bold text-xl tracking-wide">
                 Blabla<span className="text-white">Bike</span>
               </span>
