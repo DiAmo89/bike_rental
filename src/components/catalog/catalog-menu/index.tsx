@@ -1,6 +1,6 @@
 import React from "react";
-import CatalogFilters from "../CatalogFilters/CatalogFilters";
-import CatalogSort from "../CatalogSort/CatalogSort";
+import CatalogFilters from "../catalog-filters";
+import CatalogSort from "../catalog-sort";
 
 interface CatalogMenuProps {
   categories: string[];

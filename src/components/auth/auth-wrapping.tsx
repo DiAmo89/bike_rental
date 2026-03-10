@@ -34,7 +34,7 @@ export default function AuthWrapping({ children }: AuthPortalProps) {
           src="/assets/auth-wrapping-bgf.png"
           alt="Foggy Background"
           fill
-          className="object-cover opacity-60"
+          className="object-cover"
           priority
         />
         <div className="absolute inset-0 bg-linear-to-bl from-[#0a0a0a] via-transparent to-[#0a0a0a] opacity-80" />
