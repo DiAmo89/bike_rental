@@ -6,16 +6,17 @@ import {
   PATH_LOGIN,
   PATH_SIGN_UP,
   USER_PROFILE,
-  USER_BOOKINGS,
 } from "@/app/path/path";
 
-import Logo from "@/components/nav-bar/logo-svg/Logo";
-import Sidebar from "@/components/nav-bar/sidebar-burger-menu/Sidebar";
+import Logo from "@/components/nav-bar/logo-svg";
+import Sidebar from "@/components/nav-bar/sidebar-burger-menu";
 
 import { useState } from "react";
+import { usePathname } from "next/navigation";
 
-export default function NavBar() {
+const NavBar = () => {
   const [showSidebar, setShowSidebar] = useState(false);
+  const pathname = usePathname();
 
   return (
     <>
@@ -31,31 +32,31 @@ export default function NavBar() {
               </span>
             </Link>
           </div>
-          <div className="hidden xl:flex items-center justify-center gap-8">
-            <Link
-              href={PATH_CATALOG}
-              className="text-white hover:text-[#e6ff2a] transition text-sm font-medium"
-            >
-              Catalog
-            </Link>
-            <Link
-              href={PATH_ABOUT_US}
-              className="text-white hover:text-[#e6ff2a] transition text-sm font-medium"
-            >
-              About Us
-            </Link>
-            <Link
-              href={USER_PROFILE}
-              className="text-white hover:text-[#e6ff2a] transition text-sm font-medium"
-            >
-              Profile
-            </Link>
-          </div>
 
           <div className="flex items-center justify-end gap-4 col-start-3">
+            <div className="hidden xl:flex items-center gap-8">
+              <Link
+                href={PATH_CATALOG}
+                className={`text-sm font-medium transition ${pathname === PATH_CATALOG ? "text-[#e6ff2a]" : "text-white hover:text-[#e6ff2a]"}`}
+              >
+                Catalog
+              </Link>
+              <Link
+                href={PATH_ABOUT_US}
+                className={`text-sm font-medium transition ${pathname === PATH_ABOUT_US ? "text-[#e6ff2a]" : "text-white hover:text-[#e6ff2a]"}`}
+              >
+                About Us
+              </Link>
+              <Link
+                href={USER_PROFILE}
+                className={`text-sm font-medium transition ${pathname === USER_PROFILE ? "text-[#e6ff2a]" : "text-white hover:text-[#e6ff2a]"}`}
+              >
+                Profile
+              </Link>
+            </div>
             <Link
               href={PATH_LOGIN}
-              className="hidden xl:inline text-white hover:text-[#e6ff2a] transition text-sm font-medium mr-8"
+              className={`hidden xl:inline text-sm font-medium transition mr-8 ${pathname === PATH_LOGIN ? "text-[#e6ff2a]" : "text-white hover:text-[#e6ff2a]"}`}
             >
               Login
             </Link>
@@ -86,4 +87,6 @@ export default function NavBar() {
       {showSidebar && <Sidebar onClose={() => setShowSidebar(false)} />}
     </>
   );
-}
+};
+
+export default NavBar;

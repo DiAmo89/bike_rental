@@ -1,6 +1,6 @@
 "use client";
-import { CarouselSpacing } from "@/components/carousel-homepage/CarouselSpacing";
-import HeroSection from "@/components/hero-section/HeroSection";
+import { CarouselSpacing } from "@/components/carousel-homepage";
+import HeroSection from "@/components/hero-section";
 
 export default function Home() {
   return (
