@@ -1,4 +1,4 @@
-import { User } from "@/common/types/User";
+import { User } from "@/types/User";
 
 type Props = {
   user: User;

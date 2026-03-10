@@ -1,5 +1,5 @@
 import EditProfileForm from "@/components/profile/EditProfileForm";
-import { mockUser } from "@/common/mocks/user";
+import { mockUser } from "@/mocks/user";
 
 export default function EditProfilePage() {
   return <EditProfileForm user={mockUser} />;

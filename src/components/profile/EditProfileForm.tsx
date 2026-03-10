@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { User } from "@/common/types/User";
+import { User } from "@/types/User";
 
 type Props = {
   user: User;
@@ -28,8 +28,6 @@ export default function EditProfileForm({ user }: Props) {
       onSubmit={handleSubmit}
       className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm"
     >
-    
-
       <div className="space-y-4">
         <div>
           <label className="block text-sm font-medium">Name</label>
