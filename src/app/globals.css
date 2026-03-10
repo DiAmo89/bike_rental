@@ -1,6 +1,6 @@
 @import "tailwindcss";
 
-@theme {
+/* @theme {
   --color-primary: #e6ff2a;
   --color-secondary: #0c4651;
   --color-main-black: #1a1a1a;
@@ -23,4 +23,4 @@ a {
 img {
   max-width: 100%;
   height: auto;
-}
+} */
