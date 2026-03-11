@@ -4,7 +4,7 @@ import HeroSection from "@/components/hero-section";
 
 export default function Home() {
   return (
-    <main>
+    <div>
       <HeroSection />
       <section className="py-20 bg-gray-50 ml-5 mr-5">
         <div className="flex w-full justify-center">
@@ -71,6 +71,6 @@ export default function Home() {
           </div>
         </div>
       </section>
-    </main>
+    </div>
   );
 }
