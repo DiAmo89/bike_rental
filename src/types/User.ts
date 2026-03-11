@@ -6,6 +6,6 @@ export interface User {
     role: "CUSTOMER" | "ADMIN";
     avatar: string;
     telephone: string;
-    created_at: string;
-    updated_at: string;
+    created_at?: string;
+    updated_at?: string;
     }
