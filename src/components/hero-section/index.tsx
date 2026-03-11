@@ -56,14 +56,27 @@ export default function HeroSection() {
 
   return (
     <section className="relative w-full h-screen overflow-hidden">
-      <Image src="/assets/bg-image.png" alt="Foggy Background" fill priority />
+      <Image
+        src="/assets/bg-mob.png"
+        alt="Foggy Mobile Background"
+        fill
+        priority
+        className="block md:hidden"
+      />
+      <Image
+        src="/assets/bg-image.png"
+        alt="Foggy Background"
+        fill
+        priority
+        className="hidden md:block"
+      />
       <div
         ref={buttonRef}
-        className="absolute z-30 lg:pl-[18vw] lg:pt-[25vw] md:pl-[15vw] pl-[10vw] md:pt-[50vw] pt-[60vw] "
+        className="absolute z-30 lg:pl-[18vw] lg:pt-[25vw] md:pl-[15vw] pl-[10vw] md:pt-[50vw] pt-[50vw]"
       >
         <Link
           href={PATH_CATALOG}
-          className="bg-[#e6ff2a] text-black font-medium text-[2.5vw] px-[10vw] py-[1vw] ml-20px rounded-full shadow-lg hover:bg-[#f56e07] transition"
+          className="bg-[#e6ff2a] text-black font-medium text-[4vw] md:text-[2.5vw] px-[14vw] md:px-[10vw] py-[4vw] md:py-[1vw] ml-20px rounded-full shadow-lg hover:bg-[#f56e07] transition"
         >
           Rent Now
         </Link>
@@ -71,7 +84,7 @@ export default function HeroSection() {
 
       <h1
         ref={textRef}
-        className="absolute z-20 md:pl-[14vw] pl-[7vw] md:pt-[60vw] pt-[70vw] lg:pl-[16vw]   lg:pt-[30vw] text-white text-[4vw] font-bold leading-tight "
+        className="absolute z-20  md:pl-[14vw] pl-[7vw] md:pt-[60vw] pt-[70vw] lg:pl-[16vw] lg:pt-[30vw] text-balance text-[6vw] md:text-[4vw] font-bold leading-tight"
       >
         Savor the freedom <br />
         and joy of every <br />

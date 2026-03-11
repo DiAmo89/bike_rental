@@ -29,7 +29,7 @@ export default function BikeCard({ bike }: BikeCardProps) {
           </div>
         </div>
 
-        <div className="p-4 flex flex-col flex-grow">
+        <div className="p-4 flex flex-col grow">
           <p className="text-xs text-blue-500 font-bold uppercase tracking-wider">
             {bike.category.name}
           </p>
@@ -37,7 +37,7 @@ export default function BikeCard({ bike }: BikeCardProps) {
             {bike.model}
           </h3>
 
-          <p className="text-gray-600 mt-2 text-sm line-clamp-2 flex-grow">
+          <p className="text-gray-600 mt-2 text-sm line-clamp-2 grow">
             {bike.description}
           </p>
 
