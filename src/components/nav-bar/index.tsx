@@ -1,18 +1,13 @@
 "use client";
 import Link from "next/link";
-import {
-  PATH_CATALOG,
-  PATH_ABOUT_US,
-  PATH_LOGIN,
-  PATH_SIGN_UP,
-  USER_PROFILE,
-} from "@/app/path/path";
+import { PATH_CATALOG, PATH_ABOUT_US, USER_PROFILE } from "@/app/path/path";
 
 import Logo from "@/components/nav-bar/logo-svg";
 import Sidebar from "@/components/nav-bar/sidebar-burger-menu";
 
 import { useState } from "react";
 import { usePathname } from "next/navigation";
+import SignInSignOut from "../sign-in-sign-out";
 
 const NavBar = () => {
   const [showSidebar, setShowSidebar] = useState(false);
@@ -54,18 +49,9 @@ const NavBar = () => {
                 Profile
               </Link>
             </div>
-            <Link
-              href={PATH_LOGIN}
-              className={`hidden xl:inline text-sm font-medium transition mr-8 ${pathname === PATH_LOGIN ? "text-[#e6ff2a]" : "text-white hover:text-[#e6ff2a]"}`}
-            >
-              Login
-            </Link>
-            <Link
-              href={PATH_SIGN_UP}
-              className="hidden xl:inline bg-[#e6ff2a] text-black px-4 py-2 rounded-full text-sm font-medium hover:bg-white transition mr-8"
-            >
-              Sign Up
-            </Link>
+
+            <SignInSignOut />
+
             <button
               className="xl:hidden text-white pr-2 ml-auto mr-8"
               aria-label="Open menu"

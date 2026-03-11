@@ -41,11 +41,6 @@ export default function AuthWrapping({ children }: AuthPortalProps) {
         <div className="absolute inset-0 bg-black/60" />
       </div>
 
-      {/* <div
-        className="absolute inset-0 z-10 cursor-pointer"
-        onClick={closePortal}
-      /> */}
-
       <div
         className="relative z-20 w-full max-w-md"
         onClick={(e) => e.stopPropagation()}

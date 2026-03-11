@@ -1,8 +1,33 @@
 "use client";
 
+import { X } from "lucide-react";
+import Link from "next/link";
+import { Button } from "../ui/button";
+import { signIn } from "next-auth/react";
+
 export default function RegisterForm() {
+  const handleGoogleLogin = () => {
+    signIn("google", { callbackUrl: "/user-profile" });
+  };
+
   return (
-    <div className="mx-auto w-full max-w-xl rounded-xl border border-zinc-800 bg-zinc-950 p-6 shadow-xl text-zinc-50">
+    <div className="relative mx-auto w-full max-w-xl rounded-xl border border-zinc-800 bg-zinc-950 p-6 shadow-xl text-zinc-50">
+      <div className="absolute top-3 right-3">
+        <Link href="/">
+          <Button
+            variant="outline"
+            type="button"
+            size="icon"
+            className="group border-zinc-800 hover:border-gray-400 bg-transparent h-8 w-8"
+          >
+            <X
+              className="h-4 w-4 text-amber-50 transition-all duration-500 group-hover:rotate-180 group-hover:text-white
+            group-hover:scale-110"
+            />
+          </Button>
+        </Link>
+      </div>
+
       <div className="flex flex-col space-y-1.5 pb-6">
         <h3 className="text-2xl font-semibold tracking-tight text-zinc-50">
           Create an account
@@ -72,14 +97,38 @@ export default function RegisterForm() {
         </button>
       </form>
 
+      <div className="relative my-6">
+        <div className="absolute inset-0 flex items-center">
+          <span className="w-full border-t border-zinc-800" />
+        </div>
+        <div className="relative flex justify-center text-xs uppercase">
+          <span className="bg-zinc-950 px-2 text-zinc-500 font-mono">
+            Or continue with
+          </span>
+        </div>
+      </div>
+
+      <Button
+        variant="outline"
+        type="button"
+        className="w-full py-2 bg-black border-zinc-800 hover:bg-zinc-900 hover:text-white text-zinc-300 transition-all duration-300 rounded-sm font-mono"
+        onClick={handleGoogleLogin}
+      >
+        {/* SVG Google залишаємо */}
+        <svg className="mr-2 h-4 w-4" /*...*/>
+          <path fill="currentColor" d="..." />
+        </svg>
+        Google
+      </Button>
+
       <div className="mt-4 text-center text-sm text-zinc-400">
-        Already have an account?{" "}
-        <a
+        Already have an account? {/* ЗМІНЕНО: Link замість <a> */}
+        <Link
           href="/login"
           className="font-medium text-zinc-50 underline underline-offset-4 hover:text-zinc-300"
         >
           Log in
-        </a>
+        </Link>
       </div>
     </div>
   );
