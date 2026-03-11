@@ -1,6 +1,14 @@
 import EditProfileForm from "@/components/profile/EditProfileForm";
-import { mockUser } from "@/mocks/user";
+import { getCurrentUser } from "@/lib/auth/getCurrentUser";
+export default async function EditProfilePage() {
 
-export default function EditProfilePage() {
-  return <EditProfileForm user={mockUser} />;
+  const user = await getCurrentUser();
+
+
+  if (!user) {
+    return <div>User not found</div>;
+  }
+
+
+  return <EditProfileForm user={user} />;
 }

@@ -3,8 +3,9 @@ export interface User {
     email: string;
     password: string;
     full_name: string;
-    role: string;
+    role: "CUSTOMER" | "ADMIN";
     avatar: string;
     telephone: string;
-    
-  }
+    created_at: string;
+    updated_at: string;
+    }

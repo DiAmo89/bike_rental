@@ -1,20 +1,20 @@
 "use client";
 
+import { CurrentUser } from "@/types/CurrentUser";
 import { useState } from "react";
-import { User } from "@/types/User";
 
 type Props = {
-  user: User;
+  user: CurrentUser;
 };
 
 export default function EditProfileForm({ user }: Props) {
-  const [full_name, setName] = useState(user.full_name);
-  const [telephone, setTelephone] = useState(user.telephone);
+  const [full_name, setFullName] = useState(user.full_name);
+  const [telephone, setPhone] = useState(user.telephone ?? "");
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    const updatedUser: User = {
+    const updatedUser: CurrentUser = {
       ...user,
       full_name,
       telephone,
@@ -35,7 +35,7 @@ export default function EditProfileForm({ user }: Props) {
           <input
             type="text"
             value={full_name}
-            onChange={(e) => setName(e.target.value)}
+            onChange={(e) => setFullName(e.target.value)}
             className="mt-1 w-full rounded-xl border px-4 py-2"
           />
         </div>
@@ -46,7 +46,7 @@ export default function EditProfileForm({ user }: Props) {
           <input
             type="tel"
             value={telephone}
-            onChange={(e) => setTelephone(e.target.value)}
+            onChange={(e) => setPhone(e.target.value)}
             className="mt-1 w-full rounded-xl border px-4 py-2"
           />
         </div>

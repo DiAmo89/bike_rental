@@ -1,6 +1,12 @@
 import UserProfileCard from "@/components/profile/UserProfileCard";
-import { mockUser } from "@/mocks/user";
+import { getCurrentUser } from "@/lib/auth/getCurrentUser";
 
-export default function UserProfilePage() {
-  return <UserProfileCard user={mockUser} />;
+export default async function UserProfilePage() {
+  const user = await getCurrentUser();
+
+  if (!user) {
+    return <div>User not found</div>;
+  }
+
+  return <UserProfileCard user={user} />;
 }

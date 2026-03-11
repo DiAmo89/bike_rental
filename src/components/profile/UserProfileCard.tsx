@@ -1,7 +1,7 @@
-import { User } from "@/types/User";
+import { CurrentUser } from "@/types/CurrentUser";
 
 type Props = {
-  user: User;
+  user: CurrentUser;
 };
 
 export default function UserProfileCard({ user }: Props) {
