@@ -1,6 +1,7 @@
 import { FaInstagram, FaFacebookF, FaTwitter } from "react-icons/fa";
 
 import Link from "next/link";
+import Logo from "@/components/nav-bar/logo-svg";
 
 export default function Footer() {
   return (
@@ -9,12 +10,13 @@ export default function Footer() {
       <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
         <div>
           <div>
-            <Link href="/" className="flex items-center gap-2">
+            <Link href="/" className="flex items-center gap-2 mb-4">
+              <Logo />
+
               <span className="text-[#e6ff2a] font-bold text-xl tracking-wide">
                 Blabla<span className="text-white">Bike</span>
               </span>
             </Link>
-
             <p className="text-gray-400 mt-3">
               The best bike rental service in your city
             </p>
@@ -34,7 +36,7 @@ export default function Footer() {
 
             <li>
               <Link href="/team" className="text-gray-400 hover:text-white">
-                Team develop
+                Development Team
               </Link>
             </li>
           </ul>

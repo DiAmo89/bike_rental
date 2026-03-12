@@ -50,7 +50,9 @@ const NavBar = () => {
               </Link>
             </div>
 
-            <SignInSignOut />
+            <div className="hidden xl:block">
+              <SignInSignOut />
+            </div>
 
             <button
               className="xl:hidden text-white pr-2 ml-auto mr-8"
