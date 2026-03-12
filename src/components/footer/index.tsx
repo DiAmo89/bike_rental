@@ -36,7 +36,7 @@ export default function Footer() {
 
             <li>
               <Link href="/team" className="text-gray-400 hover:text-white">
-                Team develop
+                Development Team
               </Link>
             </li>
           </ul>
