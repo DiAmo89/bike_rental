@@ -4,6 +4,7 @@ import "./globals.css";
 import NavBar from "@/components/nav-bar";
 import Footer from "@/components/footer";
 import { Providers } from "@/providers/providers";
+import ScrollToTop from "@/components/scroll-to-top";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -35,6 +36,7 @@ export default function RootLayout({
             <NavBar />
             <main className="flex-1 pt-20">{children}</main>
             <Footer />
+            <ScrollToTop />
           </div>
         </Providers>
       </body>
