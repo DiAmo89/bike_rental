@@ -13,7 +13,7 @@ export default function Home() {
           </div>
         </div>
         <div className="w-full mx-auto grid md:grid-cols-1 lg:grid-cols-3 gap-8 text-center mt-10">
-          <div className="flex flex-col items-center p-6 md:p-8 bg-white rounded-xl shadow-[0_12px_80px_rgba(230,255,41,0.6)] md:min-h-[520px] min-h-[420px] md:overflow-auto overflow-visible">
+          <div className="flex flex-col items-center p-6 md:p-8 bg-white rounded-xl shadow-[0_12px_80px_rgba(230,255,41,0.6)] md:min-h-130 min-h-105 md:overflow-auto overflow-visible">
             <div className="h-30 w-30 border"></div>
             <h3 className="m-5 text-lg md:text-xl font-semibold mb-3 md:mb-4">
               Safe, Smooth & Comfortable
@@ -33,7 +33,7 @@ export default function Home() {
             </p>
           </div>
 
-          <div className="flex flex-col items-center p-6 md:p-8 bg-white rounded-xl shadow-[0_12px_80px_rgba(230,255,41,0.6)] md:min-h-[520px] min-h-[420px] md:overflow-auto overflow-visible">
+          <div className="flex flex-col items-center p-6 md:p-8 bg-white rounded-xl shadow-[0_12px_80px_rgba(230,255,41,0.6)] md:min-h-130 min-h-105 md:overflow-auto overflow-visible">
             <div className="h-30 w-30 border"></div>
             <h3 className="m-5 text-lg md:text-xl font-semibold mb-3 md:mb-4">
               Fresh Air & Pure Freedom
@@ -51,7 +51,7 @@ export default function Home() {
             </p>
           </div>
 
-          <div className="flex flex-col items-center p-6 md:p-8 bg-white rounded-xl shadow-[0_12px_80px_rgba(230,255,41,0.6)] md:min-h-[520px] min-h-[420px] md:overflow-auto overflow-visible">
+          <div className="flex flex-col items-center p-6 md:p-8 bg-white rounded-xl shadow-[0_12px_80px_rgba(230,255,41,0.6)] md:min-h-130 min-h-105 md:overflow-auto overflow-visible">
             <div className="h-30 w-30 border"></div>
             <h3 className="m-5 text-lg md:text-xl font-semibold mb-3 md:mb-4">
               Fun Guaranteed
