@@ -1,5 +1,4 @@
 import { getServerSession } from "next-auth";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 
 import { db } from "@/db/db";
 import { users } from "@/db/tables/users";
@@ -7,9 +6,9 @@ import { eq } from "drizzle-orm";
 
 import type { CurrentUser } from "@/types/CurrentUser";
 import { mapUserToCurrentUser } from "./mapUserToCurrentUser";
+import { authOptions } from "./auth-options";
 
 export async function getCurrentUser(): Promise<CurrentUser | null> {
-
   const session = await getServerSession(authOptions);
 
   if (!session?.user?.email) {
