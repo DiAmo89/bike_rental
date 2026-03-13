@@ -6,8 +6,9 @@ import { users } from "@/db/tables/users";
 import { db } from "@/db/db";
 import { eq } from "drizzle-orm";
 import { getServerSession } from "next-auth";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+
 import { revalidatePath } from "next/cache";
+import { authOptions } from "@/lib/auth/auth-options";
 
 export default async function createBooking(formData: FormData) {
   const session = await getServerSession(authOptions);
