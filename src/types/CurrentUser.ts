@@ -5,4 +5,5 @@ export interface CurrentUser {
   telephone: string;
   avatar: string | null;
   role: "CUSTOMER" | "ADMIN";
+  created_at: Date;
 }

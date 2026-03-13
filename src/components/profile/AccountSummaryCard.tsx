@@ -1,6 +1,6 @@
 export default function AccountSummaryCard() {
     return (
-      <section className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
+      <section className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm mb-6">
         <h2 className="mb-5 text-2xl font-semibold">Account Summary</h2>
   
         <div className="space-y-4 text-lg">
