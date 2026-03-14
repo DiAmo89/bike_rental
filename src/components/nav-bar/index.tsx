@@ -44,7 +44,11 @@ const NavBar = () => {
               </Link>
               <Link
                 href={USER_PROFILE}
-                className={`text-sm font-medium transition ${pathname === USER_PROFILE ? "text-[#e6ff2a]" : "text-white hover:text-[#e6ff2a]"}`}
+                className={`text-sm font-medium transition ${
+                  pathname.startsWith(USER_PROFILE)
+                    ? "text-[#e6ff2a]"
+                    : "text-white hover:text-[#e6ff2a]"
+                }`}
               >
                 Profile
               </Link>
