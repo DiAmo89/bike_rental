@@ -1,5 +1,6 @@
 import React from "react";
 import Link from "next/link";
+import SignInSignOut from "@/components/sign-in-sign-out";
 
 interface SidebarProps {
   onClose: () => void;
@@ -8,9 +9,7 @@ interface SidebarProps {
 export default function Sidebar({ onClose }: SidebarProps) {
   return (
     <div className="fixed inset-0 z-50 bg-black/60 flex">
-      
       <div className="w-64 bg-white h-full shadow-xl p-6 flex flex-col gap-6 relative">
-       
         <button
           className="absolute top-4 right-4 text-2xl text-black hover:text-red-500"
           onClick={onClose}
@@ -40,6 +39,7 @@ export default function Sidebar({ onClose }: SidebarProps) {
           >
             Profile
           </Link>
+
           <Link
             href="/login"
             onClick={onClose}
@@ -47,16 +47,13 @@ export default function Sidebar({ onClose }: SidebarProps) {
           >
             Login
           </Link>
-          <Link
-            href="/sign-up"
-            onClick={onClose}
-            className="bg-[#e6ff2a] text-black px-4 py-2 rounded-full text-lg font-medium hover:bg-white transition"
-          >
-            Sign Up
-          </Link>
+
+          <div className="">
+            <SignInSignOut />
+          </div>
         </nav>
       </div>
-      
+
       <div className="flex-1" onClick={onClose} />
     </div>
   );

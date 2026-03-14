@@ -1,11 +1,10 @@
 export interface User {
-    id: number;
+    id: string;
     email: string;
-    password: string;
     full_name: string;
     role: "CUSTOMER" | "ADMIN";
     avatar: string;
     telephone: string;
-    created_at?: string;
-    updated_at?: string;
+    created_at?: Date;
+    updated_at?: Date;
     }
