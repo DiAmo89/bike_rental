@@ -1,9 +1,12 @@
+"use client";
 import { FaInstagram, FaFacebookF, FaTwitter } from "react-icons/fa";
 
 import Link from "next/link";
 import Logo from "@/components/nav-bar/logo-svg";
+import { usePathname } from "next/navigation";
 
 export default function Footer() {
+  const pathname = usePathname();
   return (
     <footer className="p-10 bg-gray-900 text-white">
       {/* Tailwind styles will work after project styles are connected */}
@@ -29,13 +32,27 @@ export default function Footer() {
           <h3 className="mb-3">Company</h3>
           <ul className="space-y-2">
             <li>
-              <Link href="/about-us" className="text-gray-400 hover:text-white">
+              <Link
+                href="/about-us"
+                className={`${
+                  pathname === "/about-us"
+                    ? "text-[#e6ff2a]"
+                    : "text-gray-400 hover:text-white"
+                }`}
+              >
                 About us
               </Link>
             </li>
 
             <li>
-              <Link href="/team" className="text-gray-400 hover:text-white">
+              <Link
+                href="/team"
+                className={`${
+                  pathname === "/team"
+                    ? "text-[#e6ff2a]"
+                    : "text-gray-400 hover:text-white"
+                }`}
+              >
                 Development Team
               </Link>
             </li>
@@ -46,17 +63,38 @@ export default function Footer() {
           <h3 className="mb-3">Support</h3>
           <ul className="space-y-2">
             <li>
-              <Link href="/faq" className="text-gray-400 hover:text-white">
+              <Link
+                href="/faq"
+                className={`${
+                  pathname === "/faq"
+                    ? "text-[#e6ff2a]"
+                    : "text-gray-400 hover:text-white"
+                }`}
+              >
                 FAQ
               </Link>
             </li>
             <li>
-              <Link href="/terms" className="text-gray-400 hover:text-white">
+              <Link
+                href="/terms"
+                className={`${
+                  pathname === "/terms"
+                    ? "text-[#e6ff2a]"
+                    : "text-gray-400 hover:text-white"
+                }`}
+              >
                 Terms
               </Link>
             </li>
             <li>
-              <Link href="/privacy" className="text-gray-400 hover:text-white">
+              <Link
+                href="/privacy"
+                className={`${
+                  pathname === "/privacy"
+                    ? "text-[#e6ff2a]"
+                    : "text-gray-400 hover:text-white"
+                }`}
+              >
                 Privacy
               </Link>
             </li>
