@@ -1,6 +1,9 @@
 "use client";
 
-import { updateProfile, type UpdateProfileState } from "@/app/actions/updateProfile";
+import {
+  updateProfile,
+  type UpdateProfileState,
+} from "@/app/actions/updateProfile";
 import { CurrentUser } from "@/types/CurrentUser";
 import { useActionState, useEffect, useState } from "react";
 import { useFormStatus } from "react-dom";
