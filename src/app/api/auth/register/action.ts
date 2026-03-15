@@ -2,7 +2,7 @@
 
 import { db } from "@/db/db";
 import { users } from "@/db/tables/users";
-import bcrypt from "bcrypt";
+import bcrypt from "bcryptjs";
 import { registerSchema } from "@/lib/schemas/auth-schema";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
