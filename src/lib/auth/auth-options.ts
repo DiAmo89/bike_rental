@@ -1,39 +1,76 @@
-import { users } from "@/db/tables/users"; // Переконайся, що шлях вірний
+import { users } from "@/db/tables/users";
 import { db } from "@/db/db";
-import { Account, Profile, Session, User } from "next-auth";
+import { Session, User, NextAuthOptions } from "next-auth";
 import { JWT } from "next-auth/jwt";
 import GoogleProvider from "next-auth/providers/google";
 
-export const authOptions = {
+import CredentialsProvider from "next-auth/providers/credentials";
+import bcrypt from "bcrypt";
+
+export const authOptions: NextAuthOptions = {
   providers: [
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID!,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
     }),
+
+    CredentialsProvider({
+      name: "Credentials",
+      credentials: {
+        email: { label: "Email", type: "text" },
+        password: { label: "Password", type: "password" },
+      },
+      async authorize(credentials) {
+        if (!credentials?.email || !credentials?.password) {
+          throw new Error("Missing credentials");
+        }
+
+        const user = await db.query.users.findFirst({
+          where: (u, { eq }) => eq(u.email, credentials.email),
+        });
+
+        if (!user || !user.password) {
+          throw new Error("No user found with this email");
+        }
+
+        const isPasswordValid = await bcrypt.compare(
+          credentials.password,
+          user.password,
+        );
+
+        if (!isPasswordValid) {
+          throw new Error("Invalid password");
+        }
+
+        return {
+          id: user.id,
+          email: user.email,
+          fullName: user.fullName,
+          role: user.role,
+          avatar: user.avatar,
+        };
+      },
+    }),
   ],
   secret: process.env.NEXTAUTH_SECRET,
   callbacks: {
-    async jwt({
-      token,
-      account,
-      profile,
-    }: {
-      token: JWT;
-      account?: Account | null;
-      profile?: Profile | null;
-    }) {
-      if (account && profile) {
-        token.googleId = profile.sub;
+    async jwt({ token, user, account }) {
+      if (user) {
+        token.id = user.id;
+        token.role = user.role;
+        token.fullName = user.fullName;
+        token.avatar = user.avatar;
+      }
 
-        const existing = await db.query.users.findFirst({
-          where: (u, { eq }) => eq(u.email, profile.email!),
+      if (account?.provider === "google" && !token.id) {
+        const dbUser = await db.query.users.findFirst({
+          where: (u, { eq }) => eq(u.email, token.email!),
         });
-
-        if (existing) {
-          token.role = existing.role;
-          token.id = existing.id;
-          token.fullName = existing.fullName;
-          token.avatar = existing.avatar;
+        if (dbUser) {
+          token.id = dbUser.id;
+          token.role = dbUser.role;
+          token.fullName = dbUser.fullName;
+          token.avatar = dbUser.avatar;
         }
       }
       return token;
@@ -51,21 +88,24 @@ export const authOptions = {
     },
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    async signIn({ user }: { user: User | any }) {
+    async signIn({ user, account }: { user: any; account: any }) {
       if (!user.email) return false;
 
-      const existing = await db.query.users.findFirst({
-        where: (u, { eq }) => eq(u.email, user.email!),
-      });
-
-      if (!existing) {
-        await db.insert(users).values({
-          email: user.email,
-          fullName: user.name ?? "User",
-          avatar: user.image ?? null,
-          role: "CUSTOMER",
+      if (account?.provider === "google") {
+        const existing = await db.query.users.findFirst({
+          where: (u, { eq }) => eq(u.email, user.email!),
         });
+
+        if (!existing) {
+          await db.insert(users).values({
+            email: user.email,
+            fullName: user.name ?? "User",
+            avatar: user.image ?? null,
+            role: "CUSTOMER",
+          });
+        }
       }
+
       return true;
     },
   },

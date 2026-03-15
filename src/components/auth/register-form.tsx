@@ -1,11 +1,69 @@
 "use client";
 
-import { X } from "lucide-react";
+import { X, Loader2 } from "lucide-react";
 import Link from "next/link";
 import { Button } from "../ui/button";
 import { signIn } from "next-auth/react";
+import { useState } from "react";
+import { registerUser } from "@/app/api/auth/register/action";
+import { registerSchema } from "@/lib/schemas/auth-schema";
+import { useRouter } from "next/navigation";
 
 export default function RegisterForm() {
+  const router = useRouter();
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    password: "",
+  });
+  const [error, setError] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+    if (error) setError(null);
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError(null);
+    setIsLoading(true);
+
+    const validation = registerSchema.safeParse(formData);
+
+    if (!validation.success) {
+      const errors = validation.error.flatten().fieldErrors;
+
+      const firstError = Object.values(errors)[0]?.[0];
+
+      setError(firstError || "Invalid data");
+      setIsLoading(false);
+      return;
+    }
+
+    const result = await registerUser(formData);
+
+    if (result.error) {
+      setError(result.error);
+      setIsLoading(false);
+    } else {
+      // 3. АВТОМАТИЧНИЙ ВХІД (Крок 3 нашого плану)
+      const signInResult = await signIn("credentials", {
+        email: formData.email,
+        password: formData.password,
+        redirect: false,
+      });
+
+      if (signInResult?.ok) {
+        router.push("/user-profile");
+        router.refresh();
+      } else {
+        setError("Account created, but failed to log in automatically.");
+        setIsLoading(false);
+      }
+    }
+  };
+
   const handleGoogleLogin = () => {
     signIn("google", { callbackUrl: "/user-profile" });
   };
@@ -37,7 +95,13 @@ export default function RegisterForm() {
         </p>
       </div>
 
-      <form className="space-y-4">
+      {error && (
+        <div className="mb-4 rounded-md bg-red-500/10 p-3 text-sm text-red-500 border border-red-500/20 text-center">
+          {error}
+        </div>
+      )}
+
+      <form className="space-y-4" onSubmit={handleSubmit}>
         <div className="space-y-2">
           <label
             htmlFor="name"
@@ -48,6 +112,8 @@ export default function RegisterForm() {
           <input
             id="name"
             name="name"
+            value={formData.name}
+            onChange={handleChange}
             type="text"
             placeholder="John Doe"
             required
@@ -65,6 +131,8 @@ export default function RegisterForm() {
           <input
             id="email"
             name="email"
+            value={formData.email}
+            onChange={handleChange}
             type="email"
             placeholder="name@example.com"
             required
@@ -82,6 +150,8 @@ export default function RegisterForm() {
           <input
             id="password"
             name="password"
+            value={formData.password}
+            onChange={handleChange}
             type="password"
             required
             placeholder="••••••••"
@@ -93,7 +163,14 @@ export default function RegisterForm() {
           type="submit"
           className="inline-flex w-full items-center justify-center rounded-md bg-zinc-50 px-4 py-2 text-sm font-medium text-zinc-950 transition-colors hover:bg-zinc-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-300 disabled:pointer-events-none disabled:opacity-50"
         >
-          Sign Up
+          {isLoading ? (
+            <>
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              Creating account...
+            </>
+          ) : (
+            "Sign Up"
+          )}
         </button>
       </form>
 
@@ -114,7 +191,6 @@ export default function RegisterForm() {
         className="w-full py-2 bg-black border-zinc-800 hover:bg-zinc-900 hover:text-white text-zinc-300 transition-all duration-300 rounded-sm font-mono"
         onClick={handleGoogleLogin}
       >
-        {/* SVG Google залишаємо */}
         <svg className="mr-2 h-4 w-4" /*...*/>
           <path fill="currentColor" d="..." />
         </svg>

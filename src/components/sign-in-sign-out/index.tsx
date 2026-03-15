@@ -23,7 +23,11 @@ export default function SignInSignOut() {
             tabIndex={0}
           >
             <Image
-              src={session.user?.image || ""}
+              src={
+                session.user?.image ||
+                session.user?.avatar ||
+                "/images/avatar/default-avatar.png"
+              }
               alt={session.user?.name || "User"}
               width={26}
               height={26}
