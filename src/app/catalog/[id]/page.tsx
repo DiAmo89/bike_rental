@@ -1,7 +1,7 @@
-import React from "react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { bikesService } from "@/services/bikes.service";
+import BikeImage from "@/components/catalog/bike-image";
 
 interface PageProps {
   params: Promise<{ id: string }>;
@@ -37,19 +37,13 @@ export default async function BikeDetailPage({ params }: PageProps) {
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
         
-        <div className="relative h-[500px] w-full overflow-hidden rounded-3xl bg-gray-100 shadow-lg">
-          {bike.image ? (
-            <img
-              src={bike.image}
-              alt={`${bike.brand} ${bike.model}`}
-              className="h-full w-full object-cover object-center transition-transform duration-500 hover:scale-105"
-            />
-          ) : (
-            <div className="flex h-full items-center justify-center text-gray-400 font-bold">
-              NO IMAGE
-            </div>
-          )}
-        </div>
+        {bike.image ? (
+          <BikeImage src={bike.image} alt={`${bike.brand} ${bike.model}`} />
+        ) : (
+          <div className="relative h-[500px] w-full flex items-center justify-center bg-gray-100 rounded-3xl text-gray-400 font-bold">
+            NO IMAGE
+          </div>
+        )}
 
         
         <div>
