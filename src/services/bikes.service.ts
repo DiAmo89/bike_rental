@@ -1,12 +1,12 @@
 import { db } from "@/db/db";
 import { bikes } from "@/db/tables/bikes";
-import { categories } from "@/db/tables/categories"; // Импорт таблицы категорий
+import { categories } from "@/db/tables/categories"; 
 import { eq } from "drizzle-orm";
 
 export const bikesService = {
   async getAllBikes() {
     try {
-      // Соединяем таблицу велосипедов с таблицей категорий по ID
+      
       const result = await db
         .select({
           bike: bikes,
@@ -15,19 +15,19 @@ export const bikesService = {
         .from(bikes)
         .leftJoin(categories, eq(bikes.bikeCategoryId, categories.id));
 
-      // Маппим результат в удобный для фронтенда формат
+     
       return result.map(({ bike, category }) => ({
         ...bike,
         title: `${bike.brand} ${bike.model}`,
         price: Number(bike.pricePerDay),
         status: bike.isActive ? "available" : "busy",
-        // Теперь здесь реальное название из базы, а не заглушка!
+       
         category: { 
-          name: category?.name || "Без категории" 
+          name: category?.name || "No Category" 
         }
       }));
     } catch (error) {
-      console.error("Ошибка при получении велосипедов:", error);
+      console.error("Error loading bikes:", error);
       return [];
     }
   },
@@ -36,7 +36,7 @@ export const bikesService = {
     try {
       return await db.select().from(categories);
     } catch (error) {
-      console.error("Ошибка при получении категорий:", error);
+      console.error("Error loading categories:", error);
       return [];
     }
   },

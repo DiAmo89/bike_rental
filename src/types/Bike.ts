@@ -2,10 +2,11 @@ import { Category } from "./Category";
 
 export interface Bike {
   id: string;
+  brand: string;
   model: string;
-  price: number;
+  pricePerDay: number; 
   category: Category;
-  image: string;
-  description: string;
-  status: "Available" | "In Repair";
+  image: string | null;
+  description: string | null;
+  isActive: boolean;
 }
