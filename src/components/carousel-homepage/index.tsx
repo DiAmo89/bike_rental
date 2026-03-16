@@ -7,7 +7,6 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
-import { getBikes } from "@/api/getBikes";
 
 import type { Bike } from "@/types/Bike";
 import BikeCard from "../catalog/bike-card";
@@ -15,10 +14,18 @@ import BikeCard from "../catalog/bike-card";
 export function CarouselSpacing() {
   const [bikes, setBikes] = React.useState<Bike[]>([]);
 
+  // ИЗМЕНЕНИЯ ЗДЕСЬ:
   React.useEffect(() => {
-    getBikes().then((data) => {
-      setBikes(data.slice(0, 30));
-    });
+    fetch("/api/bikes") // Вызываем твой новый API роут
+      .then((res) => {
+        if (!res.ok) throw new Error("Failed to fetch");
+        return res.json();
+      })
+      .then((data) => {
+        // Берем первые 30 велосипедов, как и было
+        setBikes(data.slice(0, 30));
+      })
+      .catch((err) => console.error("Carousel loading error:", err));
   }, []);
 
   return (

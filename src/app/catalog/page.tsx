@@ -1,12 +1,10 @@
 "use client";
 import React, { useEffect, useState, useMemo } from "react";
-import { getBikes } from "@/api/getBikes";
 import { Bike } from "@/types/Bike";
 import BikeCard from "@/components/catalog/bike-card";
 import CatalogMenu from "@/components/catalog/catalog-menu";
 import CatalogPagination from "@/components/catalog/catalog-pagination";
-import CategoryCard from "@/components/catalog/category-card";
-import { Category } from "@/types/Category";
+
 
 export default function CatalogPage() {
   const [allBikes, setAllBikes] = useState<Bike[]>([]);
@@ -17,21 +15,20 @@ export default function CatalogPage() {
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(6);
 
-  /****************Карточки категорий для Димы */
-  const [categories, setCategories] = React.useState<Category[]>([]);
-
-  React.useEffect(() => {
-    import("@/api/getCategories").then((m) => {
-      m.getCategories().then(setCategories);
-    });
-  }, []);
-  /******************************************* */
-
   useEffect(() => {
-    getBikes().then((data) => {
-      setAllBikes(data);
-      setLoading(false);
-    });
+    fetch("/api/bikes")
+      .then((res) => {
+        if (!res.ok) throw new Error("Error loading");
+        return res.json();
+      })
+      .then((data) => {
+        setAllBikes(data);
+        setLoading(false);
+      })
+      .catch((err) => {
+        console.error(err);
+        setLoading(false);
+      });
   }, []);
 
   const filteredBikes = useMemo(() => {
