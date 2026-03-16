@@ -13,7 +13,7 @@ export default function CatalogPage() {
   const searchParams = useSearchParams();
   const router = useRouter();
   
-  // 1. Читаем фильтры из URL
+  
   const catFilter = searchParams.get("category") || "all";
   const statusFilter = searchParams.get("status") || "all";
   const sortBy = searchParams.get("sort") || "default";
@@ -25,19 +25,19 @@ export default function CatalogPage() {
     const savedUrl = sessionStorage.getItem("lastCatalogUrl");
     const currentQuery = window.location.search;
 
-    // Если мы зашли на пустой /catalog, но у нас есть сохраненный путь с фильтрами
+   
     if (!currentQuery && savedUrl && savedUrl.includes('?')) {
       router.replace(savedUrl);
     }
   }, []);
 
-  // 2. Сохраняем текущее состояние фильтров для кнопки "Назад"
+
   useEffect(() => {
     const currentFullUrl = window.location.pathname + window.location.search;
     sessionStorage.setItem("lastCatalogUrl", currentFullUrl);
   }, [searchParams]);
 
-  // 3. Загрузка данных
+  
   useEffect(() => {
     const loadData = async () => {
       try {
@@ -53,24 +53,24 @@ export default function CatalogPage() {
     loadData();
   }, []);
 
-  // 4. Логика фильтрации и сортировки
+  
   const filteredBikes = useMemo(() => {
     let result = [...allBikes];
     
-    // Фильтр по категориям
+  
     if (catFilter !== "all") {
       result = result.filter((b) => 
         b.category?.name?.toLowerCase() === catFilter.toLowerCase()
       );
     }
     
-    // Фильтр по статусу
+    
     if (statusFilter !== "all") {
       const isAvail = statusFilter === "Available";
       result = result.filter((b) => b.isActive === isAvail);
     }
 
-    // Сортировка
+   
     if (sortBy === "low") {
       result.sort((a, b) => Number(a.pricePerDay) - Number(b.pricePerDay));
     } else if (sortBy === "high") {
@@ -80,13 +80,13 @@ export default function CatalogPage() {
     return result;
   }, [allBikes, catFilter, statusFilter, sortBy]);
 
-  // 5. Пагинация
+
   const totalPages = Math.ceil(filteredBikes.length / itemsPerPage);
   const safePage = currentPage > totalPages && totalPages > 0 ? 1 : currentPage;
   const startIndex = (safePage - 1) * itemsPerPage;
   const paginatedBikes = filteredBikes.slice(startIndex, startIndex + itemsPerPage);
 
-  // Сбрасываем страницу на 1-ю при изменении фильтров
+  
   useEffect(() => {
     setCurrentPage(1);
   }, [catFilter, statusFilter, sortBy]);
@@ -104,14 +104,14 @@ export default function CatalogPage() {
     <div className="container mx-auto pb-20 px-4">
       {filteredBikes.length > 0 ? (
         <>
-          {/* Сетка карточек */}
+      
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {paginatedBikes.map((bike) => (
               <BikeCard key={bike.id} bike={bike} />
             ))}
           </div>
 
-          {/* Пагинация */}
+       
           <div className="mt-12">
             <CatalogPagination
               currentPage={safePage}

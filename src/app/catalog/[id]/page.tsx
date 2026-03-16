@@ -8,13 +8,13 @@ interface PageProps {
 }
 
 export default async function BikeDetailPage({ params }: PageProps) {
-  // 1. Ожидаем получение id из параметров (Next.js 15+ требование)
+  
   const { id } = await params;
 
-  // 2. Получаем данные байка
+ 
   const bike = await bikesService.getBikeById(id);
 
-  // 3. Если байк не найден — показываем 404
+  
   if (!bike) {
     notFound();
   }
@@ -24,10 +24,7 @@ export default async function BikeDetailPage({ params }: PageProps) {
 
   return (
     <div className="container mx-auto py-20 px-4">
-      {/* Простая ссылка на /catalog. 
-          Когда пользователь перейдет по ней, useEffect на странице каталога 
-          автоматически подставит сохраненные фильтры из sessionStorage.
-      */}
+      
       <Link
         href="/catalog"
         className="inline-flex items-center text-sm font-bold text-gray-400 hover:text-black transition-colors mb-8 group uppercase"
@@ -39,7 +36,7 @@ export default async function BikeDetailPage({ params }: PageProps) {
       </Link>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
-        {/* Блок с изображением */}
+        
         <div className="relative h-[500px] w-full overflow-hidden rounded-3xl bg-gray-100 shadow-lg">
           {bike.image ? (
             <img
@@ -54,13 +51,13 @@ export default async function BikeDetailPage({ params }: PageProps) {
           )}
         </div>
 
-        {/* Информационный блок */}
+        
         <div>
           <h1 className="text-5xl font-black mb-4 uppercase leading-tight">
             {bike.brand} <span className="text-gray-400">{bike.model}</span>
           </h1>
 
-          {/* Статус */}
+         
           <div className="inline-block bg-[#e6ff2a] text-black px-4 py-1 rounded-full text-xs font-black mb-6 uppercase tracking-widest">
              {displayStatus}
           </div>
