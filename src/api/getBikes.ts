@@ -25,7 +25,7 @@ export const getBikes = async (): Promise<Bike[]> => {
       price: Math.round(item.price),
 
       category: {
-        id: item.id,
+        id: item.id.toString(),
         name: item.category,
         image: item.image,
       },
