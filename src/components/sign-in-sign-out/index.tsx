@@ -5,9 +5,11 @@ import { signOut, useSession } from "next-auth/react";
 import Image from "next/image";
 import { PATH_LOGIN, PATH_SIGN_UP } from "@/app/path/path";
 import RegisteredUser from "../registered-user";
+import { usePathname } from "next/navigation";
 
 export default function SignInSignOut() {
   const { data: session } = useSession();
+  const pathname = usePathname();
 
   const baseStyles =
     "flex items-center gap-3 bg-[#e6ff2a] text-black px-4 py-2 rounded-full text-sm font-medium transition mr-8";
@@ -21,7 +23,11 @@ export default function SignInSignOut() {
             tabIndex={0}
           >
             <Image
-              src={session.user?.image || ""}
+              src={
+                session.user?.image ||
+                session.user?.avatar ||
+                "/images/avatar/default-avatar.png"
+              }
               alt={session.user?.name || "User"}
               width={26}
               height={26}
@@ -50,7 +56,11 @@ export default function SignInSignOut() {
     <div className="flex items-center gap-6">
       <Link
         href={PATH_LOGIN}
-        className="hidden xl:inline text-sm font-medium text-white hover:text-[#e6ff2a] transition mr-4"
+        className={`hidden xl:inline text-sm font-medium transition mr-4 ${
+          pathname === PATH_LOGIN
+            ? "text-[#e6ff2a]"
+            : "text-white hover:text-[#e6ff2a]"
+        }`}
       >
         Login
       </Link>

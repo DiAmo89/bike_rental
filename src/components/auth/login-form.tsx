@@ -1,11 +1,60 @@
 "use client";
 
-import { X } from "lucide-react";
+import { X, Loader2 } from "lucide-react";
 import Link from "next/link";
 import { Button } from "../ui/button";
 import { signIn } from "next-auth/react";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { loginSchema } from "@/lib/schemas/auth-schema";
 
 export default function LoginForm() {
+  const router = useRouter();
+
+  const [formData, setFormData] = useState({
+    email: "",
+    password: "",
+  });
+
+  const [error, setError] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+    if (error) setError(null);
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError(null);
+    setIsLoading(true);
+
+    const validation = loginSchema.safeParse(formData);
+
+    if (!validation.success) {
+      const fieldErrors = validation.error.flatten().fieldErrors;
+      const firstError = Object.values(fieldErrors)[0]?.[0];
+
+      setError(firstError || "Invalid login data");
+      setIsLoading(false);
+      return;
+    }
+
+    const result = await signIn("credentials", {
+      email: formData.email,
+      password: formData.password,
+      redirect: false,
+    });
+
+    if (result?.error) {
+      setError("Incorrect email address or password");
+      setIsLoading(false);
+    } else {
+      router.push("/user-profile");
+      router.refresh();
+    }
+  };
+
   const handleGoogleLogin = () => {
     signIn("google", { callbackUrl: "/user-profile" });
   };
@@ -34,8 +83,13 @@ export default function LoginForm() {
         </p>
       </div>
 
-      <form className="space-y-4">
-        {/* Поля email та password залишаю без змін - там все ок */}
+      {error && (
+        <div className="mb-4 rounded-md bg-red-500/10 p-3 text-sm text-red-500 border border-red-500/20 text-center animate-in fade-in duration-300">
+          {error}
+        </div>
+      )}
+
+      <form className="space-y-4" onSubmit={handleSubmit} noValidate>
         <div className="space-y-2">
           <label
             htmlFor="email"
@@ -49,6 +103,8 @@ export default function LoginForm() {
             type="email"
             placeholder="name@example.com"
             required
+            value={formData.email}
+            onChange={handleChange}
             className="flex h-10 w-full rounded-md border border-zinc-800 bg-zinc-900/50 px-3 py-2 text-sm transition-colors placeholder:text-zinc-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-300"
           />
         </div>
@@ -73,6 +129,8 @@ export default function LoginForm() {
             name="password"
             type="password"
             required
+            value={formData.password}
+            onChange={handleChange}
             placeholder="••••••••"
             className="flex h-10 w-full rounded-md border border-zinc-800 bg-zinc-900/50 px-3 py-2 text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-300"
           />
@@ -80,9 +138,17 @@ export default function LoginForm() {
 
         <button
           type="submit"
+          disabled={isLoading}
           className="inline-flex w-full items-center justify-center rounded-md bg-zinc-50 px-4 py-2 text-sm font-medium text-zinc-950 transition-colors hover:bg-zinc-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-300 disabled:pointer-events-none disabled:opacity-50"
         >
-          Log In
+          {isLoading ? (
+            <>
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              Logging in...
+            </>
+          ) : (
+            "Log In"
+          )}
         </button>
       </form>
 
