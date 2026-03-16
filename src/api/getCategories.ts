@@ -13,7 +13,7 @@ export async function getCategories(): Promise<Category[]> {
     return names.map((name: string, index: number) => {
       const file = name.toLowerCase().replace(/['\s]/g, "");
       return {
-        id: index + 1,
+        id: (index + 1).toString(),
         name: name,
         image: "/images/categories/" + file + ".jpg",
       };
