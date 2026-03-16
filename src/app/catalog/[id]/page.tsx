@@ -8,13 +8,10 @@ interface PageProps {
 }
 
 export default async function BikeDetailPage({ params }: PageProps) {
-  
   const { id } = await params;
 
- 
   const bike = await bikesService.getBikeById(id);
 
-  
   if (!bike) {
     notFound();
   }
@@ -24,7 +21,6 @@ export default async function BikeDetailPage({ params }: PageProps) {
 
   return (
     <div className="container mx-auto py-20 px-4">
-      
       <Link
         href="/catalog"
         className="inline-flex items-center text-sm font-bold text-gray-400 hover:text-black transition-colors mb-8 group uppercase"
@@ -36,7 +32,6 @@ export default async function BikeDetailPage({ params }: PageProps) {
       </Link>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
-        
         {bike.image ? (
           <BikeImage src={bike.image} alt={`${bike.brand} ${bike.model}`} />
         ) : (
@@ -45,31 +40,38 @@ export default async function BikeDetailPage({ params }: PageProps) {
           </div>
         )}
 
-        
         <div>
           <h1 className="text-5xl font-black mb-4 uppercase leading-tight">
             {bike.brand} <span className="text-gray-400">{bike.model}</span>
           </h1>
 
-         
           <div className="inline-block bg-[#e6ff2a] text-black px-4 py-1 rounded-full text-xs font-black mb-6 uppercase tracking-widest">
-             {displayStatus}
+            {displayStatus}
           </div>
 
           <p className="text-4xl font-black text-gray-900 mb-8">
-            {displayPrice.toLocaleString()} ₽ <span className="text-lg text-gray-400">/ day</span>
+            {displayPrice.toLocaleString()} ₽{" "}
+            <span className="text-lg text-gray-400">/ day</span>
           </p>
 
           <div className="space-y-4 mb-10 border-t border-gray-100 pt-6">
-            <h3 className="font-bold uppercase tracking-widest text-sm text-gray-400">Description</h3>
+            <h3 className="font-bold uppercase tracking-widest text-sm text-gray-400">
+              Description
+            </h3>
             <p className="text-gray-600 leading-relaxed text-lg">
-              {bike.description || "This premium model is ready for your next adventure. Contact us for technical specifications."}
+              {bike.description ||
+                "This premium model is ready for your next adventure. Contact us for technical specifications."}
             </p>
           </div>
 
-          <button className="w-full md:w-auto bg-black text-white px-12 py-5 rounded-2xl font-black hover:bg-gray-800 transition-all uppercase tracking-widest shadow-xl active:scale-95">
-            Book Now
-          </button>
+          <Link
+            href={`/catalog/${bike.id}/booking`}
+            className="w-full md:w-auto"
+          >
+            <button className="w-full bg-black text-white px-12 py-5 rounded-2xl font-black hover:scale-105 transition-transform uppercase tracking-widest shadow-xl">
+              Book Now
+            </button>
+          </Link>
         </div>
       </div>
     </div>
