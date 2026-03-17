@@ -7,12 +7,15 @@ import { revalidatePath } from "next/cache";
 
 export default async function updateAccessory(id: string, formData: FormData) {
   const name = formData.get("name") as string;
-  const pricePerDay = formData.get("price_per_day") as string;
-
+  let pricePerDay = formData.get("price_per_day") as string;
+  // Validate and convert pricePerDay
+  if (!pricePerDay || isNaN(Number(pricePerDay))) {
+    throw new Error("Invalid price per day");
+  }
+  pricePerDay = Number(pricePerDay).toFixed(2);
   await db
     .update(accessories)
     .set({ name, pricePerDay })
     .where(eq(accessories.id, id));
-
   revalidatePath("/admin");
 }

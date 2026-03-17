@@ -6,7 +6,7 @@ export default function UserProfileLayout({
   children: React.ReactNode;
 }) {
   return (
-    <main className="mx-auto max-w-6xl px-6">
+    <main className=" m-20 mx-auto max-w-6xl px-6">
       <h1 className="mb-8 text-3xl font-bold">User Profile</h1>
 
       <div className="grid grid-cols-1 gap-8 md:grid-cols-[220px_1fr]">
