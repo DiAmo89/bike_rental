@@ -41,6 +41,7 @@ export default function EditProfileForm({ user }: Props) {
   const [showSuccess, setShowSuccess] = useState(false);
 
   const fullNameError = state?.fieldErrors?.full_name?.[0];
+  const telephoneError = state?.fieldErrors?.telephone?.[0];
 
   useEffect(() => {
     if (!state?.success || !state?.successMessage) return;
@@ -59,14 +60,16 @@ export default function EditProfileForm({ user }: Props) {
       action={formAction}
       className="mb-6 rounded-2xl border border-gray-200 bg-white p-6 shadow-sm"
     >
-      <div className="space-y-4">
+      <div >
         <div>
           <label className="block text-sm font-medium">Avatar</label>
           <input
             name="avatar"
             defaultValue={state.values.avatar}
+            placeholder="https://example.com/avatar.jpg"
             className="mt-1 w-full rounded-xl border px-4 py-2"
           />
+          <div className="min-h-5" />
         </div>
 
         <div>
@@ -74,9 +77,10 @@ export default function EditProfileForm({ user }: Props) {
           <input
             name="full_name"
             defaultValue={state.values.full_name}
+            placeholder="Enter your full name"
             className="mt-1 w-full rounded-xl border px-4 py-2"
           />
-          <div className="mt-1 min-h-5">
+          <div className="min-h-5">
             {fullNameError && (
               <p className="text-sm text-red-600">{fullNameError}</p>
             )}
@@ -88,12 +92,18 @@ export default function EditProfileForm({ user }: Props) {
           <input
             name="telephone"
             defaultValue={state.values.telephone}
+            placeholder="+49 155 6618 3536"
             className="mt-1 w-full rounded-xl border px-4 py-2"
           />
+          <div className="min-h-5">
+            {telephoneError && (
+              <p className="mt-1 text-sm text-red-600">{telephoneError}</p>
+            )}
+          </div>
         </div>
       </div>
 
-      <div className="mt-6 flex items-center gap-3">
+      <div className="mt-3 flex items-center gap-2">
         <SubmitButton />
         <div className="min-h-5">
           {showSuccess && state?.successMessage && (

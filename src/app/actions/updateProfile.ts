@@ -21,9 +21,9 @@ export async function updateProfile(
   }
 
   const values = {
-    avatar: String(formData.get("avatar") ?? ""),
-    full_name: String(formData.get("full_name") ?? ""),
-    telephone: String(formData.get("telephone") ?? ""),
+    avatar: String(formData.get("avatar") ?? "").trim(),
+    full_name: String(formData.get("full_name") ?? "").trim(),
+    telephone: String(formData.get("telephone") ?? "").trim(),
   };
 
   const result = updateProfileSchema.safeParse(values);
@@ -45,7 +45,7 @@ export async function updateProfile(
     .set({
       avatar: parsed.avatar,
       fullName: parsed.full_name,
-      phone: parsed.telephone,
+      phone: parsed.telephone ? parsed.telephone : null,
     })
     .where(eq(users.id, currentUser.id));
 
