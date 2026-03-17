@@ -1,14 +1,21 @@
-import AccountSummaryCard from "@/components/profile/AccountSummaryCard";
-import ActiveBookingCard from "@/components/profile/ActiveBookingCard";
-import PastBookingsCard from "@/components/profile/PastBookingsCard";
+import AccountSummarySection from "@/components/profile/bookings/AccountSummarySection";
+import CurrentBookingsSection from "@/components/profile/bookings/CurrentBookingsSection";
+import PastBookingsSection from "@/components/profile/bookings/PastBookingsSection";
+import { getUserBookings } from "@/app/api/actions-booking/get-user-bookings";
+import { mapBookingRowsToListItems } from "@/lib/bookings/bookings.mapper";
+import { buildBookingsPageData } from "@/lib/bookings/bookings.service";
 
+export default async function BookingHistoryPage() {
+  const rows = await getUserBookings();
+  const bookingItems = mapBookingRowsToListItems(rows);
+  const { currentBookings, pastBookings, summary } =
+    buildBookingsPageData(bookingItems);
 
-export default function BookingHistoryPage() {
   return (
-    <div className="space-y-6">
-      <ActiveBookingCard />
-      <PastBookingsCard />
-      <AccountSummaryCard />
+    <div className="space-y-6 p-6">
+      <CurrentBookingsSection bookings={currentBookings} />
+      <PastBookingsSection bookings={pastBookings} />
+      <AccountSummarySection summary={summary} />
     </div>
   );
 }
