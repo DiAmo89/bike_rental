@@ -1,5 +1,5 @@
-import BookingCard from "./BookingCard";
 import type { BookingListItem } from "./bookings.types";
+import PastBookingCard from "./PastBookingCard";
 
 type Props = {
   bookings: BookingListItem[];
@@ -21,7 +21,7 @@ export default function PastBookingsSection({ bookings }: Props) {
       ) : (
         <div className="space-y-4">
           {bookings.map((booking) => (
-            <BookingCard key={booking.id} booking={booking} variant="past" />
+            <PastBookingCard key={booking.id} booking={booking} />
           ))}
         </div>
       )}
