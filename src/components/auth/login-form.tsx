@@ -50,7 +50,7 @@ export default function LoginForm() {
       setError("Incorrect email address or password");
       setIsLoading(false);
     } else {
-      router.push("/user-profile");
+      router.replace("/user-profile");
       router.refresh();
     }
   };

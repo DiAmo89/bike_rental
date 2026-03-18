@@ -54,7 +54,7 @@ export default function RegisterForm() {
       });
 
       if (signInResult?.ok) {
-        router.push("/user-profile");
+        router.replace("/user-profile");
         router.refresh();
       } else {
         setError("Account created, but failed to log in automatically.");
