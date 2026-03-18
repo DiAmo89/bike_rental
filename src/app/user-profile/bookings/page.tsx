@@ -12,7 +12,7 @@ export default async function BookingHistoryPage() {
     buildBookingsPageData(bookingItems);
 
   return (
-    <div className="space-y-6 p-6">
+    <div className="space-y-6">
       <CurrentBookingsSection bookings={currentBookings} />
       <PastBookingsSection bookings={pastBookings} />
       <AccountSummarySection summary={summary} />

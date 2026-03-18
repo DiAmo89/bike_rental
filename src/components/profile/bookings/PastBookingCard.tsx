@@ -1,3 +1,4 @@
+import Link from "next/link";
 import type { BookingListItem } from "./bookings.types";
 
 type Props = {
@@ -10,8 +11,10 @@ function formatPrice(value: number) {
 
 export default function PastBookingCard({ booking }: Props) {
   return (
-    <div className="flex items-center justify-between gap-4 py-3 text-sm border-b border-gray-100 last:border-none">
-      
+    <Link
+      href={`/user-profile/bookings/${booking.id}`}
+      className="flex items-center justify-between gap-4 border-b border-gray-100 py-3 text-sm transition hover:bg-gray-50 last:border-none"
+    >
       {/* Title */}
       <div className="min-w-0 flex-1">
         <p className="truncate font-medium">{booking.title}</p>
@@ -31,6 +34,6 @@ export default function PastBookingCard({ booking }: Props) {
       <div className="whitespace-nowrap text-xs text-gray-500">
         Completed
       </div>
-    </div>
+    </Link>
   );
 }

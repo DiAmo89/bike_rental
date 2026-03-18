@@ -19,7 +19,7 @@ export default function PastBookingsSection({ bookings }: Props) {
       {bookings.length === 0 ? (
         <p className="text-gray-500">No completed bookings yet.</p>
       ) : (
-        <div className="max-h-[400px] overflow-y-auto">
+        <div className="max-h-100 overflow-y-auto">
           {bookings.map((booking) => (
             <PastBookingCard key={booking.id} booking={booking} />
           ))}

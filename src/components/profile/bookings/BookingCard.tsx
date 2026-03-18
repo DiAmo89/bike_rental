@@ -4,6 +4,7 @@ import Image from "next/image";
 import { useState } from "react";
 import BookingProgress from "./BookingProgress";
 import type { BookingListItem } from "./bookings.types";
+import Link from "next/link";
 
 type Props = {
   booking: BookingListItem;
@@ -136,15 +137,23 @@ export default function BookingCard({ booking, variant }: Props) {
 
       {!isPast && (
         <>
-          {booking.status === "active" && <BookingProgress progress={progress} />}
+          {booking.status === "active" && (
+            <BookingProgress progress={progress} />
+          )}
 
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-            <button className="rounded-xl border border-gray-300 px-5 py-4 text-lg font-medium transition hover:bg-gray-50">
+            <Link
+              href={`/user-profile/bookings/${booking.id}`}
+              className="rounded-xl border border-gray-300 px-5 py-4 text-center text-lg font-medium transition hover:bg-gray-50"
+            >
               View Details
-            </button>
-            <button className="rounded-xl bg-black px-5 py-4 text-lg font-medium text-white transition hover:bg-gray-800">
+            </Link>
+            <a
+              href={`mailto:info@blablabike.com?subject=Booking%20${booking.id}&body=Hello,%0A%0AI%20need%20help%20with%20booking%20ID:%20${booking.id}.`}
+              className="rounded-xl bg-black px-5 py-4 text-center text-lg font-medium text-white transition hover:bg-gray-800"
+            >
               Contact Support
-            </button>
+            </a>
           </div>
         </>
       )}

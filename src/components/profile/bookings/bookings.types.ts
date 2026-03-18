@@ -27,3 +27,16 @@ export type BookingsPageData = {
   pastBookings: BookingListItem[];
   summary: BookingSummary;
 };
+
+
+export type BookingAccessoryItem = {
+  id: string;
+  name: string;
+  pricePerDay: number;
+};
+
+export type BookingDetailsItem = BookingListItem & {
+  bikePricePerDay: number;
+  bikeDescription: string | null;
+  accessories: BookingAccessoryItem[];
+};
