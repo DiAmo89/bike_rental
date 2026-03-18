@@ -61,7 +61,7 @@ export default function BikesTable({
               <td className="px-6 py-4">
                 <div className="flex items-center gap-3">
                   <img
-                    src={bike.image || "/images/bike-placeholder.png"}
+                    src={bike.image || "/images/default-bicycle.png"}
                     alt={bike.name}
                     className="h-10 w-10 rounded-md object-cover border border-gray-200"
                   />
