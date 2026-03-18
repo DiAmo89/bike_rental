@@ -5,8 +5,11 @@ import { db } from "@/db/db";
 import { bikes } from "@/db/tables/bikes";
 import { eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
+import { requireAdmin } from "@/lib/auth/requireAdmin";
 
 export async function createBike(formData: FormData) {
+  await requireAdmin();
+
   const brand = formData.get("brand") as string;
   const model = formData.get("model") as string;
   const description = formData.get("description") as string;

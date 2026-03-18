@@ -3,8 +3,11 @@
 import { accessories } from "@/db/tables/accessories";
 import { db } from "@/db/db";
 import { revalidatePath } from "next/cache";
+import { requireAdmin } from "@/lib/auth/requireAdmin";
 
 export default async function createAccessory(formData: FormData) {
+  await requireAdmin();
+
   const name = formData.get("name") as string;
   let pricePerDay = formData.get("price_per_day") as string;
   // Validate and convert pricePerDay
