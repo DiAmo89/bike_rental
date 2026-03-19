@@ -23,7 +23,17 @@ export default function AdminPanel() {
   const loadBikes = async () => {
     const res = await fetch("/api/bikes");
     const data = await res.json();
-    setBikes(data);
+
+    const adminBikes = data.map((bike: any) => ({
+      id: bike.id,
+      name: `${bike.brand ?? ""} ${bike.model ?? ""}`.trim(),
+      type: bike.category?.name || "No Category",
+      price: Number(bike.pricePerDay),
+      status: bike.isActive ? "available" : "busy",
+      image: bike.image ?? null,
+    }));
+
+    setBikes(adminBikes);
   };
 
   useEffect(() => {

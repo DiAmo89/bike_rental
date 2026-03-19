@@ -15,12 +15,15 @@ export const bikesService = {
         .leftJoin(categories, eq(bikes.bikeCategoryId, categories.id));
 
       return result.map(({ bike, category }) => ({
-        id: bike.id,
-        name: `${bike.brand ?? ""} ${bike.model ?? ""}`.trim(),
-        type: category?.name || "No Category",
-        price: Number(bike.pricePerDay),
-        status: bike.isActive ? "available" : "busy",
-        image: bike.image ?? null,
+        ...bike,
+        pricePerDay: Number(bike.pricePerDay),
+        category: category
+          ? { ...category }
+          : {
+              id: "",
+              name: "No Category",
+              description: null,
+            },
       }));
     } catch (error) {
       console.error("Error loading bikes:", error);
