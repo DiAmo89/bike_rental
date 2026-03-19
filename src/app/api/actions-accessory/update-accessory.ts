@@ -4,8 +4,11 @@ import { accessories } from "@/db/tables/accessories";
 import { db } from "@/db/db";
 import { eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
+import { requireAdmin } from "@/lib/auth/requireAdmin";
 
 export default async function updateAccessory(id: string, formData: FormData) {
+  await requireAdmin();
+
   const name = formData.get("name") as string;
   let pricePerDay = formData.get("price_per_day") as string;
   // Validate and convert pricePerDay
