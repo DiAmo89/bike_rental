@@ -91,7 +91,6 @@ export default function AdminPanel() {
         <AdminStats
           totalBikes={bikes.length}
           activeOrders={0}
-          inRepair={0}
           totalAccessories={accessories.length}
         />
 
