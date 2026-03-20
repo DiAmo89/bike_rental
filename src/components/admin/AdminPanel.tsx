@@ -5,7 +5,6 @@ import { useRouter } from "next/navigation";
 import AdminHeader from "./AdminHeader";
 import AdminTabs from "./AdminTabs";
 import AdminStats from "./AdminStats";
-import AdminActions from "./AdminActions";
 import AdminSidebar from "./AdminSidebar";
 import BikesTable from "./BikesTable";
 import AddBikeModal from "./AddBikeModal";
@@ -77,7 +76,11 @@ export default function AdminPanel() {
       </aside>
 
       <section className="space-y-6">
-        <AdminHeader />
+        <AdminHeader
+          onAddBike={handleAddBike}
+          onAddAccessory={handleAddAccessory}
+          onAddCategory={handleAddCategory}
+        />
 
         <AdminTabs
           activeTab={activeTab}
@@ -90,12 +93,6 @@ export default function AdminPanel() {
           activeOrders={0}
           inRepair={0}
           totalAccessories={accessories.length}
-        />
-
-        <AdminActions
-          onAddBike={handleAddBike}
-          onAddAccessory={handleAddAccessory}
-          onAddCategory={handleAddCategory}
         />
 
         {activeTab === "bikes" && (
