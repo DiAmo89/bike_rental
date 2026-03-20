@@ -2,9 +2,12 @@ import { redirect } from "next/navigation";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth/auth-options";
 import { getUserByEmail } from "@/app/api/user/get-current-user";
-import AdminPanel from "@/components/admin/AdminPanel";
 
-export default async function AdminPage() {
+export default async function AdminLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   const session = await getServerSession(authOptions);
 
   if (!session?.user?.email) {
@@ -21,9 +24,5 @@ export default async function AdminPage() {
     redirect("/");
   }
 
-  return (
-    <main className="mx-auto max-w-7xl px-6 pb-10 pt-28">
-      <AdminPanel />
-    </main>
-  );
+  return <>{children}</>;
 }

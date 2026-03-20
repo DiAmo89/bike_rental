@@ -6,6 +6,7 @@ import AdminHeader from "./AdminHeader";
 import AdminTabs from "./AdminTabs";
 import AdminStats from "./AdminStats";
 import AdminActions from "./AdminActions";
+import AdminSidebar from "./AdminSidebar";
 import BikesTable from "./BikesTable";
 import AddBikeModal from "./AddBikeModal";
 import { Bike } from "@/types/admin";
@@ -70,37 +71,49 @@ export default function AdminPanel() {
   };
 
   return (
-    <div className="space-y-6">
-      <AdminHeader />
-      <AdminTabs
-        activeTab={activeTab}
-        onChangeTab={setActiveTab}
-        activeOrdersCount={0}
-      />
-      <AdminStats
-        totalBikes={bikes.length}
-        activeOrders={0}
-        inRepair={0}
-        totalAccessories={accessories.length}
-      />
-      <AdminActions
-        onAddBike={handleAddBike}
-        onAddAccessory={handleAddAccessory}
-        onAddCategory={handleAddCategory}
-      />
-      {activeTab === "bikes" && (
-        <BikesTable
-          bikes={bikes}
-          categories={categories}
-          onDeleteSuccess={loadBikes}
+    <div className="grid grid-cols-1 gap-8 md:grid-cols-[210px_1fr]">
+      <aside className="self-start">
+        <AdminSidebar />
+      </aside>
+
+      <section className="space-y-6">
+        <AdminHeader />
+
+        <AdminTabs
+          activeTab={activeTab}
+          onChangeTab={setActiveTab}
+          activeOrdersCount={0}
         />
-      )}
+
+        <AdminStats
+          totalBikes={bikes.length}
+          activeOrders={0}
+          inRepair={0}
+          totalAccessories={accessories.length}
+        />
+
+        <AdminActions
+          onAddBike={handleAddBike}
+          onAddAccessory={handleAddAccessory}
+          onAddCategory={handleAddCategory}
+        />
+
+        {activeTab === "bikes" && (
+          <BikesTable
+            bikes={bikes}
+            categories={categories}
+            onDeleteSuccess={loadBikes}
+          />
+        )}
+      </section>
+
       <AddBikeModal
         open={showAddBike}
         onClose={() => setShowAddBike(false)}
         onSuccess={handleAddBikeSuccess}
         categories={categories}
       />
+
       <AddAccessoryModal
         open={showAddAccessory}
         onClose={() => setShowAddAccessory(false)}
