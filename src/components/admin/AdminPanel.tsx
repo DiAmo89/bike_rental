@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import AdminHeader from "./AdminHeader";
 import AdminTabs from "./AdminTabs";
 import AdminStats from "./AdminStats";
@@ -10,7 +11,6 @@ import AddBikeModal from "./AddBikeModal";
 import { Bike } from "@/types/admin";
 import AddAccessoryModal from "./AddAccessoryModal";
 import { Category } from "@/types/Category";
-// Elimin import server-only
 
 export default function AdminPanel() {
   const [showAddAccessory, setShowAddAccessory] = useState(false);
@@ -19,6 +19,7 @@ export default function AdminPanel() {
   const [categories, setCategories] = useState<Category[]>([]);
   const [accessories, setAccessories] = useState([]);
   const [showAddBike, setShowAddBike] = useState(false);
+  const router = useRouter();
 
   const loadBikes = async () => {
     const res = await fetch("/api/bikes");
@@ -49,6 +50,11 @@ export default function AdminPanel() {
   }, []);
 
   const handleAddAccessory = () => setShowAddAccessory(true);
+
+  const handleAddCategory = () => {
+    router.push("/admin/categories/new");
+  };
+
   const handleAddAccessorySuccess = () => {
     setShowAddAccessory(false);
     fetch("/api/actions-accessory/read-all-accessories")
@@ -57,6 +63,7 @@ export default function AdminPanel() {
   };
 
   const handleAddBike = () => setShowAddBike(true);
+
   const handleAddBikeSuccess = async () => {
     setShowAddBike(false);
     await loadBikes();
@@ -79,7 +86,7 @@ export default function AdminPanel() {
       <AdminActions
         onAddBike={handleAddBike}
         onAddAccessory={handleAddAccessory}
-        onAddCategory={() => {}}
+        onAddCategory={handleAddCategory}
       />
       {activeTab === "bikes" && (
         <BikesTable bikes={bikes} onDeleteSuccess={loadBikes} />
