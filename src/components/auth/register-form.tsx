@@ -154,7 +154,7 @@ export default function RegisterForm() {
           </label>
           <input
             id="password"
-            name="password" // ДОДАНО
+            name="password"
             value={formData.password}
             onChange={handleChange}
             type="password"
@@ -180,7 +180,6 @@ export default function RegisterForm() {
         </button>
       </form>
 
-      {/* Решта блоку з Google без змін */}
       <div className="relative my-6">
         <div className="absolute inset-0 flex items-center">
           <span className="w-full border-t border-zinc-800" />

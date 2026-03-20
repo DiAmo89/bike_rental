@@ -1,13 +1,17 @@
 import { z } from "zod";
 
+const nameValidation = z
+  .string()
+  .trim()
+  .min(2, "Name must be at least 2 characters")
+  .max(50, "Name is too long")
+  .regex(/^[a-zA-Zа-яА-ЯіІїЇєЄґҐ\s'-]+$/, "Name can only contain letters")
+  .refine((val) => (val.match(/[a-zA-Zа-яА-ЯіІїЇєЄґҐ]/g) || []).length >= 2, {
+    message: "Input must include at least two letters",
+  });
+
 export const registerSchema = z.object({
-  name: z
-    .string()
-    .trim()
-    .min(1, "Name is required")
-    .min(2, "Name must be at least 2 characters")
-    .max(50, "Name is too long")
-    .regex(/^[a-zA-Zа-яА-ЯіІїЇєЄґҐ\s'-]+$/, "Name can only contain letters"),
+  name: nameValidation,
 
   email: z.string().trim().email("Invalid email address"),
 
@@ -25,20 +29,8 @@ export const loginSchema = z.object({
 });
 
 export const bookingSchema = z.object({
-  firstName: z
-    .string()
-    .trim()
-    .min(1, "Name is required")
-    .min(2, "Name must be at least 2 characters")
-    .max(50, "Name is too long")
-    .regex(/^[a-zA-Zа-яА-ЯіІїЇєЄґҐ\s'-]+$/, "Name can only contain letters"),
-  lastName: z
-    .string()
-    .trim()
-    .min(1, "Last name is required")
-    .min(2, "Last name is too short")
-    .max(50, "Name is too long")
-    .regex(/^[a-zA-Zа-яА-ЯіІїЇєЄґҐ\s'-]+$/, "Name can only contain letters"),
+  firstName: nameValidation,
+  lastName: nameValidation,
 
   email: z.string().trim().email("Invalid email address"),
 
