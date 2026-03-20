@@ -89,7 +89,11 @@ export default function AdminPanel() {
         onAddCategory={handleAddCategory}
       />
       {activeTab === "bikes" && (
-        <BikesTable bikes={bikes} onDeleteSuccess={loadBikes} />
+        <BikesTable
+          bikes={bikes}
+          categories={categories}
+          onDeleteSuccess={loadBikes}
+        />
       )}
       <AddBikeModal
         open={showAddBike}
