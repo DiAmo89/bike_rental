@@ -67,6 +67,8 @@ export default function AddAccessoryModal({
           onChange={handleChange}
           placeholder="Price per day"
           type="number"
+          min="0"
+          step="0.01"
           className="mb-2 w-full border p-2 rounded"
           required
         />
