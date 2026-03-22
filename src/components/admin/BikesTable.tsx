@@ -3,6 +3,7 @@
 import { useState } from "react";
 import EmptyState from "@/components/admin/EmptyState";
 import EditBikeModal from "@/components/admin/EditBikeModal";
+import DeleteConfirmationModal from "@/components/admin/DeleteConfirmationModal";
 import type { Bike } from "@/types/admin";
 import type { Category } from "@/types/Category";
 import deleteBike from "@/app/api/actions-bike/delete-bike";
@@ -20,6 +21,9 @@ export default function BikesTable({
 }: BikesTableProps) {
   const [showEditModal, setShowEditModal] = useState(false);
   const [selectedBikeId, setSelectedBikeId] = useState<string | null>(null);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [bikeToDelete, setBikeToDelete] = useState<string | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const handleEditBike = (id: string) => {
     setSelectedBikeId(id);
@@ -30,17 +34,31 @@ export default function BikesTable({
     alert(`Repair bike: ${id}`);
   };
 
-  const handleDeleteBike = async (id: string) => {
-    const confirmed = confirm("Are you sure you want to delete this bike?");
-    if (!confirmed) return;
+  const handleDeleteButtonClick = (id: string) => {
+    setBikeToDelete(id);
+    setShowDeleteModal(true);
+  };
 
+  const handleConfirmDelete = async () => {
+    if (!bikeToDelete) return;
+
+    setIsDeleting(true);
     try {
-      await deleteBike(id);
+      await deleteBike(bikeToDelete);
+      setShowDeleteModal(false);
+      setBikeToDelete(null);
       await onDeleteSuccess();
     } catch (error) {
       console.error("Delete failed:", error);
       alert("Failed to delete bike");
+      setIsDeleting(false);
     }
+  };
+
+  const handleCancelDelete = () => {
+    setShowDeleteModal(false);
+    setBikeToDelete(null);
+    setIsDeleting(false);
   };
 
   const handleEditSuccess = async () => {
@@ -94,13 +112,16 @@ export default function BikesTable({
 
                 <td className="px-6 py-4">
                   <div className="flex items-center gap-3 text-base">
-                    <button type="button" onClick={() => handleEditBike(bike.id)}>
+                    <button
+                      type="button"
+                      onClick={() => handleEditBike(bike.id)}
+                    >
                       ✏️
                     </button>
 
                     <button
                       type="button"
-                      onClick={() => handleDeleteBike(bike.id)}
+                      onClick={() => handleDeleteButtonClick(bike.id)}
                     >
                       🗑️
                     </button>
@@ -121,6 +142,15 @@ export default function BikesTable({
         }}
         onSuccess={handleEditSuccess}
         categories={categories}
+      />
+
+      <DeleteConfirmationModal
+        open={showDeleteModal}
+        title="Delete Bike"
+        description="Are you sure you want to delete this bike? This action cannot be undone."
+        isLoading={isDeleting}
+        onConfirm={handleConfirmDelete}
+        onCancel={handleCancelDelete}
       />
     </>
   );
