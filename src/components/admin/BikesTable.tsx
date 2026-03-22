@@ -76,7 +76,7 @@ export default function BikesTable({
 
   return (
     <>
-      <div className="overflow-hidden rounded-xl border border-gray-200 bg-white">
+      <div className="overflow-y-auto max-h-80 rounded-xl border border-gray-200 bg-white">
         <table className="w-full text-left">
           <thead className="bg-gray-50 text-sm text-gray-600">
             <tr>
