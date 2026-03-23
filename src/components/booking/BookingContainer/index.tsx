@@ -1,27 +1,44 @@
 "use client";
+
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import BookingForm from "../BookingForm";
 import OrderSummary from "../OrderSummary";
 import PaymentSection from "../PaymentSection";
-import { bookingSchema } from "@/lib/schemas/auth-schema";
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export default function BookingContainer({ bike }: { bike: any }) {
+import { bookingSchema } from "@/lib/schemas/auth-schema";
+import SuccessModal from "../SuccessModal";
+
+interface BookingContainerProps {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  bike: any;
+}
+
+export default function BookingContainer({ bike }: BookingContainerProps) {
   const router = useRouter();
+
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [dbAccessories, setDbAccessories] = useState<any[] | null>(null);
   const [options, setOptions] = useState<Record<string, boolean>>({});
+
   const [errors, setErrors] = useState<Record<string, string[]>>({});
   const [isLoading, setIsLoading] = useState(false);
+  const [showSuccess, setShowSuccess] = useState(false);
 
   const [contactData, setContactData] = useState({
     firstName: "",
     lastName: "",
     email: "",
     phone: "",
+  });
+
+  const [paymentMethod, setPaymentMethod] = useState("card");
+  const [cardData, setCardData] = useState({
+    cardNumber: "",
+    expiryDate: "",
+    cvc: "",
   });
 
   const handleContactChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -32,6 +49,35 @@ export default function BookingContainer({ bike }: { bike: any }) {
       setErrors((prev) => {
         const newErrors = { ...prev };
         delete newErrors[name];
+        return newErrors;
+      });
+    }
+  };
+
+  const handleCardChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    let formattedValue = value;
+
+    if (name === "cardNumber") {
+      formattedValue = value
+        .replace(/\D/g, "")
+        .replace(/(.{4})/g, "$1 ")
+        .trim();
+    } else if (name === "expiryDate") {
+      formattedValue = value
+        .replace(/\D/g, "")
+        .replace(/(\d{2})(\d{0,2})/, "$1/$2")
+        .trim();
+    } else if (name === "cvc") {
+      formattedValue = value.replace(/\D/g, "");
+    }
+
+    setCardData((prev) => ({ ...prev, [name]: formattedValue }));
+
+    if (errors.card) {
+      setErrors((prev) => {
+        const newErrors = { ...prev };
+        delete newErrors.card;
         return newErrors;
       });
     }
@@ -69,6 +115,21 @@ export default function BookingContainer({ bike }: { bike: any }) {
       return;
     }
 
+    if (paymentMethod === "card") {
+      const cardErrors: string[] = [];
+      if (cardData.cardNumber.replace(/\s/g, "").length < 16)
+        cardErrors.push("Invalid card number");
+      if (!cardData.expiryDate.includes("/"))
+        cardErrors.push("Invalid expiry date");
+      if (cardData.cvc.length < 3) cardErrors.push("Invalid CVC");
+
+      if (cardErrors.length > 0) {
+        setErrors((prev) => ({ ...prev, card: cardErrors }));
+        setIsLoading(false);
+        return;
+      }
+    }
+
     const start = new Date(startDate);
     const end = new Date(endDate);
     const days = Math.max(
@@ -94,6 +155,7 @@ export default function BookingContainer({ bike }: { bike: any }) {
           ...validation.data,
           bikeId: bike.id,
           totalPrice: finalPrice,
+          paymentMethod,
         }),
       });
 
@@ -101,7 +163,7 @@ export default function BookingContainer({ bike }: { bike: any }) {
 
       if (!response.ok) throw new Error(result.error || "Booking failed");
 
-      router.push("/user-profile?success=true");
+      setShowSuccess(true);
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
       setErrors({ server: [err.message] });
@@ -112,12 +174,18 @@ export default function BookingContainer({ bike }: { bike: any }) {
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
+      <SuccessModal
+        isOpen={showSuccess}
+        onClose={() => router.push("/user-profile")}
+      />
+
       <div className="lg:col-span-2 space-y-12">
         {errors.server && (
           <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-xl text-sm">
             {errors.server[0]}
           </div>
         )}
+
         <BookingForm
           startDate={startDate}
           setStartDate={setStartDate}
@@ -130,8 +198,16 @@ export default function BookingContainer({ bike }: { bike: any }) {
           setContactData={handleContactChange}
           errors={errors}
         />
-        <PaymentSection />
+
+        <PaymentSection
+          paymentMethod={paymentMethod}
+          setPaymentMethod={setPaymentMethod}
+          cardData={cardData}
+          onCardChange={handleCardChange}
+          errors={errors}
+        />
       </div>
+
       <div className="lg:col-span-1">
         <OrderSummary
           bike={bike}
