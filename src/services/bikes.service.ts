@@ -87,4 +87,21 @@ export const bikesService = {
       return null;
     }
   },
+
+  async getBikeBookings(bikeId: string) {
+  try {
+    const data = await db
+      .select({
+        startDate: bookings.startDate,
+        endDate: bookings.endDate,
+      })
+      .from(bookings)
+      .where(eq(bookings.bikeId, bikeId));
+
+    return data;
+  } catch (error) {
+    console.error("Error in getBikeBookings:", error);
+    return [];
+  }
+},
 };
