@@ -17,13 +17,13 @@ function CatalogContent() {
   const catFilter = searchParams.get("category") || "all";
   const statusFilter = searchParams.get("status") || "all";
   const sortBy = searchParams.get("sort") || "default";
-  const dateFrom = searchParams.get("from") || "";
-  const dateTo = searchParams.get("to") || "";
+  const startDate = searchParams.get("start") || ""; 
+  const endDate = searchParams.get("end") || "";
 
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(6);
 
- 
+
   useEffect(() => {
     const savedUrl = sessionStorage.getItem("lastCatalogUrl");
     if (savedUrl && window.location.search === "" && window.location.pathname === "/catalog") {
@@ -31,6 +31,7 @@ function CatalogContent() {
     }
   }, [router]);
 
+  
   useEffect(() => {
     const currentFullUrl = window.location.pathname + window.location.search;
     if (window.location.pathname === '/catalog') {
@@ -41,8 +42,14 @@ function CatalogContent() {
  
   useEffect(() => {
     const loadData = async () => {
+      setLoading(true); 
       try {
-        const res = await fetch("/api/bikes");
+        const query = new URLSearchParams();
+        if (startDate) query.set("start", startDate);
+        if (endDate) query.set("end", endDate);
+
+        
+        const res = await fetch(`/api/bikes?${query.toString()}`);
         const data: Bike[] = await res.json();
         setAllBikes(data);
       } catch (e) {
@@ -52,28 +59,26 @@ function CatalogContent() {
       }
     };
     loadData();
-  }, []);
+  }, [startDate, endDate]); 
 
-  
+ 
   const filteredBikes = useMemo(() => {
     let result = [...allBikes];
 
+    
     if (catFilter !== "all") {
       result = result.filter(
         (b) => b.category?.name?.toLowerCase() === catFilter.toLowerCase()
       );
     }
 
+   
     if (statusFilter !== "all") {
       const isAvail = statusFilter === "Available";
       result = result.filter((b) => b.isActive === isAvail);
     }
 
-  
-    if (dateFrom || dateTo) {
-      result = result.filter((b) => b.isActive === true);
-    }
-
+    
     if (sortBy === "low") {
       result.sort((a, b) => Number(a.pricePerDay) - Number(b.pricePerDay));
     } else if (sortBy === "high") {
@@ -81,9 +86,9 @@ function CatalogContent() {
     }
 
     return result;
-  }, [allBikes, catFilter, statusFilter, sortBy, dateFrom, dateTo]);
+  }, [allBikes, catFilter, statusFilter, sortBy]);
 
- 
+  
   const totalPages = Math.ceil(filteredBikes.length / itemsPerPage);
   const safePage = currentPage > totalPages && totalPages > 0 ? 1 : currentPage;
   const startIndex = (safePage - 1) * itemsPerPage;
@@ -92,19 +97,21 @@ function CatalogContent() {
   
   useEffect(() => {
     setCurrentPage(1);
-  }, [catFilter, statusFilter, sortBy, dateFrom, dateTo]);
+  }, [catFilter, statusFilter, sortBy, startDate, endDate]);
 
   if (loading) {
     return (
-      <div className="flex justify-center items-center min-h-[400px]">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
-        <span className="ml-3 font-medium text-gray-500 uppercase">Loading bikes...</span>
+      <div className="flex flex-col justify-center items-center min-h-[400px]">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-black"></div>
+        <span className="mt-4 font-black uppercase tracking-widest text-xs text-gray-500">
+          Checking availability...
+        </span>
       </div>
     );
   }
 
   return (
-    <div className="container mx-auto pb-20 px-4">
+    <div className="container mx-auto pb-20">
       {filteredBikes.length > 0 ? (
         <>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -128,15 +135,15 @@ function CatalogContent() {
           </div>
         </>
       ) : (
-        <div className="text-center py-20 border-2 border-dashed border-gray-200 rounded-3xl text-gray-400">
-          <p className="text-xl">
-            No bikes available for these criteria
+        <div className="text-center py-32 border-2 border-dashed border-gray-100 rounded-[3rem] text-gray-400">
+          <p className="font-black uppercase tracking-widest text-sm">
+            No bikes found for these dates or filters
           </p>
           <button
             onClick={() => router.push("/catalog")}
-            className="mt-4 text-blue-500 hover:text-blue-600 font-medium underline"
+            className="mt-6 text-xs font-black uppercase tracking-widest border-b-2 border-black text-black hover:opacity-60 transition-opacity"
           >
-            Clear all filters
+            Reset all filters
           </button>
         </div>
       )}
@@ -146,7 +153,11 @@ function CatalogContent() {
 
 export default function CatalogPage() {
   return (
-    <Suspense fallback={<div className="min-h-[400px] flex items-center justify-center">Preparing...</div>}>
+    <Suspense fallback={
+      <div className="min-h-[400px] flex items-center justify-center font-black uppercase tracking-widest text-xs">
+        Loading Catalog...
+      </div>
+    }>
       <CatalogContent />
     </Suspense>
   );

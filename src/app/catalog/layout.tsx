@@ -13,8 +13,8 @@ export default function CatalogLayout({
 
   
   return (
-    <section className="pt-20">
-      <div className="sticky top-20 z-30 bg-white/95 backdrop-blur-md pt-5 pb-2">
+    <section className="pt-10">
+      <div className="sticky top-10 z-30 bg-white/95 backdrop-blur-md pt-5 pb-2">
         <div className="container mx-auto px-4">
           <Suspense
             fallback={

@@ -77,12 +77,12 @@ export default async function BikeDetailPage({ params }: PageProps) {
                   <h1 className="text-3xl font-black uppercase leading-tight tracking-tighter">
                     {bike.brand}
                   </h1>
-                  <p className="text-gray-400 font-bold uppercase text-xs tracking-widest">
+                  <h1 className="text-3xl font-black uppercase leading-tight tracking-tighter">
                     {bike.model}
-                  </p>
+                  </h1>
                 </div>
                 <div
-                  className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-tighter ${bike.isActive ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"}`}
+                  className={`px-3 py-1 rounded-full text-[15px] font-black uppercase tracking-tighter ${bike.isActive ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"}`}
                 >
                   {displayStatus}
                 </div>
@@ -96,7 +96,7 @@ export default async function BikeDetailPage({ params }: PageProps) {
                   </span>
                 </div>
                 <div className="flex justify-between text-sm">
-                  <span className="text-gray-400 font-medium">Duration</span>
+                  <span className="tet-gray-400 font-medium">Duration</span>
                   <span className="font-bold text-gray-900">1 Day</span>
                 </div>
                 <div className="flex justify-between text-sm">
@@ -113,12 +113,27 @@ export default async function BikeDetailPage({ params }: PageProps) {
                   </span>
                 </div>
               </div>
-
-              <Link href={`/catalog/${bike.id}/booking`} className="block">
-                <button className="w-full bg-[#e6ff2a] hover:bg-black hover:text-white text-black py-6 rounded-2xl font-black transition-all duration-300 uppercase tracking-widest text-sm shadow-lg active:scale-95">
-                  Confirm & Book Now
-                </button>
-              </Link>
+              {!bike.isActive && (
+                <p className="text-red-600 text-[15px] font-black uppercase tracking-tight text-center">
+                  This bike is not available for booking at this time.
+                </p>
+              )}
+              <div className="mt-6">
+                {bike.isActive ? (
+                  <Link href={`/catalog/${bike.id}/booking`} className="block">
+                    <button className="w-full bg-[#e6ff2a] hover:bg-black hover:text-[#e6ff2a] text-black py-6 rounded-2xl font-black transition-all duration-300 uppercase tracking-widest text-sm shadow-lg active:scale-95">
+                      Confirm & Book Now
+                    </button>
+                  </Link>
+                ) : (
+                  <button
+                    disabled
+                    className="w-full bg-gray-100 text-gray-400 py-6 rounded-2xl font-black uppercase tracking-widest text-sm cursor-not-allowed border border-gray-200"
+                  >
+                    Not Available
+                  </button>
+                )}
+              </div>
 
               <p className="text-[10px] text-gray-400 text-center mt-6 uppercase font-bold tracking-widest">
                 Secure checkout • Instant confirmation

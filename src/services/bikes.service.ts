@@ -1,18 +1,50 @@
 import { db } from "@/db/db";
 import { bikes } from "@/db/tables/bikes";
 import { categories } from "@/db/tables/categories";
-import { eq } from "drizzle-orm";
+import { bookings } from "@/db/tables/bookings"; 
+import { eq, and, lte, gte, notInArray, or } from "drizzle-orm";
 
 export const bikesService = {
-  async getAllBikes() {
+  
+ async getAllBikes(startDate?: string, endDate?: string, categoryName?: string) {
     try {
-      const result = await db
+      let query = db
         .select({
           bike: bikes,
           category: categories,
         })
         .from(bikes)
-        .leftJoin(categories, eq(bikes.bikeCategoryId, categories.id));
+        .leftJoin(categories, eq(bikes.bikeCategoryId, categories.id))
+        .$dynamic(); 
+
+     
+      if (categoryName && categoryName !== "all") {
+        query = query.where(eq(categories.name, categoryName));
+      }
+
+      
+      if (startDate && endDate) {
+        
+        const occupiedBikes = await db
+          .select({ id: bookings.bikeId })
+          .from(bookings)
+          .where(
+            and(
+              lte(bookings.startDate, endDate), 
+              gte(bookings.endDate, startDate)  
+            )
+          );
+
+        const occupiedIds = occupiedBikes
+          .map((b) => b.id)
+          .filter((id): id is string => id !== null);
+
+        if (occupiedIds.length > 0) {
+          query = query.where(notInArray(bikes.id, occupiedIds));
+        }
+      }
+
+      const result = await query;
 
       return result.map(({ bike, category }) => ({
         ...bike,
@@ -31,6 +63,7 @@ export const bikesService = {
     }
   },
 
+  
   async getAllCategories() {
     try {
       return await db.select().from(categories);
@@ -40,8 +73,18 @@ export const bikesService = {
     }
   },
 
+  
   async getBikeById(id: string) {
-    const result = await db.select().from(bikes).where(eq(bikes.id, id));
-    return result[0] || null;
+    try {
+      const result = await db
+        .select()
+        .from(bikes)
+        .where(eq(bikes.id, id));
+      
+      return result[0] || null;
+    } catch (error) {
+      console.error(`Error loading bike with id ${id}:`, error);
+      return null;
+    }
   },
 };

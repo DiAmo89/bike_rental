@@ -10,6 +10,10 @@ interface CatalogMenuProps {
   onStatusChange: (status: string) => void;
   onSortChange: (sort: string) => void;
   sortBy: string; 
+  startDate: string;
+  endDate: string;
+  onDateChange: (key: "start" | "end", value: string) => void;
+  onReset: () => void;
 }
 
 export default function CatalogMenu({
@@ -20,6 +24,10 @@ export default function CatalogMenu({
   onStatusChange,
   onSortChange,
   sortBy, 
+  startDate,
+  endDate,
+  onDateChange,
+  onReset,
 }: CatalogMenuProps) {
   return (
     <div className="bg-gray-50 p-6 rounded-2xl border border-gray-100 mb-10 shadow-sm">
@@ -31,6 +39,10 @@ export default function CatalogMenu({
             onCategoryChange={onCategoryChange}
             activeStatus={activeStatus}
             onStatusChange={onStatusChange}
+            startDate={startDate}
+            endDate={endDate}
+            onDateChange={onDateChange}
+            onReset={onReset}
           />
         </div>
         <div className="flex-1">
