@@ -5,7 +5,7 @@ export default async function UserProfilePage() {
   const user = await getCurrentUser();
 
   if (!user) {
-    return <div>User not found</div>;
+    return null;
   }
 
   return <UserProfileCard user={user} />;

@@ -3,14 +3,15 @@
 import { X, Loader2 } from "lucide-react";
 import Link from "next/link";
 import { Button } from "../ui/button";
-import { signIn } from "next-auth/react";
-import { useState } from "react";
+import { signIn, useSession } from "next-auth/react"; // Додав useSession
+import { useState, useEffect } from "react";
 import { registerUser } from "@/app/api/auth/register/action";
 import { registerSchema } from "@/lib/schemas/auth-schema";
 import { useRouter } from "next/navigation";
 
 export default function RegisterForm() {
   const router = useRouter();
+  const { status } = useSession(); // Отримуємо статус сесії
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -18,6 +19,12 @@ export default function RegisterForm() {
   });
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    if (status === "authenticated") {
+      router.replace("/user-profile");
+    }
+  }, [status, router]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -33,9 +40,7 @@ export default function RegisterForm() {
 
     if (!validation.success) {
       const errors = validation.error.flatten().fieldErrors;
-
       const firstError = Object.values(errors)[0]?.[0];
-
       setError(firstError || "Invalid data");
       setIsLoading(false);
       return;
@@ -54,7 +59,7 @@ export default function RegisterForm() {
       });
 
       if (signInResult?.ok) {
-        router.push("/user-profile");
+        router.replace("/user-profile");
         router.refresh();
       } else {
         setError("Account created, but failed to log in automatically.");
@@ -64,8 +69,11 @@ export default function RegisterForm() {
   };
 
   const handleGoogleLogin = () => {
+    setIsLoading(true);
     signIn("google", { callbackUrl: "/user-profile" });
   };
+
+  if (status === "loading") return null;
 
   return (
     <div className="relative mx-auto w-full max-w-xl rounded-xl border border-zinc-800 bg-zinc-950 p-6 shadow-xl text-zinc-50">
@@ -77,10 +85,7 @@ export default function RegisterForm() {
             size="icon"
             className="group border-zinc-800 hover:border-gray-400 bg-transparent h-8 w-8"
           >
-            <X
-              className="h-4 w-4 text-amber-50 transition-all duration-500 group-hover:rotate-180 group-hover:text-white
-            group-hover:scale-110"
-            />
+            <X className="h-4 w-4 text-amber-50 transition-all duration-500 group-hover:rotate-180 group-hover:text-white group-hover:scale-110" />
           </Button>
         </Link>
       </div>
@@ -116,7 +121,7 @@ export default function RegisterForm() {
             type="text"
             placeholder="John Doe"
             required
-            className="flex h-10 w-full rounded-md border border-zinc-800 bg-zinc-900/50 px-3 py-2 text-sm transition-colors placeholder:text-zinc-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-300 disabled:cursor-not-allowed disabled:opacity-50"
+            className="flex h-10 w-full rounded-md border border-zinc-800 bg-zinc-900/50 px-3 py-2 text-sm transition-colors placeholder:text-zinc-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-300 disabled:opacity-50"
           />
         </div>
 
@@ -135,13 +140,14 @@ export default function RegisterForm() {
             type="email"
             placeholder="name@example.com"
             required
-            className="flex h-10 w-full rounded-md border border-zinc-800 bg-zinc-900/50 px-3 py-2 text-sm transition-colors placeholder:text-zinc-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-300"
+            className="flex h-10 w-full rounded-md border border-zinc-800 bg-zinc-900/50 px-3 py-2 text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-300"
           />
         </div>
 
         <div className="space-y-2">
           <label
             htmlFor="password"
+            title="Password"
             className="text-sm font-medium leading-none text-zinc-50"
           >
             Password
@@ -160,12 +166,13 @@ export default function RegisterForm() {
 
         <button
           type="submit"
-          className="inline-flex w-full items-center justify-center rounded-md bg-zinc-50 px-4 py-2 text-sm font-medium text-zinc-950 transition-colors hover:bg-zinc-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-300 disabled:pointer-events-none disabled:opacity-50"
+          disabled={isLoading}
+          className="inline-flex w-full items-center justify-center rounded-md bg-zinc-50 px-4 py-2 text-sm font-medium text-zinc-950 transition-colors hover:bg-zinc-200 disabled:opacity-50"
         >
           {isLoading ? (
             <>
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              Creating account...
+              Processing...
             </>
           ) : (
             "Sign Up"
@@ -189,15 +196,13 @@ export default function RegisterForm() {
         type="button"
         className="w-full py-2 bg-black border-zinc-800 hover:bg-zinc-900 hover:text-white text-zinc-300 transition-all duration-300 rounded-sm font-mono"
         onClick={handleGoogleLogin}
+        disabled={isLoading}
       >
-        <svg className="mr-2 h-4 w-4" /*...*/>
-          <path fill="currentColor" d="..." />
-        </svg>
         Google
       </Button>
 
       <div className="mt-4 text-center text-sm text-zinc-400">
-        Already have an account? {/* ЗМІНЕНО: Link замість <a> */}
+        Already have an account?{" "}
         <Link
           href="/login"
           className="font-medium text-zinc-50 underline underline-offset-4 hover:text-zinc-300"

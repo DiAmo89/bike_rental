@@ -62,12 +62,12 @@ export default function EditProfileForm({ user }: Props) {
     >
       <div >
         <div>
-          <label className="block text-sm font-medium">Avatar</label>
+          <label className="block text-sm font-medium ">Avatar</label>
           <input
             name="avatar"
             defaultValue={state.values.avatar}
             placeholder="https://example.com/avatar.jpg"
-            className="mt-1 w-full rounded-xl border px-4 py-2"
+            className="mt-1 w-full rounded-xl border px-4 py-2  border-gray-200"
           />
           <div className="min-h-5" />
         </div>
@@ -78,7 +78,7 @@ export default function EditProfileForm({ user }: Props) {
             name="full_name"
             defaultValue={state.values.full_name}
             placeholder="Enter your full name"
-            className="mt-1 w-full rounded-xl border px-4 py-2"
+            className="mt-1 w-full rounded-xl border px-4 py-2  border-gray-200"
           />
           <div className="min-h-5">
             {fullNameError && (
@@ -93,7 +93,7 @@ export default function EditProfileForm({ user }: Props) {
             name="telephone"
             defaultValue={state.values.telephone}
             placeholder="+49 155 6618 3536"
-            className="mt-1 w-full rounded-xl border px-4 py-2"
+            className="mt-1 w-full rounded-xl border px-4 py-2  border-gray-200"
           />
           <div className="min-h-5">
             {telephoneError && (

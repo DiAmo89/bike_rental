@@ -1,10 +1,28 @@
-"use client";
-
+import { redirect } from "next/navigation";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth/auth-options";
+import { getUserByEmail } from "@/app/api/user/get-current-user";
 import AdminPanel from "@/components/admin/AdminPanel";
 
-export default function AdminPage() {
+export default async function AdminPage() {
+  const session = await getServerSession(authOptions);
+
+  if (!session?.user?.email) {
+    redirect("/login");
+  }
+
+  const user = await getUserByEmail(session.user.email);
+
+  if (!user) {
+    redirect("/login");
+  }
+
+  if (user.role !== "ADMIN") {
+    redirect("/");
+  }
+
   return (
-    <main className=" m-10 p-8 space-y-6">
+    <main className="mx-auto max-w-7xl px-6 pb-10 pt-28">
       <AdminPanel />
     </main>
   );

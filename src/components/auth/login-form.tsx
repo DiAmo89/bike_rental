@@ -3,13 +3,14 @@
 import { X, Loader2 } from "lucide-react";
 import Link from "next/link";
 import { Button } from "../ui/button";
-import { signIn } from "next-auth/react";
+import { signIn, useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { loginSchema } from "@/lib/schemas/auth-schema";
 
 export default function LoginForm() {
   const router = useRouter();
+  const { status } = useSession();
 
   const [formData, setFormData] = useState({
     email: "",
@@ -18,6 +19,12 @@ export default function LoginForm() {
 
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    if (status === "authenticated") {
+      router.replace("/user-profile");
+    }
+  }, [status, router]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -34,7 +41,6 @@ export default function LoginForm() {
     if (!validation.success) {
       const fieldErrors = validation.error.flatten().fieldErrors;
       const firstError = Object.values(fieldErrors)[0]?.[0];
-
       setError(firstError || "Invalid login data");
       setIsLoading(false);
       return;
@@ -50,14 +56,17 @@ export default function LoginForm() {
       setError("Incorrect email address or password");
       setIsLoading(false);
     } else {
-      router.push("/user-profile");
+      router.replace("/user-profile");
       router.refresh();
     }
   };
 
   const handleGoogleLogin = () => {
+    setIsLoading(true);
     signIn("google", { callbackUrl: "/user-profile" });
   };
+
+  if (status === "loading") return null;
 
   return (
     <div className="relative mx-auto w-full max-w-xl rounded-xl border border-zinc-800 bg-zinc-950 p-6 shadow-xl text-zinc-50">
@@ -105,7 +114,7 @@ export default function LoginForm() {
             required
             value={formData.email}
             onChange={handleChange}
-            className="flex h-10 w-full rounded-md border border-zinc-800 bg-zinc-900/50 px-3 py-2 text-sm transition-colors placeholder:text-zinc-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-300"
+            className="flex h-10 w-full rounded-md border border-zinc-800 bg-zinc-900/50 px-3 py-2 text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-300"
           />
         </div>
 
@@ -139,12 +148,12 @@ export default function LoginForm() {
         <button
           type="submit"
           disabled={isLoading}
-          className="inline-flex w-full items-center justify-center rounded-md bg-zinc-50 px-4 py-2 text-sm font-medium text-zinc-950 transition-colors hover:bg-zinc-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-300 disabled:pointer-events-none disabled:opacity-50"
+          className="inline-flex w-full items-center justify-center rounded-md bg-zinc-50 px-4 py-2 text-sm font-medium text-zinc-950 transition-colors hover:bg-zinc-200 disabled:opacity-50"
         >
           {isLoading ? (
             <>
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              Logging in...
+              Processing...
             </>
           ) : (
             "Log In"
@@ -156,16 +165,15 @@ export default function LoginForm() {
         <div className="absolute inset-0 flex items-center">
           <span className="w-full border-t border-zinc-800" />
         </div>
-        <div className="relative flex justify-center text-xs uppercase">
-          <span className="bg-zinc-950 px-2 text-zinc-500 font-mono">
-            Or continue with
-          </span>
+        <div className="relative flex justify-center text-xs uppercase text-zinc-500 font-mono">
+          <span className="bg-zinc-950 px-2">Or continue with</span>
         </div>
       </div>
 
       <Button
         variant="outline"
         type="button"
+        disabled={isLoading}
         className="w-full py-2 bg-black border-zinc-800 hover:bg-zinc-900 hover:text-white text-zinc-300 transition-all duration-300 rounded-sm font-mono"
         onClick={handleGoogleLogin}
       >

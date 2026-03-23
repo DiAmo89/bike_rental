@@ -1,17 +1,27 @@
 "use client";
 import Link from "next/link";
-import { PATH_CATALOG, PATH_ABOUT_US, USER_PROFILE } from "@/app/path/path";
+import {
+  PATH_CATALOG,
+  PATH_ABOUT_US,
+  USER_PROFILE,
+  PATH_ADMIN,
+} from "@/app/path/path";
 
 import Logo from "@/components/nav-bar/logo-svg";
 import Sidebar from "@/components/nav-bar/sidebar-burger-menu";
 
 import { useState } from "react";
 import { usePathname } from "next/navigation";
+import { useSession } from "next-auth/react";
 import SignInSignOut from "../sign-in-sign-out";
 
 const NavBar = () => {
   const [showSidebar, setShowSidebar] = useState(false);
   const pathname = usePathname();
+  const { data: session, status } = useSession();
+
+  const isAdmin = session?.user?.role === "ADMIN";
+  const isLoggedIn = status === "authenticated" && !!session;
 
   return (
     <>
@@ -42,16 +52,30 @@ const NavBar = () => {
               >
                 About Us
               </Link>
-              <Link
-                href={USER_PROFILE}
-                className={`text-sm font-medium transition ${
-                  pathname.startsWith(USER_PROFILE)
-                    ? "text-[#e6ff2a]"
-                    : "text-white hover:text-[#e6ff2a]"
-                }`}
-              >
-                Profile
-              </Link>
+              {isLoggedIn && (
+                <Link
+                  href={USER_PROFILE}
+                  className={`text-sm font-medium transition ${
+                    pathname.startsWith(USER_PROFILE)
+                      ? "text-[#e6ff2a]"
+                      : "text-white hover:text-[#e6ff2a]"
+                  }`}
+                >
+                  Profile
+                </Link>
+              )}
+              {isAdmin && (
+                <Link
+                  href={PATH_ADMIN}
+                  className={`text-sm font-medium transition ${
+                    pathname.startsWith(PATH_ADMIN)
+                      ? "text-[#e6ff2a]"
+                      : "text-white hover:text-[#e6ff2a]"
+                  }`}
+                >
+                  Admin
+                </Link>
+              )}
             </div>
 
             <div className="hidden xl:block">

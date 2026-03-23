@@ -4,6 +4,7 @@ export type Bike = {
   type: string;
   price: number;
   status: string;
+  image?: string | null;
 };
 
 export type Order = {

@@ -10,16 +10,18 @@ export default function CatalogLayout({
     <section className="pt-20">
       <div className="sticky top-20 z-30 bg-white/95 backdrop-blur-md pt-5 pb-2">
         <div className="container mx-auto px-4">
-         
-          <Suspense fallback={<div className="h-12 w-full bg-gray-50 animate-pulse rounded-xl" />}>
+          
+          <Suspense
+            fallback={
+              <div className="h-12 w-full bg-gray-50 animate-pulse rounded-xl" />
+            }
+          >
             <CatalogMenu />
           </Suspense>
         </div>
       </div>
-      
-      <div className="container mx-auto px-4">
-        {children}
-      </div>
+
+      <div className="container mx-auto px-4">{children}</div>
     </section>
   );
 }

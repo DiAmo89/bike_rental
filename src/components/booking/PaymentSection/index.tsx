@@ -12,7 +12,6 @@ export default function PaymentSection() {
         </div>
 
         <div className="space-y-4">
-          {/* ВАРІАНТ 1: КАРТКА */}
           <label className="flex items-center justify-between p-4 rounded-xl border-2 border-[#e6ff2a] bg-[#e6ff2a]/5 cursor-pointer transition-all">
             <div className="flex items-center gap-4">
               <input
