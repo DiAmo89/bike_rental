@@ -2,8 +2,8 @@
 
 import React, { useRef } from "react";
 
-// Расширяем интерфейс, чтобы TS знал о showPicker и не ругался
-interface HTMLPickerElement extends HTMLInputElement {
+// Расширяем интерфейс, чтобы TS не ругался на отсутствие метода
+interface HTMLInputElementWithPicker extends HTMLInputElement {
   showPicker: () => void;
 }
 
@@ -32,11 +32,13 @@ export default function CatalogFilters({
 }: CatalogFiltersProps) {
   const today = new Date().toISOString().split('T')[0];
   
+  // Явно указываем тип null для начального значения
   const startInputRef = useRef<HTMLInputElement>(null);
   const endInputRef = useRef<HTMLInputElement>(null);
 
+  // Убираем неиспользуемый 'err' из catch, чтобы линтер не ругался
   const handleContainerClick = (inputRef: React.RefObject<HTMLInputElement | null>) => {
-    const el = inputRef.current as HTMLPickerElement;
+    const el = inputRef.current as HTMLInputElementWithPicker | null;
     if (el) {
       try {
         if (typeof el.showPicker === 'function') {
@@ -56,6 +58,7 @@ export default function CatalogFilters({
       {/* Селекторы */}
       <div className="flex flex-row gap-1.5 w-full md:w-auto">
         <button
+          type="button"
           onClick={onReset}
           className="bg-[#e6ff2a] hover:bg-black hover:text-[#e6ff2a] text-black px-3 h-[38px] md:h-[42px] rounded-lg font-black transition-all uppercase text-[9px] md:text-[10px] shadow-sm whitespace-nowrap active:scale-95"
         >
@@ -84,10 +87,10 @@ export default function CatalogFilters({
         </select>
       </div>
 
-      {/* Блок ДАТ: h-[38px] для идеального выравнивания с Type/Status */}
+      {/* Блок ДАТ */}
       <div className="flex flex-col md:flex-row items-stretch md:items-center gap-1.5 w-full md:flex-1">
         
-        {/* Поле ОТ */}
+        {/* Pick up */}
         <div 
           onClick={() => handleContainerClick(startInputRef)}
           className="relative flex-1 bg-white border border-gray-200 rounded-lg px-3 h-[38px] md:h-[42px] flex items-center justify-between shadow-sm cursor-pointer active:bg-gray-50 transition-colors"
@@ -96,7 +99,6 @@ export default function CatalogFilters({
             {startDate || "Select date pick up"}
           </span>
           <span className="text-[12px] opacity-40">📅</span>
-          
           <input
             ref={startInputRef}
             type="date"
@@ -109,16 +111,15 @@ export default function CatalogFilters({
 
         <span className="hidden md:block text-black-300 font-bold text-[10px]">→</span>
 
-        {/* Поле ДО */}
+        {/* Return */}
         <div 
           onClick={() => handleContainerClick(endInputRef)}
           className="relative flex-1 bg-white border border-gray-200 rounded-lg px-3 h-[38px] md:h-[42px] flex items-center justify-between shadow-sm cursor-pointer active:bg-gray-50 transition-colors"
         >
-          <span className={`text-[10px] md:text-[11px] truncate ${!endDate ? "text-black-400" : "text-gray-700 font-medium"}`}>
+          <span className={`text-[10px] md:text-[11px] truncate ${!endDate ? "text-black-400" : "text-black-700 font-medium"}`}>
             {endDate || "Select date return"}
           </span>
           <span className="text-[12px] opacity-40">📅</span>
-          
           <input
             ref={endInputRef}
             type="date"
