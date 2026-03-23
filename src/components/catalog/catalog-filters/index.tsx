@@ -27,7 +27,7 @@ export default function CatalogFilters({
                      activeStatus !== "all" || 
                      startDate !== "" || 
                      endDate !== "";
-
+const today = new Date().toISOString().split('T')[0];
   return (
     <div className="flex flex-col md:flex-row gap-6 items-end">
       
@@ -80,9 +80,11 @@ export default function CatalogFilters({
           <label className="block text-xs font-black mb-2 uppercase tracking-widest text-gray-400">
             Pick up
           </label>
+
           <input
             type="date"
             value={startDate}
+            min={today}
             onChange={(e) => onDateChange("start", e.target.value)}
             className="w-full bg-white border border-gray-200 rounded-lg p-2 text-sm text-gray-700 outline-none shadow-sm h-[42px]"
           />
@@ -94,6 +96,7 @@ export default function CatalogFilters({
           <input
             type="date"
             value={endDate}
+            min={startDate}
             onChange={(e) => onDateChange("end", e.target.value)}
             className="w-full bg-white border border-gray-200 rounded-lg p-2 text-sm text-gray-700 outline-none shadow-sm h-[42px]"
           />

@@ -25,7 +25,8 @@ export default function CatalogMenuWrapper() {
   
   const handleDateChange = (key: "start" | "end", value: string) => {
     if (key === "start") {
-      f.setDates(value, f.end); 
+      const newEndDate = (f.end && value > f.end) ? value : f.end;
+      f.setDates(value, newEndDate);
     } else {
       f.setDates(f.start, value);
     }
