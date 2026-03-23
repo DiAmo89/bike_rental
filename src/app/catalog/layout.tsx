@@ -1,7 +1,8 @@
 "use client";
+
 import { Suspense } from "react";
 import { usePathname } from "next/navigation";
-import CatalogMenuWrapper from "@/components/catalog/catalog-menu-wrapper";
+import CatalogMenu from "@/components/catalog/catalog-menu-wrapper";
 
 export default function CatalogLayout({
   children,
@@ -10,6 +11,8 @@ export default function CatalogLayout({
 }) {
   const pathname = usePathname();
 
+  // Показываем меню фильтров только на главной странице каталога
+  // и скрываем его, если пользователь зашел внутрь конкретного байка
   const isMainCatalogPage = pathname === "/catalog";
 
   return (
@@ -22,7 +25,7 @@ export default function CatalogLayout({
                 <div className="h-12 w-full bg-gray-50 animate-pulse rounded-xl" />
               }
             >
-              <CatalogMenuWrapper />
+              <CatalogMenu />
             </Suspense>
           </div>
         </div>

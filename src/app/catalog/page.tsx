@@ -20,6 +20,7 @@ function CatalogContent() {
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(6);
 
+  // Восстановление URL из sessionStorage при первом заходе
   useEffect(() => {
     const savedUrl = sessionStorage.getItem("lastCatalogUrl");
     const currentQuery = window.location.search;
@@ -29,11 +30,15 @@ function CatalogContent() {
     }
   }, [router]);
 
+  // Сохранение текущего URL в sessionStorage
   useEffect(() => {
     const currentFullUrl = window.location.pathname + window.location.search;
-    sessionStorage.setItem("lastCatalogUrl", currentFullUrl);
+    if (window.location.pathname === "/catalog") {
+      sessionStorage.setItem("lastCatalogUrl", currentFullUrl);
+    }
   }, [searchParams]);
 
+  // Загрузка данных
   useEffect(() => {
     const loadData = async () => {
       try {
@@ -49,12 +54,13 @@ function CatalogContent() {
     loadData();
   }, []);
 
+  // Фильтрация и сортировка
   const filteredBikes = useMemo(() => {
     let result = [...allBikes];
 
     if (catFilter !== "all") {
       result = result.filter(
-        (b) => b.category?.name?.toLowerCase() === catFilter.toLowerCase(),
+        (b) => b.category?.name?.toLowerCase() === catFilter.toLowerCase()
       );
     }
 
@@ -72,14 +78,16 @@ function CatalogContent() {
     return result;
   }, [allBikes, catFilter, statusFilter, sortBy]);
 
+  // Пагинация
   const totalPages = Math.ceil(filteredBikes.length / itemsPerPage);
   const safePage = currentPage > totalPages && totalPages > 0 ? 1 : currentPage;
   const startIndex = (safePage - 1) * itemsPerPage;
   const paginatedBikes = filteredBikes.slice(
     startIndex,
-    startIndex + itemsPerPage,
+    startIndex + itemsPerPage
   );
 
+  // Сброс страницы при изменении фильтров
   useEffect(() => {
     setCurrentPage(1);
   }, [catFilter, statusFilter, sortBy]);
@@ -88,7 +96,7 @@ function CatalogContent() {
     return (
       <div className="flex justify-center items-center min-h-[400px]">
         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
-        <span className="ml-3 font-medium text-gray-500 uppercase font-bold">
+        <span className="ml-3 font-bold text-gray-500 uppercase">
           Loading bikes...
         </span>
       </div>

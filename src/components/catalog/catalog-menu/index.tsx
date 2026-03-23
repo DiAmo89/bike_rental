@@ -1,7 +1,7 @@
 import CatalogFilters from "../catalog-filters";
 import CatalogSort from "../catalog-sort";
 
-// ДОБАВЛЯЕМ sortBy В ЭТОТ СПИСОК (Interface)
+
 interface CatalogMenuProps {
   categories: string[];
   activeCategory: string;
@@ -9,7 +9,7 @@ interface CatalogMenuProps {
   activeStatus: string;
   onStatusChange: (status: string) => void;
   onSortChange: (sort: string) => void;
-  sortBy: string; // <-- ОБЯЗАТЕЛЬНО ТУТ
+  sortBy: string; 
 }
 
 export default function CatalogMenu({
@@ -19,7 +19,7 @@ export default function CatalogMenu({
   activeStatus,
   onStatusChange,
   onSortChange,
-  sortBy, // <-- И ТУТ В СКОБКАХ
+  sortBy, 
 }: CatalogMenuProps) {
   return (
     <div className="bg-gray-50 p-6 rounded-2xl border border-gray-100 mb-10 shadow-sm">
@@ -34,7 +34,7 @@ export default function CatalogMenu({
           />
         </div>
         <div className="flex-1">
-          {/* ТЕПЕРЬ ПЕРЕДАЕМ sortBy В value */}
+        
           <CatalogSort onSortChange={onSortChange} value={sortBy} />
         </div>
       </div>
