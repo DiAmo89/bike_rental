@@ -31,12 +31,39 @@ export default function AddBikeModal({
     e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>,
   ) => {
     setForm({ ...form, [e.target.name]: e.target.value });
+    if (error) {
+      setError("");
+    }
+  };
+
+  const isValidText = (value: string) => {
+    if (!value.trim()) return true;
+    const re = /^[a-zA-Z0-9\s.,'"()\-]+$/;
+    return re.test(value.trim());
   };
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
     setError("");
+
+    if (!isValidText(form.brand)) {
+      setLoading(false);
+      setError("Brand contains unsupported special characters.");
+      return;
+    }
+
+    if (!isValidText(form.model)) {
+      setLoading(false);
+      setError("Model contains unsupported special characters.");
+      return;
+    }
+
+    if (form.description && !isValidText(form.description)) {
+      setLoading(false);
+      setError("Description contains unsupported special characters.");
+      return;
+    }
 
     const price = Number(form.price_per_day);
 

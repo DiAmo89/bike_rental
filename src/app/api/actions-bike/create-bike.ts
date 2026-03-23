@@ -17,6 +17,21 @@ export async function createBike(formData: FormData) {
   const image = formData.get("image") as string;
   const bikeCategoryId = formData.get("bike_category_id") as string;
 
+  const validateTextField = (name: string, value: string) => {
+    const trimmed = value.trim();
+    if (!trimmed) {
+      return;
+    }
+    const re = /^[a-zA-Z0-9\s.,'"()\-]+$/;
+    if (!re.test(trimmed)) {
+      throw new Error(`${name} contains unsupported special characters`);
+    }
+  };
+
+  validateTextField("Brand", brand);
+  validateTextField("Model", model);
+  validateTextField("Description", description);
+
   const pricePerDay = Number(pricePerDayRaw);
 
   if (Number.isNaN(pricePerDay)) {
