@@ -40,7 +40,9 @@ export default function SignInSignOut() {
               <Image
                 src={DEFAULT_AVATAR}
                 alt="fallback"
-                className="absolute inset-0 w-full h-full object-cover"
+                fill
+                unoptimized
+                className="object-cover"
               />
             </div>
 
