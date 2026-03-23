@@ -15,13 +15,20 @@ export default function OrderSummary({
   const pricePerDay = Number(bike.pricePerDay) || 0;
   const serviceFee = 5.0;
 
+  const isDatesValid =
+    startDate && endDate && new Date(endDate) > new Date(startDate);
+
   const calculateDays = () => {
-    if (!startDate || !endDate) return 1;
+    if (!isDatesValid) return 0;
     const start = new Date(startDate);
     const end = new Date(endDate);
+    start.setHours(0, 0, 0, 0);
+    end.setHours(0, 0, 0, 0);
+
     const diffInMs = end.getTime() - start.getTime();
     const diffInDays = Math.ceil(diffInMs / (1000 * 60 * 60 * 24));
-    return diffInDays > 0 ? diffInDays : 1;
+
+    return diffInDays >= 1 ? diffInDays : 0;
   };
 
   const days = calculateDays();
@@ -39,56 +46,60 @@ export default function OrderSummary({
 
   const subtotal = pricePerDay * days + accessoriesTotal;
   const tax = subtotal * 0.1;
-  const total = subtotal + serviceFee + tax;
+  const total = isDatesValid ? subtotal + serviceFee + tax : 0;
 
   return (
-    <div className="sticky top-24 rounded-2xl border border-zinc-200 bg-white p-6 shadow-md">
-      <h2 className="text-xl font-bold mb-6 text-zinc-900">Order Summary</h2>
+    <div className="sticky top-24 rounded-2xl border border-zinc-200 bg-white p-6 shadow-md dark:bg-zinc-950 dark:border-zinc-800 transition-colors">
+      <h2 className="text-xl font-bold mb-6 text-zinc-900 dark:text-zinc-100">
+        Order Summary
+      </h2>
 
-      <div className="flex gap-4 mb-6 border-b border-zinc-100 pb-6">
-        <div className="relative h-16 w-20 overflow-hidden rounded-lg bg-zinc-100">
+      <div className="flex gap-4 mb-6 border-b border-zinc-100 dark:border-zinc-800 pb-6">
+        <div className="relative h-16 w-20 overflow-hidden rounded-lg bg-zinc-100 dark:bg-zinc-900">
           <Image
             src={bike.image || "/images/categories/mensclothing.jpg"}
             alt={bike.brand}
             fill
-            className="object-contain"
+            className="object-contain p-1"
           />
         </div>
         <div>
-          <h4 className="font-semibold text-zinc-900 text-sm">
+          <h4 className="font-semibold text-zinc-900 dark:text-zinc-100 text-sm">
             {bike.brand} {bike.model}
           </h4>
-          <p className="text-[10px] text-zinc-400 uppercase tracking-widest">
+          <p className="text-[10px] text-zinc-400 dark:text-zinc-500 uppercase tracking-widest">
             {bike.category || "Professional Bike"}
           </p>
         </div>
       </div>
 
-      <div className="space-y-3 mb-6 border-b border-zinc-100 pb-6 text-sm">
+      <div className="space-y-3 mb-6 border-b border-zinc-100 dark:border-zinc-800 pb-6 text-sm">
         <div className="flex justify-between">
-          <span className="text-zinc-500">Rental duration:</span>
-          <span className="font-bold text-zinc-900">
+          <span className="text-zinc-500 dark:text-zinc-400">
+            Rental duration:
+          </span>
+          <span className="font-bold text-zinc-900 dark:text-zinc-100">
             {days} {days === 1 ? "day" : "days"}
           </span>
         </div>
         <div className="flex justify-between text-[11px]">
           <span className="text-zinc-400 italic">Pick-up:</span>
-          <span className="text-zinc-600">
-            {startDate ? new Date(startDate).toLocaleString() : "---"}
+          <span className="text-zinc-600 dark:text-zinc-300">
+            {startDate ? new Date(startDate).toLocaleDateString() : "---"}
           </span>
         </div>
         <div className="flex justify-between text-[11px]">
           <span className="text-zinc-400 italic">Return:</span>
-          <span className="text-zinc-600">
-            {endDate ? new Date(endDate).toLocaleString() : "---"}
+          <span className="text-zinc-600 dark:text-zinc-300">
+            {endDate ? new Date(endDate).toLocaleDateString() : "---"}
           </span>
         </div>
       </div>
 
       <div className="space-y-3 mb-6 text-sm">
-        <div className="flex justify-between text-zinc-600">
+        <div className="flex justify-between text-zinc-600 dark:text-zinc-400">
           <span>Base Rental</span>
-          <span className="font-medium text-zinc-900">
+          <span className="font-medium text-zinc-900 dark:text-zinc-100">
             €{(pricePerDay * days).toFixed(2)}
           </span>
         </div>
@@ -100,10 +111,10 @@ export default function OrderSummary({
               return (
                 <div
                   key={acc.id}
-                  className="flex justify-between text-zinc-600"
+                  className="flex justify-between text-zinc-600 dark:text-zinc-400"
                 >
                   <span>{acc.name}</span>
-                  <span className="font-medium text-zinc-900">
+                  <span className="font-medium text-zinc-900 dark:text-zinc-100">
                     €{(Number(acc.pricePerDay) * days).toFixed(2)}
                   </span>
                 </div>
@@ -113,34 +124,44 @@ export default function OrderSummary({
           },
         )}
 
-        <div className="flex justify-between text-zinc-600">
+        <div className="flex justify-between text-zinc-600 dark:text-zinc-400">
           <span>Service Fee</span>
-          <span className="font-medium text-zinc-900">
-            €{serviceFee.toFixed(2)}
+          <span className="font-medium text-zinc-900 dark:text-zinc-100">
+            €{isDatesValid ? serviceFee.toFixed(2) : "0.00"}
           </span>
         </div>
 
-        <div className="flex justify-between text-zinc-600">
+        <div className="flex justify-between text-zinc-600 dark:text-zinc-400">
           <span>Tax (10%)</span>
-          <span className="font-medium text-zinc-900">€{tax.toFixed(2)}</span>
+          <span className="font-medium text-zinc-900 dark:text-zinc-100">
+            €{tax.toFixed(2)}
+          </span>
         </div>
       </div>
 
-      <div className="flex justify-between items-center border-t border-zinc-900 pt-4 mb-6">
-        <span className="text-lg font-bold text-zinc-900">Total</span>
-        <span className="text-2xl font-black text-black">
+      <div className="flex justify-between items-center border-t border-zinc-900 dark:border-zinc-100 pt-4 mb-6">
+        <span className="text-lg font-bold text-zinc-900 dark:text-zinc-100">
+          Total
+        </span>
+        <span className="text-2xl font-black text-black dark:text-[#e6ff2a]">
           €{total.toFixed(2)}
         </span>
       </div>
 
       <Button
         onClick={onConfirm}
-        className="w-full bg-[#e6ff2a] hover:bg-black hover:text-[#e6ff2a] text-black font-bold py-6 rounded-xl transition-all duration-300 uppercase tracking-widest text-xs shadow-lg shadow-[#e6ff2a]/20"
+        disabled={!isDatesValid}
+        className={`w-full font-bold py-6 rounded-xl transition-all duration-300 uppercase tracking-widest text-xs shadow-lg 
+          ${
+            !isDatesValid
+              ? "bg-zinc-200 text-zinc-400 cursor-not-allowed dark:bg-zinc-800 dark:text-zinc-600 shadow-none"
+              : "bg-[#e6ff2a] hover:bg-black hover:text-[#e6ff2a] dark:hover:bg-white dark:hover:text-black text-black shadow-[#e6ff2a]/20"
+          }`}
       >
-        Confirm & Pay
+        {isDatesValid ? "Confirm & Pay" : "Select Rental Dates"}
       </Button>
 
-      <p className="text-[10px] text-zinc-400 text-center mt-4 uppercase tracking-tighter">
+      <p className="text-[10px] text-zinc-400 dark:text-zinc-500 text-center mt-4 uppercase tracking-tighter">
         Secure checkout powered by Stripe
       </p>
     </div>
