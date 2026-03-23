@@ -2,7 +2,6 @@
 
 import React, { useRef } from "react";
 
-// Расширяем интерфейс, чтобы TS не ругался на отсутствие метода
 interface HTMLInputElementWithPicker extends HTMLInputElement {
   showPicker: () => void;
 }
@@ -32,11 +31,11 @@ export default function CatalogFilters({
 }: CatalogFiltersProps) {
   const today = new Date().toISOString().split('T')[0];
   
-  // Явно указываем тип null для начального значения
+ 
   const startInputRef = useRef<HTMLInputElement>(null);
   const endInputRef = useRef<HTMLInputElement>(null);
 
-  // Убираем неиспользуемый 'err' из catch, чтобы линтер не ругался
+ 
   const handleContainerClick = (inputRef: React.RefObject<HTMLInputElement | null>) => {
     const el = inputRef.current as HTMLInputElementWithPicker | null;
     if (el) {
@@ -55,7 +54,7 @@ export default function CatalogFilters({
   return (
     <div className="flex flex-col md:flex-row items-stretch md:items-center gap-2 w-full">
       
-      {/* Селекторы */}
+     
       <div className="flex flex-row gap-1.5 w-full md:w-auto">
         <button
           type="button"
@@ -87,10 +86,10 @@ export default function CatalogFilters({
         </select>
       </div>
 
-      {/* Блок ДАТ */}
+ 
       <div className="flex flex-col md:flex-row items-stretch md:items-center gap-1.5 w-full md:flex-1">
         
-        {/* Pick up */}
+        
         <div 
           onClick={() => handleContainerClick(startInputRef)}
           className="relative flex-1 bg-white border border-gray-200 rounded-lg px-3 h-[38px] md:h-[42px] flex items-center justify-between shadow-sm cursor-pointer active:bg-gray-50 transition-colors"
@@ -111,7 +110,7 @@ export default function CatalogFilters({
 
         <span className="hidden md:block text-black-300 font-bold text-[10px]">→</span>
 
-        {/* Return */}
+       
         <div 
           onClick={() => handleContainerClick(endInputRef)}
           className="relative flex-1 bg-white border border-gray-200 rounded-lg px-3 h-[38px] md:h-[42px] flex items-center justify-between shadow-sm cursor-pointer active:bg-gray-50 transition-colors"
