@@ -11,10 +11,14 @@ export default function SignInSignOut() {
   const { data: session } = useSession();
   const pathname = usePathname();
 
+  const DEFAULT_AVATAR = "/images/avatar/default-avatar.png";
   const baseStyles =
     "flex items-center gap-3 bg-[#e6ff2a] text-black px-4 py-2 rounded-full text-sm font-medium transition mr-8";
 
   if (session) {
+    const avatarSrc =
+      session.user?.image || session.user?.avatar || DEFAULT_AVATAR;
+
     return (
       <div className="flex items-center gap-4">
         <div className={baseStyles}>
@@ -22,18 +26,25 @@ export default function SignInSignOut() {
             className="relative group flex items-center outline-none cursor-help"
             tabIndex={0}
           >
-            <Image
-              src={
-                session.user?.image ||
-                session.user?.avatar ||
-                "/images/avatar/default-avatar.png"
-              }
-              alt={session.user?.name || "User"}
-              width={26}
-              height={26}
-              unoptimized
-              className="rounded-full border border-black/10"
-            />
+            <div className="relative w-[26px] h-[26px] rounded-full overflow-hidden border border-black/10 bg-zinc-200">
+              <Image
+                src={avatarSrc}
+                alt={session.user?.name || "User"}
+                fill
+                unoptimized
+                className="object-cover z-10"
+                onError={(e) => {
+                  (e.target as HTMLImageElement).style.display = "none";
+                }}
+              />
+              <Image
+                src={DEFAULT_AVATAR}
+                alt="fallback"
+                fill
+                unoptimized
+                className="object-cover"
+              />
+            </div>
 
             <RegisteredUser />
           </div>
@@ -64,8 +75,7 @@ export default function SignInSignOut() {
       >
         Login
       </Link>
-
-      <Link href={PATH_SIGN_UP} className={baseStyles + " hover:bg-white"}>
+      <Link href={PATH_SIGN_UP} className={`${baseStyles} hover:bg-white mr-0`}>
         Sign In
       </Link>
     </div>

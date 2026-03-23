@@ -14,6 +14,7 @@ import { useState } from "react";
 import { usePathname } from "next/navigation";
 import { useSession } from "next-auth/react";
 import SignInSignOut from "../sign-in-sign-out";
+import ThemeToggle from "../theme-toggle";
 
 const NavBar = () => {
   const [showSidebar, setShowSidebar] = useState(false);
@@ -76,6 +77,8 @@ const NavBar = () => {
                   Admin
                 </Link>
               )}
+
+              <ThemeToggle />
             </div>
 
             <div className="hidden xl:block">
