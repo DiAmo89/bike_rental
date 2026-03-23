@@ -26,7 +26,7 @@ export default function SignInSignOut() {
             className="relative group flex items-center outline-none cursor-help"
             tabIndex={0}
           >
-            <div className="relative w-[26px] h-[26px] rounded-full overflow-hidden border border-black/10 bg-zinc-200">
+            <div className="relative w-6.5 h-6.5 rounded-full overflow-hidden border border-black/10 bg-zinc-200">
               <Image
                 src={avatarSrc}
                 alt={session.user?.name || "User"}
@@ -40,7 +40,8 @@ export default function SignInSignOut() {
               <Image
                 src={DEFAULT_AVATAR}
                 alt="fallback"
-                className="absolute inset-0 w-full h-full object-cover"
+                fill
+                className="object-cover"
               />
             </div>
 
