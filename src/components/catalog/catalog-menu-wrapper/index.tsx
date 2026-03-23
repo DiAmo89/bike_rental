@@ -39,7 +39,7 @@ export default function CatalogMenuWrapper() {
     return { activeCategory: "all", activeStatus: "all", sortBy: "default" };
   }, [searchParams]); 
 
-  
+
   useEffect(() => {
     fetch("/api/bikes")
       .then((res) => res.json())
@@ -57,10 +57,10 @@ export default function CatalogMenuWrapper() {
    
     const newParams = new URLSearchParams();
 
-  
+    
     const current = { activeCategory, activeStatus, sortBy };
 
-   
+    
     if (key === "category") current.activeCategory = value;
     if (key === "status") current.activeStatus = value;
     if (key === "sort") current.sortBy = value;
@@ -70,7 +70,7 @@ export default function CatalogMenuWrapper() {
     if (current.activeStatus !== "all") newParams.set("status", current.activeStatus);
     if (current.sortBy !== "default") newParams.set("sort", current.sortBy);
 
-   
+    
     router.push(`/catalog?${newParams.toString()}`, { scroll: false });
   };
 
