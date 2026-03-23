@@ -1,3 +1,5 @@
+"use client";
+
 import React from "react";
 
 interface CatalogSortProps {
@@ -8,17 +10,15 @@ interface CatalogSortProps {
 export default function CatalogSort({ onSortChange, value }: CatalogSortProps) {
   return (
     <div className="w-full">
-      <label className="block text-xs font-black mb-2 uppercase tracking-widest text-gray-400">
-        Price
-      </label>
+      <label className="sr-only">Sort</label>
       <select
         value={value} 
         onChange={(e) => onSortChange(e.target.value)}
-        className="w-full bg-white border border-gray-200 text-gray-700 text-sm rounded-lg p-2.5 shadow-sm focus:ring-2 focus:ring-blue-500 outline-none transition-all"
+        className="w-full bg-white border border-gray-200 text-gray-700 text-[12px] font-medium rounded-lg px-3 h-[38px] md:h-[42px] outline-none appearance-none cursor-pointer"
       >
-        <option value="default">By default</option>
-        <option value="low">Cheap first</option>
-        <option value="high">Expensive first</option>
+        <option value="default">Sort: Default</option>
+        <option value="low">Price: Low to High</option>
+        <option value="high">Price: High to Low</option>
       </select>
     </div>
   );

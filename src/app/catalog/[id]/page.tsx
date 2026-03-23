@@ -25,7 +25,7 @@ export default async function BikeDetailPage({ params }: PageProps) {
       <div className="container mx-auto max-w-6xl">
         <Link
           href="/catalog"
-          className="inline-flex items-center text-xs font-bold text-gray-400 hover:text-black transition-colors mb-8 group uppercase tracking-widest"
+          className="inline-flex items-center text-xs font-bold text-gray-400 hover:text-black transition-colors mb-2 group uppercase tracking-widest"
         >
           <span className="mr-2 transition-transform group-hover:-translate-x-1">
             ←
@@ -34,7 +34,6 @@ export default async function BikeDetailPage({ params }: PageProps) {
         </Link>
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-          {/* LEFT COLUMN: Images & Description */}
           <div className="lg:col-span-8 space-y-6">
             <div className="relative w-full rounded-[1.8rem] overflow-hidden">
               {bike.image ? (
@@ -67,10 +66,8 @@ export default async function BikeDetailPage({ params }: PageProps) {
             </div>
           </div>
 
-          {/* RIGHT COLUMN: Order Summary & Availability */}
           <div className="lg:col-span-4 sticky top-10">
             <div className="bg-white p-8 rounded-[2.5rem] shadow-xl shadow-gray-200/50 border border-gray-100 flex flex-col gap-6">
-              
               <div className="space-y-4">
                 <h2 className="text-xl font-bold text-gray-900 mb-1">
                   Order Summary
@@ -82,9 +79,9 @@ export default async function BikeDetailPage({ params }: PageProps) {
                     <h1 className="text-3xl font-black uppercase leading-tight tracking-tighter">
                       {bike.brand}
                     </h1>
-                    <h1 className="text-3xl font-black uppercase leading-tight tracking-tighter">
+                    <h3 className="text-2xl font-black uppercase leading-tight tracking-tighter">
                       {bike.model}
-                    </h1>
+                    </h3>
                   </div>
                   <div
                     className={`px-3 py-1 rounded-full text-[12px] font-black uppercase tracking-tighter ${bike.isActive ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"}`}
@@ -94,7 +91,6 @@ export default async function BikeDetailPage({ params }: PageProps) {
                 </div>
               </div>
 
-              {/* AVAILABILITY COMPONENT */}
               <BikeAvailability bikeId={id} />
 
               <div className="space-y-4 border-t border-gray-50 pt-6">
