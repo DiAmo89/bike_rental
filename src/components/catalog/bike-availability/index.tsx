@@ -60,7 +60,7 @@ export default function BikeAvailability({ bikeId }: { bikeId: string }) {
     return bookings.some(b => isWithinInterval(day, { start: b.from, end: b.to }));
   };
 
-  // Проверка: можно ли листать назад?
+
   const canGoBack = !isSameMonth(currentMonth, new Date()) && !isBefore(currentMonth, new Date());
 
   if (isLoading) return <div className="h-[300px] w-[280px] animate-pulse bg-gray-50 rounded-[2rem] mx-auto border" />;
@@ -74,7 +74,7 @@ export default function BikeAvailability({ bikeId }: { bikeId: string }) {
         <div className="flex gap-2">
           <button 
             type="button"
-            disabled={!canGoBack} // Блокируем кнопку
+            disabled={!canGoBack} 
             onClick={() => setCurrentMonth(subMonths(currentMonth, 1))}
             className={`p-1 rounded-md transition-colors ${canGoBack ? "hover:bg-gray-100 text-gray-800" : "text-gray-200 cursor-not-allowed"}`}
           >
@@ -102,7 +102,7 @@ export default function BikeAvailability({ bikeId }: { bikeId: string }) {
         {calendarDays.map((day, idx) => {
           const booked = isBooked(day);
           const currentM = isSameMonth(day, monthStart);
-          const isPast = isBefore(day, today); // Проверка на прошлое
+          const isPast = isBefore(day, today); 
           const isToday = isSameDay(day, today);
           
           return (
