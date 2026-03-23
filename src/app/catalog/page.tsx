@@ -13,27 +13,32 @@ function CatalogContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
 
+  // Параметры из URL
   const catFilter = searchParams.get("category") || "all";
   const statusFilter = searchParams.get("status") || "all";
   const sortBy = searchParams.get("sort") || "default";
+  const dateFrom = searchParams.get("from") || "";
+  const dateTo = searchParams.get("to") || "";
 
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(6);
 
+  // Сохранение и восстановление URL (sessionStorage)
   useEffect(() => {
     const savedUrl = sessionStorage.getItem("lastCatalogUrl");
-    const currentQuery = window.location.search;
-
-    if (!currentQuery && savedUrl && savedUrl.includes("?")) {
+    if (savedUrl && window.location.search === "" && window.location.pathname === "/catalog") {
       router.replace(savedUrl);
     }
   }, [router]);
 
   useEffect(() => {
     const currentFullUrl = window.location.pathname + window.location.search;
-    sessionStorage.setItem("lastCatalogUrl", currentFullUrl);
+    if (window.location.pathname === '/catalog') {
+      sessionStorage.setItem("lastCatalogUrl", currentFullUrl);
+    }
   }, [searchParams]);
 
+  // Загрузка данных
   useEffect(() => {
     const loadData = async () => {
       try {
@@ -49,6 +54,7 @@ function CatalogContent() {
     loadData();
   }, []);
 
+  // ФИЛЬТРАЦИЯ
   const filteredBikes = useMemo(() => {
     let result = [...allBikes];
 
@@ -63,6 +69,12 @@ function CatalogContent() {
       result = result.filter((b) => b.isActive === isAvail);
     }
 
+    // Логика дат: если выбраны даты, показываем только активные байки (isActive)
+    // В будущем здесь будет запрос к API для проверки броней
+    if (dateFrom || dateTo) {
+      result = result.filter((b) => b.isActive === true);
+    }
+
     if (sortBy === "low") {
       result.sort((a, b) => Number(a.pricePerDay) - Number(b.pricePerDay));
     } else if (sortBy === "high") {
@@ -70,27 +82,22 @@ function CatalogContent() {
     }
 
     return result;
-  }, [allBikes, catFilter, statusFilter, sortBy]);
+  }, [allBikes, catFilter, statusFilter, sortBy, dateFrom, dateTo]);
 
   const totalPages = Math.ceil(filteredBikes.length / itemsPerPage);
   const safePage = currentPage > totalPages && totalPages > 0 ? 1 : currentPage;
   const startIndex = (safePage - 1) * itemsPerPage;
-  const paginatedBikes = filteredBikes.slice(
-    startIndex,
-    startIndex + itemsPerPage,
-  );
+  const paginatedBikes = filteredBikes.slice(startIndex, startIndex + itemsPerPage);
 
   useEffect(() => {
     setCurrentPage(1);
-  }, [catFilter, statusFilter, sortBy]);
+  }, [catFilter, statusFilter, sortBy, dateFrom, dateTo]);
 
   if (loading) {
     return (
       <div className="flex justify-center items-center min-h-[400px]">
         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
-        <span className="ml-3 font-medium text-gray-500 uppercase font-bold">
-          Loading bikes...
-        </span>
+        <span className="ml-3 font-medium text-gray-500 uppercase">Loading bikes...</span>
       </div>
     );
   }
@@ -104,7 +111,6 @@ function CatalogContent() {
               <BikeCard key={bike.id} bike={bike} />
             ))}
           </div>
-
           <div className="mt-12">
             <CatalogPagination
               currentPage={safePage}
@@ -123,7 +129,7 @@ function CatalogContent() {
       ) : (
         <div className="text-center py-20 border-2 border-dashed border-gray-200 rounded-3xl text-gray-400">
           <p className="text-xl">
-            No bikes found for category &quot;{catFilter}&quot;
+            No bikes available for these criteria
           </p>
           <button
             onClick={() => router.push("/catalog")}
@@ -139,15 +145,7 @@ function CatalogContent() {
 
 export default function CatalogPage() {
   return (
-    <Suspense
-      fallback={
-        <div className="flex justify-center items-center min-h-[400px]">
-          <div className="animate-pulse text-gray-400 font-bold uppercase">
-            Preparing Catalog...
-          </div>
-        </div>
-      }
-    >
+    <Suspense fallback={<div className="min-h-[400px] flex items-center justify-center">Preparing...</div>}>
       <CatalogContent />
     </Suspense>
   );
