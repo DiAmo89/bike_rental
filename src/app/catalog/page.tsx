@@ -22,19 +22,25 @@ function CatalogContent() {
   const [itemsPerPage, setItemsPerPage] = useState(6);
 
  
+  
   useEffect(() => {
     const savedUrl = sessionStorage.getItem("lastCatalogUrl");
     const currentQuery = window.location.search;
 
+    
     if (!currentQuery && savedUrl && savedUrl.includes('?')) {
+      
       router.replace(savedUrl);
     }
-  }, [router]);
+  }, []); 
 
-  
+ 
   useEffect(() => {
     const currentFullUrl = window.location.pathname + window.location.search;
-    sessionStorage.setItem("lastCatalogUrl", currentFullUrl);
+
+    if (window.location.pathname === '/catalog') {
+      sessionStorage.setItem("lastCatalogUrl", currentFullUrl);
+    }
   }, [searchParams]);
 
   
