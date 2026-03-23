@@ -11,8 +11,7 @@ export default function CatalogMenuWrapper() {
   const pathname = usePathname();
   const [categories, setCategories] = useState<string[]>([]);
 
-  // 1. Вычисляем активные значения. 
-  // Если в URL есть параметры — берем их. Если нет (мы в карточке) — берем из sessionStorage.
+  
   const { activeCategory, activeStatus, sortBy } = useMemo(() => {
     const hasUrlParams = searchParams.has("category") || searchParams.has("status") || searchParams.has("sort");
 
@@ -24,7 +23,7 @@ export default function CatalogMenuWrapper() {
       };
     }
 
-    // Если параметров в URL нет, проверяем память
+    
     if (typeof window !== "undefined") {
       const savedUrl = sessionStorage.getItem("lastCatalogUrl");
       if (savedUrl && savedUrl.includes("?")) {
@@ -38,9 +37,9 @@ export default function CatalogMenuWrapper() {
     }
 
     return { activeCategory: "all", activeStatus: "all", sortBy: "default" };
-  }, [searchParams]); // Важно: пересчитываем при каждом изменении URL
+  }, [searchParams]); 
 
-  // 2. Загрузка списка категорий
+  
   useEffect(() => {
     fetch("/api/bikes")
       .then((res) => res.json())
@@ -53,25 +52,25 @@ export default function CatalogMenuWrapper() {
       .catch((err) => console.error("Error loading categories:", err));
   }, []);
 
-  // 3. Универсальная функция обновления
+  
   const updateFilter = (key: string, value: string) => {
-    // Создаем новый объект параметров, основываясь на текущих АКТИВНЫХ значениях
+   
     const newParams = new URLSearchParams();
 
-    // Берем текущий срез данных из меню
+  
     const current = { activeCategory, activeStatus, sortBy };
 
-    // Обновляем только то поле, которое изменил пользователь
+   
     if (key === "category") current.activeCategory = value;
     if (key === "status") current.activeStatus = value;
     if (key === "sort") current.sortBy = value;
 
-    // Формируем чистую строку параметров для URL
+    
     if (current.activeCategory !== "all") newParams.set("category", current.activeCategory);
     if (current.activeStatus !== "all") newParams.set("status", current.activeStatus);
     if (current.sortBy !== "default") newParams.set("sort", current.sortBy);
 
-    // Всегда отправляем на /catalog, чтобы сбросить путь карточки, если мы были в ней
+   
     router.push(`/catalog?${newParams.toString()}`, { scroll: false });
   };
 

@@ -1,7 +1,7 @@
-"use client"; // Обязательно добавь это в начало, раз используешь usePathname
+"use client"; 
 
 import { Suspense } from "react"; 
-import { usePathname } from "next/navigation"; // Добавили пропущенный импорт
+import { usePathname } from "next/navigation"; 
 import CatalogMenu from "@/components/catalog/catalog-menu-wrapper";
 
 export default function CatalogLayout({
@@ -11,7 +11,7 @@ export default function CatalogLayout({
 }) {
   const pathname = usePathname();
 
-  // Мы убираем проверку isMainCatalogPage, чтобы меню было ВЕЗДЕ
+  
   return (
     <section className="pt-20">
       <div className="sticky top-20 z-30 bg-white/95 backdrop-blur-md pt-5 pb-2">

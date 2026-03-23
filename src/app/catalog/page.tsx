@@ -13,7 +13,7 @@ function CatalogContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
 
-  // Параметры из URL
+  
   const catFilter = searchParams.get("category") || "all";
   const statusFilter = searchParams.get("status") || "all";
   const sortBy = searchParams.get("sort") || "default";
@@ -23,7 +23,7 @@ function CatalogContent() {
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(6);
 
-  // Сохранение и восстановление URL (sessionStorage)
+ 
   useEffect(() => {
     const savedUrl = sessionStorage.getItem("lastCatalogUrl");
     if (savedUrl && window.location.search === "" && window.location.pathname === "/catalog") {
@@ -38,7 +38,7 @@ function CatalogContent() {
     }
   }, [searchParams]);
 
-  // Загрузка данных
+ 
   useEffect(() => {
     const loadData = async () => {
       try {
@@ -54,13 +54,13 @@ function CatalogContent() {
     loadData();
   }, []);
 
-  // ФИЛЬТРАЦИЯ
+  
   const filteredBikes = useMemo(() => {
     let result = [...allBikes];
 
     if (catFilter !== "all") {
       result = result.filter(
-        (b) => b.category?.name?.toLowerCase() === catFilter.toLowerCase(),
+        (b) => b.category?.name?.toLowerCase() === catFilter.toLowerCase()
       );
     }
 
@@ -69,8 +69,7 @@ function CatalogContent() {
       result = result.filter((b) => b.isActive === isAvail);
     }
 
-    // Логика дат: если выбраны даты, показываем только активные байки (isActive)
-    // В будущем здесь будет запрос к API для проверки броней
+  
     if (dateFrom || dateTo) {
       result = result.filter((b) => b.isActive === true);
     }
@@ -84,11 +83,13 @@ function CatalogContent() {
     return result;
   }, [allBikes, catFilter, statusFilter, sortBy, dateFrom, dateTo]);
 
+ 
   const totalPages = Math.ceil(filteredBikes.length / itemsPerPage);
   const safePage = currentPage > totalPages && totalPages > 0 ? 1 : currentPage;
   const startIndex = (safePage - 1) * itemsPerPage;
   const paginatedBikes = filteredBikes.slice(startIndex, startIndex + itemsPerPage);
 
+  
   useEffect(() => {
     setCurrentPage(1);
   }, [catFilter, statusFilter, sortBy, dateFrom, dateTo]);
