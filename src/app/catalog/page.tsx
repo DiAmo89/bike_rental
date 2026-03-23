@@ -112,6 +112,7 @@ function CatalogContent() {
             ))}
           </div>
 
+
           <div className="mt-12">
             <CatalogPagination
               currentPage={safePage}
@@ -138,6 +139,9 @@ function CatalogContent() {
           </button>
         </div>
       )}
+
+      
+
     </div>
   );
 }
