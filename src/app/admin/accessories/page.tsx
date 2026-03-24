@@ -61,113 +61,112 @@ export default function AdminAccessoriesPage() {
   }, []);
 
   return (
-    <div>
-      <div className="grid grid-cols-1 gap-8 md:grid-cols-[210px_1fr] items-start m-10 container mx-auto py-10">
-        <div className="self-start">
-          <AdminSidebar />
-        </div>
-
-        <div>
-          <div className="mb-6">
-            <h1 className="text-3xl font-bold">Accessories</h1>
-            <p className="text-gray-500">Create and manage accessories</p>
-          </div>
-
-          <div className="mb-6 flex flex-col items-start gap-4">
-            <div className="bg-gray-100 rounded-xl px-6 py-4 text-lg font-semibold">
-              Total Accessories: {accessories.length}
-            </div>
-
-            <button
-              type="button"
-              onClick={() => setShowAddAccessory(true)}
-              className="rounded-lg bg-black px-5 py-3 text-sm font-medium text-white transition hover:opacity-90"
-            >
-              Add Accessory
-            </button>
-          </div>
-          <table className="w-full text-left border border-gray-200 rounded-xl bg-white">
-            <thead className="bg-gray-50 text-sm text-gray-600">
-              <tr>
-                <th className="px-6 py-4">Name</th>
-                <th className="px-6 py-4">Price/Day</th>
-                <th className="px-6 py-4">Actions</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-200">
-              {accessories.map((acc: any) => (
-                <tr key={acc.id} className="text-sm text-gray-700">
-                  <td className="px-6 py-4">{acc.name}</td>
-                  <td className="px-6 py-4">€{acc.pricePerDay}</td>
-                  <td className="px-6 py-4">
-                    <div className="flex items-center gap-3 text-base">
-                      <button
-                        type="button"
-                        onClick={() => handleEditAccessory(acc)}
-                      >
-                        ✏️
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => handleDeleteAccessory(acc.id)}
-                      >
-                        🗑️
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-
-          {editModalOpen && (
-            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
-              <form
-                className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md"
-                onSubmit={handleEditSubmit}
-              >
-                <h2 className="text-xl font-bold mb-4">Edit Accessory</h2>
-                <input
-                  name="name"
-                  value={editForm.name || ""}
-                  onChange={handleEditChange}
-                  placeholder="Name"
-                  className="mb-2 w-full border p-2 rounded"
-                />
-                <input
-                  name="price_per_day"
-                  value={editForm.price_per_day || ""}
-                  onChange={handleEditChange}
-                  placeholder="Price per day"
-                  type="number"
-                  className="mb-2 w-full border p-2 rounded"
-                />
-                <div className="flex gap-2 mt-4">
-                  <button
-                    type="button"
-                    className="bg-gray-300 px-4 py-2 rounded"
-                    onClick={() => setEditModalOpen(false)}
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    type="submit"
-                    className="bg-black text-white px-4 py-2 rounded"
-                  >
-                    Save
-                  </button>
-                </div>
-              </form>
-            </div>
-          )}
-
-          <AddAccessoryModal
-            open={showAddAccessory}
-            onClose={() => setShowAddAccessory(false)}
-            onSuccess={handleAddAccessorySuccess}
-          />
-        </div>
+    <div className="grid grid-cols-1 gap-8 md:grid-cols-[210px_1fr] items-start">
+      <div className="self-start">
+        <AdminSidebar />
       </div>
+
+      <section className="space-y-6">
+        <div>
+          <h1 className="text-3xl font-bold">Accessories</h1>
+          <p className="text-gray-500">Create and manage accessories</p>
+        </div>
+
+        <div className="flex flex-col items-start gap-4">
+          <div className="bg-gray-100 rounded-xl px-6 py-4 text-lg font-semibold">
+            Total Accessories: {accessories.length}
+          </div>
+
+          <button
+            type="button"
+            onClick={() => setShowAddAccessory(true)}
+            className="rounded-lg bg-black px-5 py-3 text-sm font-medium text-white transition hover:opacity-90"
+          >
+            Add Accessory
+          </button>
+        </div>
+
+        <table className="w-full text-left border border-gray-200 rounded-xl bg-white">
+          <thead className="bg-gray-50 text-sm text-gray-600">
+            <tr>
+              <th className="px-6 py-4">Name</th>
+              <th className="px-6 py-4">Price/Day</th>
+              <th className="px-6 py-4">Actions</th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-gray-200">
+            {accessories.map((acc: any) => (
+              <tr key={acc.id} className="text-sm text-gray-700">
+                <td className="px-6 py-4">{acc.name}</td>
+                <td className="px-6 py-4">€{acc.pricePerDay}</td>
+                <td className="px-6 py-4">
+                  <div className="flex items-center gap-3 text-base">
+                    <button
+                      type="button"
+                      onClick={() => handleEditAccessory(acc)}
+                    >
+                      ✏️
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => handleDeleteAccessory(acc.id)}
+                    >
+                      🗑️
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+
+        {editModalOpen && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
+            <form
+              className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md"
+              onSubmit={handleEditSubmit}
+            >
+              <h2 className="text-xl font-bold mb-4">Edit Accessory</h2>
+              <input
+                name="name"
+                value={editForm.name || ""}
+                onChange={handleEditChange}
+                placeholder="Name"
+                className="mb-2 w-full border p-2 rounded"
+              />
+              <input
+                name="price_per_day"
+                value={editForm.price_per_day || ""}
+                onChange={handleEditChange}
+                placeholder="Price per day"
+                type="number"
+                className="mb-2 w-full border p-2 rounded"
+              />
+              <div className="flex gap-2 mt-4">
+                <button
+                  type="button"
+                  className="bg-gray-300 px-4 py-2 rounded"
+                  onClick={() => setEditModalOpen(false)}
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="bg-black text-white px-4 py-2 rounded"
+                >
+                  Save
+                </button>
+              </div>
+            </form>
+          </div>
+        )}
+
+        <AddAccessoryModal
+          open={showAddAccessory}
+          onClose={() => setShowAddAccessory(false)}
+          onSuccess={handleAddAccessorySuccess}
+        />
+      </section>
     </div>
   );
 }
