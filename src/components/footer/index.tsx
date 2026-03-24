@@ -130,7 +130,7 @@ export default function Footer() {
       </section>
 
       <section className="mt-8 pt-6 border-t border-gray-700 text-center">
-        © 2025 BlablaBike. All rights reserved.
+        © 2026 BlablaBike. All rights reserved.
       </section>
     </footer>
   );
