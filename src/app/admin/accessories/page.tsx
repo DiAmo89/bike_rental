@@ -2,20 +2,28 @@
 import { useEffect, useState } from "react";
 import React from "react";
 import AdminSidebar from "@/components/admin/AdminSidebar";
+import AddAccessoryModal from "@/components/admin/AddAccessoryModal";
 
 export default function AdminAccessoriesPage() {
   const [accessories, setAccessories] = useState([]);
+  const [showAddAccessory, setShowAddAccessory] = useState(false);
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [editForm, setEditForm] = useState<any>({});
   const [editId, setEditId] = useState<string | null>(null);
-  const handleDeleteAccessory = async (id: string) => {
-    await fetch(`/api/actions-accessory/delete-accessory?id=${id}`, {
-      method: "POST",
-    });
+
+  const loadAccessories = () => {
     fetch("/api/actions-accessory/read-all-accessories")
       .then((res) => res.json())
       .then((accs) => setAccessories(accs));
   };
+
+  const handleDeleteAccessory = async (id: string) => {
+    await fetch(`/api/actions-accessory/delete-accessory?id=${id}`, {
+      method: "POST",
+    });
+    loadAccessories();
+  };
+
   const handleEditAccessory = (acc: any) => {
     setEditForm({
       name: acc.name || "",
@@ -40,14 +48,16 @@ export default function AdminAccessoriesPage() {
       body: formData,
     });
     setEditModalOpen(false);
-    fetch("/api/actions-accessory/read-all-accessories")
-      .then((res) => res.json())
-      .then((accs) => setAccessories(accs));
+    loadAccessories();
   };
+
+  const handleAddAccessorySuccess = () => {
+    setShowAddAccessory(false);
+    loadAccessories();
+  };
+
   useEffect(() => {
-    fetch("/api/actions-accessory/read-all-accessories")
-      .then((res) => res.json())
-      .then((accs) => setAccessories(accs));
+    loadAccessories();
   }, []);
 
   return (
@@ -58,9 +68,18 @@ export default function AdminAccessoriesPage() {
         </div>
 
         <div>
-          <div className="flex items-center mb-6">
+          <div className="mb-6 flex items-center justify-between gap-4">
             <h1 className="text-3xl font-bold">Accessories</h1>
+
+            <button
+              type="button"
+              onClick={() => setShowAddAccessory(true)}
+              className="rounded-lg bg-black px-5 py-3 text-sm font-medium text-white transition hover:opacity-90"
+            >
+              Add Accessory
+            </button>
           </div>
+
           <div className="mb-6 flex gap-6">
             <div className="bg-gray-100 rounded-xl px-6 py-4 text-lg font-semibold">
               Total Accessories: {accessories.length}
@@ -138,6 +157,12 @@ export default function AdminAccessoriesPage() {
               </form>
             </div>
           )}
+
+          <AddAccessoryModal
+            open={showAddAccessory}
+            onClose={() => setShowAddAccessory(false)}
+            onSuccess={handleAddAccessorySuccess}
+          />
         </div>
       </div>
     </div>

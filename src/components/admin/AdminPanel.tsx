@@ -1,26 +1,20 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
 
 import AdminHeader from "./AdminHeader";
-import AdminTabs from "./AdminTabs";
 import AdminStats from "./AdminStats";
 import BikesTable from "./BikesTable";
 import AddBikeModal from "./AddBikeModal";
-import AddAccessoryModal from "./AddAccessoryModal";
 import AdminSidebar from "./AdminSidebar";
 import { Bike } from "@/types/admin";
 import { Category } from "@/types/Category";
 
 export default function AdminPanel() {
-  const [showAddAccessory, setShowAddAccessory] = useState(false);
-  const [activeTab, setActiveTab] = useState<"bikes" | "orders">("bikes");
   const [bikes, setBikes] = useState<Bike[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [accessories, setAccessories] = useState([]);
   const [showAddBike, setShowAddBike] = useState(false);
-  const router = useRouter();
 
   const loadBikes = async () => {
     const res = await fetch("/api/bikes");
@@ -50,19 +44,6 @@ export default function AdminPanel() {
       .then((accs) => setAccessories(accs));
   }, []);
 
-  const handleAddAccessory = () => setShowAddAccessory(true);
-
-  const handleAddCategory = () => {
-    router.push("/admin/categories/new");
-  };
-
-  const handleAddAccessorySuccess = () => {
-    setShowAddAccessory(false);
-    fetch("/api/actions-accessory/read-all-accessories")
-      .then((res) => res.json())
-      .then((accs) => setAccessories(accs));
-  };
-
   const handleAddBike = () => setShowAddBike(true);
 
   const handleAddBikeSuccess = async () => {
@@ -77,16 +58,7 @@ export default function AdminPanel() {
       </div>
 
       <section className="space-y-6">
-        <AdminHeader
-          onAddBike={handleAddBike}
-          onAddAccessory={handleAddAccessory}
-        />
-
-        <AdminTabs
-          activeTab={activeTab}
-          onChangeTab={setActiveTab}
-          activeOrdersCount={0}
-        />
+        <AdminHeader onAddBike={handleAddBike} />
 
         <AdminStats
           totalBikes={bikes.length}
@@ -94,13 +66,11 @@ export default function AdminPanel() {
           totalAccessories={accessories.length}
         />
 
-        {activeTab === "bikes" && (
-          <BikesTable
-            bikes={bikes}
-            categories={categories}
-            onDeleteSuccess={loadBikes}
-          />
-        )}
+        <BikesTable
+          bikes={bikes}
+          categories={categories}
+          onDeleteSuccess={loadBikes}
+        />
       </section>
 
       <AddBikeModal
@@ -108,12 +78,6 @@ export default function AdminPanel() {
         onClose={() => setShowAddBike(false)}
         onSuccess={handleAddBikeSuccess}
         categories={categories}
-      />
-
-      <AddAccessoryModal
-        open={showAddAccessory}
-        onClose={() => setShowAddAccessory(false)}
-        onSuccess={handleAddAccessorySuccess}
       />
     </div>
   );
