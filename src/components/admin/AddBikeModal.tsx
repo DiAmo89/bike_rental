@@ -1,7 +1,10 @@
+"use client";
+
 import { useState, ChangeEvent, FormEvent } from "react";
 import { createBike } from "@/app/api/actions-bike/create-bike";
-
 import { Category } from "@/types/Category";
+import BikeImageUpload from "@/components/admin/bikes/BikeImageUpload";
+import BikeSubmitButton from "./bikes/BikeSubmitButton";
 
 type AddBikeModalProps = {
   open: boolean;
@@ -24,16 +27,16 @@ export default function AddBikeModal({
     image: "",
     bike_category_id: "",
   });
+
   const [loading, setLoading] = useState(false);
+  const [isUploadingImage, setIsUploadingImage] = useState(false);
   const [error, setError] = useState("");
 
   const handleChange = (
-    e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>,
+    e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
   ) => {
     setForm({ ...form, [e.target.name]: e.target.value });
-    if (error) {
-      setError("");
-    }
+    if (error) setError("");
   };
 
   const isValidText = (value: string) => {
@@ -42,8 +45,27 @@ export default function AddBikeModal({
     return re.test(value.trim());
   };
 
+  const getEmptyForm = () => ({
+    brand: "",
+    model: "",
+    description: "",
+    price_per_day: "",
+    image: "",
+    bike_category_id: "",
+  });
+
+  const handleClose = () => {
+    setForm(getEmptyForm());
+    setError("");
+    setIsUploadingImage(false);
+    onClose();
+  };
+
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
+    if (isUploadingImage) return;
+
     setLoading(true);
     setError("");
 
@@ -59,11 +81,6 @@ export default function AddBikeModal({
       return;
     }
 
-    if (form.description && !isValidText(form.description)) {
-      setLoading(false);
-      setError("Description contains unsupported special characters.");
-      return;
-    }
 
     const price = Number(form.price_per_day);
 
@@ -75,22 +92,23 @@ export default function AddBikeModal({
 
     try {
       const formData = new FormData();
-      Object.entries(form).forEach(([key, value]) =>
-        formData.append(key, value),
-      );
+
+      Object.entries(form).forEach(([key, value]) => {
+        formData.append(key, value);
+      });
 
       await createBike(formData);
 
-      setLoading(false);
       onSuccess();
-      onClose();
+      handleClose();
     } catch (err) {
-      setLoading(false);
       if (err instanceof Error) {
         setError(err.message);
       } else {
         setError("Error creating bike");
       }
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -104,12 +122,19 @@ export default function AddBikeModal({
       >
         <h2 className="text-xl font-bold mb-4">Add Bike</h2>
 
+        {/* 🔥 IMAGE UPLOAD */}
+        <BikeImageUpload
+          value={form.image}
+          onChange={(url) => setForm((prev) => ({ ...prev, image: url }))}
+          onUploadingChange={setIsUploadingImage}
+        />
+
         <input
           name="brand"
           value={form.brand}
           onChange={handleChange}
           placeholder="Brand"
-          className="mb-2 w-full border p-2 rounded"
+          className="mt-3 mb-2 w-full border p-2 rounded"
           required
         />
 
@@ -142,14 +167,6 @@ export default function AddBikeModal({
           required
         />
 
-        <input
-          name="image"
-          value={form.image}
-          onChange={handleChange}
-          placeholder="Image URL"
-          className="mb-2 w-full border p-2 rounded"
-        />
-
         <select
           name="bike_category_id"
           value={form.bike_category_id}
@@ -171,19 +188,13 @@ export default function AddBikeModal({
           <button
             type="button"
             className="bg-gray-300 px-4 py-2 rounded"
-            onClick={onClose}
-            disabled={loading}
+            onClick={handleClose}
+            disabled={loading || isUploadingImage}
           >
             Cancel
           </button>
 
-          <button
-            type="submit"
-            className="bg-black text-white px-4 py-2 rounded"
-            disabled={loading}
-          >
-            {loading ? "Saving..." : "Save"}
-          </button>
+          <BikeSubmitButton disabled={loading || isUploadingImage} />
         </div>
       </form>
     </div>
