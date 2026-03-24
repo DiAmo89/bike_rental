@@ -68,8 +68,14 @@ export default function AdminAccessoriesPage() {
         </div>
 
         <div>
-          <div className="mb-6 flex items-center justify-between gap-4">
+          <div className="mb-6">
             <h1 className="text-3xl font-bold">Accessories</h1>
+          </div>
+
+          <div className="mb-6 flex flex-col items-start gap-4">
+            <div className="bg-gray-100 rounded-xl px-6 py-4 text-lg font-semibold">
+              Total Accessories: {accessories.length}
+            </div>
 
             <button
               type="button"
@@ -78,12 +84,6 @@ export default function AdminAccessoriesPage() {
             >
               Add Accessory
             </button>
-          </div>
-
-          <div className="mb-6 flex gap-6">
-            <div className="bg-gray-100 rounded-xl px-6 py-4 text-lg font-semibold">
-              Total Accessories: {accessories.length}
-            </div>
           </div>
           <table className="w-full text-left border border-gray-200 rounded-xl bg-white">
             <thead className="bg-gray-50 text-sm text-gray-600">
