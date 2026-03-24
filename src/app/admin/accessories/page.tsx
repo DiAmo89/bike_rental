@@ -70,6 +70,7 @@ export default function AdminAccessoriesPage() {
         <div>
           <div className="mb-6">
             <h1 className="text-3xl font-bold">Accessories</h1>
+            <p className="text-gray-500">Create and manage accessories</p>
           </div>
 
           <div className="mb-6 flex flex-col items-start gap-4">
@@ -99,18 +100,20 @@ export default function AdminAccessoriesPage() {
                   <td className="px-6 py-4">{acc.name}</td>
                   <td className="px-6 py-4">€{acc.pricePerDay}</td>
                   <td className="px-6 py-4">
-                    <button
-                      className="mr-2 text-blue-600"
-                      onClick={() => handleEditAccessory(acc)}
-                    >
-                      Edit
-                    </button>
-                    <button
-                      className="text-red-600"
-                      onClick={() => handleDeleteAccessory(acc.id)}
-                    >
-                      Delete
-                    </button>
+                    <div className="flex items-center gap-3 text-base">
+                      <button
+                        type="button"
+                        onClick={() => handleEditAccessory(acc)}
+                      >
+                        ✏️
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => handleDeleteAccessory(acc.id)}
+                      >
+                        🗑️
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))}
