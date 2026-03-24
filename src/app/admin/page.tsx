@@ -21,9 +21,5 @@ export default async function AdminPage() {
     redirect("/");
   }
 
-  return (
-    <main className="mx-auto max-w-7xl px-6 pb-10 pt-28">
-      <AdminPanel />
-    </main>
-  );
+  return <AdminPanel />;
 }

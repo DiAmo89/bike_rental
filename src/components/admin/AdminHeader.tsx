@@ -4,9 +4,11 @@ type AdminHeaderProps = {
 
 export default function AdminHeader({ onAddBike }: AdminHeaderProps) {
   return (
-    <div>
-      <h1 className="text-3xl font-bold">Admin Dashboard</h1>
-      <p className="text-gray-500">Manage bikes and orders</p>
+    <div className="space-y-4">
+      <div>
+        <h1 className="text-3xl font-bold">Admin Dashboard</h1>
+        <p className="text-gray-500">Manage bikes</p>
+      </div>
 
       <div className="flex flex-wrap items-center gap-3">
         <button
