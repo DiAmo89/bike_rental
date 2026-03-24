@@ -116,7 +116,7 @@ export default async function BikeDetailPage({ params }: PageProps) {
                 <div className="flex justify-between text-sm">
                   <span className="text-gray-400 font-medium">Rental rate</span>
                   <span className="font-bold text-gray-900 dark:text-white">
-                    {displayPrice.toLocaleString("de-DE")} €
+                    €{displayPrice.toLocaleString("de-DE")} 
                   </span>
                 </div>
                 <div className="flex justify-between text-sm">
@@ -129,7 +129,7 @@ export default async function BikeDetailPage({ params }: PageProps) {
                     Total per day
                   </span>
                   <span className="text-4xl font-black text-gray-900 dark:text-white leading-none">
-                    {displayPrice.toLocaleString("de-DE")} €
+                   €{displayPrice.toLocaleString("de-DE")} 
                   </span>
                 </div>
               </div>
