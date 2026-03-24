@@ -3,20 +3,18 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  
+  { params }: { params: Promise<{ id: string }> } 
 ) {
   try {
-    
-    const { id } = await params;
+   
+    const { id } = await params; 
 
     if (!id) {
       return NextResponse.json({ error: "ID is required" }, { status: 400 });
     }
 
-    
     const data = await bikesService.getBikeBookings(id);
-
-   
     console.log(`[API] Bookings for bike ${id}:`, data);
 
     return NextResponse.json(data);
