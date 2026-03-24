@@ -10,9 +10,10 @@ export default function OrderSummary({
   options,
   dbAccessories,
   onConfirm,
+  isLoading,
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
 }: any) {
-  const pricePerDay = Number(bike.pricePerDay) || 0;
+  const pricePerDay = Number(bike?.pricePerDay) || 0;
   const serviceFee = 5.0;
 
   const isDatesValid =
@@ -37,7 +38,7 @@ export default function OrderSummary({
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (accSum: number, acc: any) => {
       if (options[acc.id]) {
-        return accSum + Number(acc.pricePerDay) * days;
+        return accSum + Number(acc.pricePerDay || 0) * days;
       }
       return accSum;
     },
@@ -49,57 +50,56 @@ export default function OrderSummary({
   const total = isDatesValid ? subtotal + serviceFee + tax : 0;
 
   return (
-    <div className="sticky top-24 rounded-2xl border border-zinc-200 bg-white p-6 shadow-md dark:bg-zinc-950 dark:border-zinc-800 transition-colors">
-      <h2 className="text-xl font-bold mb-6 text-zinc-900 dark:text-zinc-100">
-        Order Summary
-      </h2>
+    <div className="sticky top-24 rounded-2xl border border-zinc-200 bg-white p-6 shadow-md transition-colors">
+      <h2 className="text-xl font-bold mb-6 text-zinc-900">Order Summary</h2>
 
-      <div className="flex gap-4 mb-6 border-b border-zinc-100 dark:border-zinc-800 pb-6">
-        <div className="relative h-16 w-20 overflow-hidden rounded-lg bg-zinc-100 dark:bg-zinc-900">
+      <div className="flex gap-4 mb-6 border-b border-zinc-100 pb-6">
+        <div className="relative h-16 w-20 overflow-hidden rounded-lg bg-zinc-100">
           <Image
-            src={bike.image || "/images/categories/mensclothing.jpg"}
-            alt={bike.brand}
+            src={bike?.image || "/images/categories/mensclothing.jpg"}
+            alt={typeof bike?.brand === "string" ? bike.brand : "Bike"}
             fill
             className="object-contain p-1"
           />
         </div>
         <div>
-          <h4 className="font-semibold text-zinc-900 dark:text-zinc-100 text-sm">
-            {bike.brand} {bike.model}
+          <h4 className="font-semibold text-zinc-900 text-sm">
+            {(bike?.brand as string) || "Bike"}{" "}
+            {(bike?.model as string) || "Model"}
           </h4>
-          <p className="text-[10px] text-zinc-400 dark:text-zinc-500 uppercase tracking-widest">
-            {bike.category || "Professional Bike"}
+          <p className="text-[10px] text-zinc-400 uppercase tracking-widest">
+            {typeof bike?.category === "string"
+              ? bike.category
+              : "Professional Bike"}
           </p>
         </div>
       </div>
 
-      <div className="space-y-3 mb-6 border-b border-zinc-100 dark:border-zinc-800 pb-6 text-sm">
+      <div className="space-y-3 mb-6 border-b border-zinc-100 pb-6 text-sm">
         <div className="flex justify-between">
-          <span className="text-zinc-500 dark:text-zinc-400">
-            Rental duration:
-          </span>
-          <span className="font-bold text-zinc-900 dark:text-zinc-100">
+          <span className="text-zinc-500">Rental duration:</span>
+          <span className="font-bold text-zinc-900">
             {days} {days === 1 ? "day" : "days"}
           </span>
         </div>
         <div className="flex justify-between text-[11px]">
           <span className="text-zinc-400 italic">Pick-up:</span>
-          <span className="text-zinc-600 dark:text-zinc-300">
+          <span className="text-zinc-600">
             {startDate ? new Date(startDate).toLocaleDateString() : "---"}
           </span>
         </div>
         <div className="flex justify-between text-[11px]">
           <span className="text-zinc-400 italic">Return:</span>
-          <span className="text-zinc-600 dark:text-zinc-300">
+          <span className="text-zinc-600">
             {endDate ? new Date(endDate).toLocaleDateString() : "---"}
           </span>
         </div>
       </div>
 
       <div className="space-y-3 mb-6 text-sm">
-        <div className="flex justify-between text-zinc-600 dark:text-zinc-400">
+        <div className="flex justify-between text-zinc-600">
           <span>Base Rental</span>
-          <span className="font-medium text-zinc-900 dark:text-zinc-100">
+          <span className="font-medium text-zinc-900">
             €{(pricePerDay * days).toFixed(2)}
           </span>
         </div>
@@ -111,11 +111,14 @@ export default function OrderSummary({
               return (
                 <div
                   key={acc.id}
-                  className="flex justify-between text-zinc-600 dark:text-zinc-400"
+                  className="flex justify-between text-zinc-600"
                 >
-                  <span>{acc.name}</span>
-                  <span className="font-medium text-zinc-900 dark:text-zinc-100">
-                    €{(Number(acc.pricePerDay) * days).toFixed(2)}
+                  {/* Безпечний вивід назви аксесуара */}
+                  <span>
+                    {typeof acc.name === "string" ? acc.name : "Accessory"}
+                  </span>
+                  <span className="font-medium text-zinc-900">
+                    €{(Number(acc.pricePerDay || 0) * days).toFixed(2)}
                   </span>
                 </div>
               );
@@ -124,44 +127,44 @@ export default function OrderSummary({
           },
         )}
 
-        <div className="flex justify-between text-zinc-600 dark:text-zinc-400">
+        <div className="flex justify-between text-zinc-600">
           <span>Service Fee</span>
-          <span className="font-medium text-zinc-900 dark:text-zinc-100">
+          <span className="font-medium text-zinc-900">
             €{isDatesValid ? serviceFee.toFixed(2) : "0.00"}
           </span>
         </div>
 
-        <div className="flex justify-between text-zinc-600 dark:text-zinc-400">
+        <div className="flex justify-between text-zinc-600">
           <span>Tax (10%)</span>
-          <span className="font-medium text-zinc-900 dark:text-zinc-100">
-            €{tax.toFixed(2)}
-          </span>
+          <span className="font-medium text-zinc-900">€{tax.toFixed(2)}</span>
         </div>
       </div>
 
-      <div className="flex justify-between items-center border-t border-zinc-900 dark:border-zinc-100 pt-4 mb-6">
-        <span className="text-lg font-bold text-zinc-900 dark:text-zinc-100">
-          Total
-        </span>
-        <span className="text-2xl font-black text-black dark:text-[#e6ff2a]">
+      <div className="flex justify-between items-center border-t border-zinc-900 pt-4 mb-6">
+        <span className="text-lg font-bold text-zinc-900">Total</span>
+        <span className="text-2xl font-black text-black">
           €{total.toFixed(2)}
         </span>
       </div>
 
       <Button
         onClick={onConfirm}
-        disabled={!isDatesValid}
+        disabled={!isDatesValid || isLoading}
         className={`w-full font-bold py-6 rounded-xl transition-all duration-300 uppercase tracking-widest text-xs shadow-lg 
           ${
             !isDatesValid
-              ? "bg-zinc-200 text-zinc-400 cursor-not-allowed dark:bg-zinc-800 dark:text-zinc-600 shadow-none"
-              : "bg-[#e6ff2a] hover:bg-black hover:text-[#e6ff2a] dark:hover:bg-white dark:hover:text-black text-black shadow-[#e6ff2a]/20"
+              ? "bg-zinc-200 text-zinc-400 cursor-not-allowed shadow-none"
+              : "bg-[#e6ff2a] hover:bg-black hover:text-[#e6ff2a] text-black shadow-[#e6ff2a]/20"
           }`}
       >
-        {isDatesValid ? "Confirm & Pay" : "Select Rental Dates"}
+        {isLoading
+          ? "Processing..."
+          : isDatesValid
+            ? "Confirm & Pay"
+            : "Select Rental Dates"}
       </Button>
 
-      <p className="text-[10px] text-zinc-400 dark:text-zinc-500 text-center mt-4 uppercase tracking-tighter">
+      <p className="text-[10px] text-zinc-400 text-center mt-4 uppercase tracking-tighter">
         Secure checkout powered by Stripe
       </p>
     </div>
