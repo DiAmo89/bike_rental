@@ -10,10 +10,26 @@ import AdminSidebar from "./AdminSidebar";
 import { Bike } from "@/types/admin";
 import { Category } from "@/types/Category";
 
+type BookingItem = {
+  startDate: string;
+  endDate: string;
+};
+
+const toLocalDateString = (date: Date) => {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+};
+
+const isActiveBooking = (booking: BookingItem, today: string) =>
+  booking.startDate <= today && booking.endDate >= today;
+
 export default function AdminPanel() {
   const [bikes, setBikes] = useState<Bike[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [accessories, setAccessories] = useState([]);
+  const [activeOrdersCount, setActiveOrdersCount] = useState(0);
   const [showAddBike, setShowAddBike] = useState(false);
 
   const loadBikes = async () => {
@@ -32,8 +48,20 @@ export default function AdminPanel() {
     setBikes(adminBikes);
   };
 
+  const loadActiveOrders = async () => {
+    const res = await fetch("/api/actions-booking?mode=all");
+    const data = await res.json();
+    const bookings: BookingItem[] = Array.isArray(data) ? data : [];
+    const today = toLocalDateString(new Date());
+
+    setActiveOrdersCount(
+      bookings.filter((booking) => isActiveBooking(booking, today)).length,
+    );
+  };
+
   useEffect(() => {
     loadBikes();
+    loadActiveOrders();
 
     fetch("/api/getCategories")
       .then((res) => res.json())
@@ -62,7 +90,7 @@ export default function AdminPanel() {
 
         <AdminStats
           totalBikes={bikes.length}
-          activeOrders={0}
+          activeOrders={activeOrdersCount}
           totalAccessories={accessories.length}
         />
 
