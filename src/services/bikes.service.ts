@@ -8,6 +8,7 @@ export const bikesService = {
   
   async getAllBikes(startDate?: string, endDate?: string, categoryName?: string) {
     try {
+      
       let query = db
         .select({
           bike: bikes,
@@ -17,10 +18,12 @@ export const bikesService = {
         .leftJoin(categories, eq(bikes.bikeCategoryId, categories.id))
         .$dynamic(); 
 
+     
       if (categoryName && categoryName !== "all") {
         query = query.where(eq(categories.name, categoryName));
       }
 
+    
       if (startDate && endDate) {
         const occupiedBikes = await db
           .select({ id: bookings.bikeId })
@@ -36,6 +39,7 @@ export const bikesService = {
           .map((b) => b.id)
           .filter((id): id is string => id !== null);
 
+      
         if (occupiedIds.length > 0) {
           query = query.where(notInArray(bikes.id, occupiedIds));
         }
@@ -43,6 +47,7 @@ export const bikesService = {
 
       const result = await query;
 
+    
       return result.map(({ bike, category }) => ({
         ...bike,
         pricePerDay: Number(bike.pricePerDay),
@@ -60,6 +65,7 @@ export const bikesService = {
     }
   },
 
+  
   async getAllCategories() {
     try {
       return await db.select().from(categories);
