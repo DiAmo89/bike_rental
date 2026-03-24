@@ -45,6 +45,35 @@ export async function POST(req: Request) {
       validation.data;
     const { bikeId, totalPrice } = body;
 
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    if (start < today) {
+      return NextResponse.json(
+        { error: "Pick-up date cannot be in the past" },
+        { status: 400 },
+      );
+    }
+
+    const diffInMs = end.getTime() - start.getTime();
+    const diffInDays = diffInMs / (1000 * 60 * 60 * 24);
+
+    if (diffInDays < 1) {
+      return NextResponse.json(
+        { error: "Return date must be at least 1 day after pick-up" },
+        { status: 400 },
+      );
+    }
+
+    if (diffInDays > 30) {
+      return NextResponse.json(
+        { error: "Maximum rental period is 30 days" },
+        { status: 400 },
+      );
+    }
+
     const [newBooking] = await db
       .insert(bookings)
       .values({

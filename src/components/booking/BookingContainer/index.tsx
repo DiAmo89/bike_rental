@@ -64,16 +64,40 @@ export default function BookingContainer({ bike }: BookingContainerProps) {
         .replace(/(.{4})/g, "$1 ")
         .trim();
     } else if (name === "expiryDate") {
-      formattedValue = value
-        .replace(/\D/g, "")
-        .replace(/(\d{2})(\d{0,2})/, "$1/$2")
-        .trim();
+      // Прибираємо все, крім цифр
+      let cleanValue = value.replace(/\D/g, "");
+
+      if (cleanValue.length >= 1) {
+        const firstDigit = parseInt(cleanValue[0]);
+        // Якщо перша цифра > 1, це не може бути валідний місяць (01-12)
+        // Автоматично робимо "0" + ця цифра
+        if (firstDigit > 1) {
+          cleanValue = "0" + cleanValue;
+        }
+      }
+
+      if (cleanValue.length >= 2) {
+        const month = parseInt(cleanValue.substring(0, 2));
+        // Якщо місяць > 12, примусово ставимо 12
+        if (month > 12) cleanValue = "12" + cleanValue.substring(2);
+        // Якщо місяць "00", ставимо "01"
+        if (cleanValue.substring(0, 2) === "00")
+          cleanValue = "01" + cleanValue.substring(2);
+
+        // Додаємо слеш
+        formattedValue =
+          cleanValue.substring(0, 2) +
+          (cleanValue.length > 2 ? "/" + cleanValue.substring(2, 4) : "");
+      } else {
+        formattedValue = cleanValue;
+      }
     } else if (name === "cvc") {
       formattedValue = value.replace(/\D/g, "");
     }
 
     setCardData((prev) => ({ ...prev, [name]: formattedValue }));
 
+    // Очищаємо помилки при зміні
     if (errors.card) {
       setErrors((prev) => {
         const newErrors = { ...prev };
@@ -117,11 +141,34 @@ export default function BookingContainer({ bike }: BookingContainerProps) {
 
     if (paymentMethod === "card") {
       const cardErrors: string[] = [];
-      if (cardData.cardNumber.replace(/\s/g, "").length < 16)
+
+      if (cardData.cardNumber.replace(/\s/g, "").length < 16) {
         cardErrors.push("Invalid card number");
-      if (!cardData.expiryDate.includes("/"))
-        cardErrors.push("Invalid expiry date");
-      if (cardData.cvc.length < 3) cardErrors.push("Invalid CVC");
+      }
+
+      const expiryParts = cardData.expiryDate.split("/");
+      if (expiryParts.length !== 2 || cardData.expiryDate.length !== 5) {
+        cardErrors.push("Expiry date must be MM/YY");
+      } else {
+        const month = parseInt(expiryParts[0], 10);
+        const year = parseInt("20" + expiryParts[1], 10); // Перетворюємо YY в 20YY
+        const now = new Date();
+        const currentMonth = now.getMonth() + 1;
+        const currentYear = now.getFullYear();
+
+        if (month < 1 || month > 12) {
+          cardErrors.push("Invalid month (01-12)");
+        } else if (
+          year < currentYear ||
+          (year === currentYear && month < currentMonth)
+        ) {
+          cardErrors.push("Card has expired");
+        }
+      }
+
+      if (cardData.cvc.length < 3) {
+        cardErrors.push("Invalid CVC");
+      }
 
       if (cardErrors.length > 0) {
         setErrors((prev) => ({ ...prev, card: cardErrors }));
