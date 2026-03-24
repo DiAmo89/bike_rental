@@ -53,7 +53,7 @@ export default function CatalogPagination({
         >
           {myOptions.map((opt) => (
             <option key={opt} value={opt}>
-              {opt === totalItems ? "Все" : opt}
+              {opt === totalItems ? "All" : opt}
             </option>
           ))}
         </select>

@@ -1,5 +1,5 @@
 import { Bike } from "@/types/Bike";
-import { useRouter } from "next/navigation";
+
 import Link from "next/link";
 
 interface BikeCardProps {
@@ -8,8 +8,7 @@ interface BikeCardProps {
 
 export default function BikeCard({ bike }: BikeCardProps) {
   const isAvailable = bike.isActive;
-  // Используем useRouter только если планируем делать программную навигацию, 
-  // но здесь у нас вся карточка — это Link, так что router.push не обязателен.
+  
 
   return (
     <Link
@@ -17,7 +16,7 @@ export default function BikeCard({ bike }: BikeCardProps) {
       className="group bg-white rounded-2xl border border-gray-100 overflow-hidden hover:shadow-xl transition-all duration-300 flex flex-col h-full"
     >
       <div className="flex flex-col h-full">
-        {/* Image Section */}
+     
         <div className="relative h-56 w-full bg-gray-50 overflow-hidden">
           {bike.image ? (
             <img
@@ -32,7 +31,7 @@ export default function BikeCard({ bike }: BikeCardProps) {
             </div>
           )}
 
-          {/* Status Badge */}
+         
           <div
             className={`absolute top-3 right-3 px-2 py-1 rounded-full text-[10px] font-black uppercase tracking-wider text-white shadow-sm ${
               isAvailable ? "bg-green-500" : "bg-red-500"
@@ -42,7 +41,7 @@ export default function BikeCard({ bike }: BikeCardProps) {
           </div>
         </div>
 
-        {/* Content Section */}
+       
         <div className="p-4 flex flex-col grow">
           <p className="text-xs text-blue-500 font-bold uppercase tracking-wider">
             {bike.category?.name || "No category"}
@@ -56,18 +55,18 @@ export default function BikeCard({ bike }: BikeCardProps) {
             {bike.description || "No description available"}
           </p>
 
-          {/* Footer Section */}
+    
           <div className="mt-4 pt-4 border-t border-gray-100 flex items-center justify-between">
             <div className="flex flex-col">
               <span className="text-xl font-black text-gray-900">
-                {bike.pricePerDay} €
-                <span className="text-xs text-gray-400 font-normal ml-1">
+                €{bike.pricePerDay} 
+                <span className="text-xs text-black-400 font-normal ml-1">
                   /Day
                 </span>
               </span>
             </div>
 
-            {/* Вместо кнопки используем div, так как мы уже внутри Link */}
+           
             <div
               className={`px-4 py-2 rounded font-semibold text-sm transition-colors ${
                 isAvailable
