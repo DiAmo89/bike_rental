@@ -41,6 +41,7 @@ export default function SignInSignOut() {
                 src={DEFAULT_AVATAR}
                 alt="fallback"
                 fill
+                unoptimized
                 className="object-cover"
               />
             </div>
