@@ -14,7 +14,7 @@ export default function Home() {
           </div>
         </div>
 
-{/* Разделитель */}
+
     <div className="relative flex items-center justify-center mb-20 px-10">
       <div className="absolute inset-0 flex items-center px-10" aria-hidden="true">
         <div className="w-full border-t border-gray-100" />
@@ -24,7 +24,7 @@ export default function Home() {
       </div>
     </div>
 
-    {/* Категории — добавляем небольшие отступы только здесь, чтобы они не прилипали к краям */}
+   
     <div className="px-6 md:px-12">
       <div className="text-center mb-16">
         <h2 className="text-[10px] font-black uppercase tracking-[0.4em] text-gray-400 mb-2">
