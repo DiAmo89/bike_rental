@@ -9,6 +9,7 @@ export function mapUserToCurrentUser(user: User): CurrentUser {
     telephone: user.phone ?? "",
     role: user.role,
     avatar: user.avatar ?? null,
+    avatarKey: user.avatarKey ?? null,
     created_at: user.createdAt,
   };
 }
