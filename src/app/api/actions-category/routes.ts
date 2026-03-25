@@ -112,6 +112,9 @@ export async function DELETE(req: NextRequest) {
     await deleteCategory(id);
     return NextResponse.json({ message: "Category deleted" });
   } catch (error) {
-    return NextResponse.json({ error: "Delete failed" }, { status: 400 });
+    const errorMessage =
+      error instanceof Error ? error.message : "Delete failed";
+
+    return NextResponse.json({ error: errorMessage }, { status: 400 });
   }
 }
