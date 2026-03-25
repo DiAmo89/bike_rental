@@ -1,20 +1,26 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import type { Category } from "@/types/Category";
 import deleteCategory from "@/app/api/actions-category/delete-category";
 import DeleteConfirmationModal from "@/components/admin/DeleteConfirmationModal";
 
+type CategoryRow = {
+  id: string;
+  name: string;
+  image: string | null;
+};
+
 type CategoriesTableProps = {
-  initialCategories: Category[];
+  initialCategories: CategoryRow[];
 };
 
 export default function CategoriesTable({
   initialCategories,
 }: CategoriesTableProps) {
-  const [categories, setCategories] = useState<Category[]>(initialCategories);
+  const [categories, setCategories] =
+    useState<CategoryRow[]>(initialCategories);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const [categoryToDelete, setCategoryToDelete] = useState<Category | null>(
+  const [categoryToDelete, setCategoryToDelete] = useState<CategoryRow | null>(
     null,
   );
   const [isDeleting, setIsDeleting] = useState(false);
@@ -23,7 +29,7 @@ export default function CategoriesTable({
   const hasCategories = categories.length > 0;
   const totalCategories = useMemo(() => categories.length, [categories]);
 
-  const handleDeleteButtonClick = (category: Category) => {
+  const handleDeleteButtonClick = (category: CategoryRow) => {
     setCategoryToDelete(category);
     setDeleteError(null);
     setShowDeleteModal(true);
