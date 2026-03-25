@@ -15,6 +15,27 @@
       "when": 1773484356991,
       "tag": "0001_messy_marrow",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1774447617746,
+      "tag": "0002_quick_cloak",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1774450286344,
+      "tag": "0003_mixed_luckman",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1774450582246,
+      "tag": "0004_hesitant_scarlet_witch",
+      "breakpoints": true
     }
   ]
 }

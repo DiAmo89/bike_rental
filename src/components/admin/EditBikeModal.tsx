@@ -4,13 +4,10 @@ import { useEffect, useState, ChangeEvent, FormEvent } from "react";
 import updateBike from "@/app/api/actions-bike/update-bike";
 import { Category } from "@/types/Category";
 import BikeImageUpload from "@/components/admin/bikes/BikeImageUpload";
-import BikeSubmitButton from "./bikes/BikeSubmitButton";
-import {
-  isValidBikePriceInput,
-  isValidBikeTextInput,
-  validateBikePrice,
-  validateBikeTextField,
-} from "@/lib/bike-validation";
+
+import SubmitButton from "../ui/submit-form-button";
+import { isValidBikePriceInput, isValidBikeTextInput, validateBikePrice, validateBikeTextField } from "@/lib/bike-validation";
+
 
 type BikeDetails = {
   id: string;
@@ -264,7 +261,7 @@ export default function EditBikeModal({
             Cancel
           </button>
 
-          <BikeSubmitButton disabled={loadingBike || isUploadingImage} />
+          <SubmitButton disabled={loadingBike || isUploadingImage} />
         </div>
       </form>
     </div>

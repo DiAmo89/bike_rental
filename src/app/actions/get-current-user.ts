@@ -8,6 +8,7 @@ export interface CurrentUserData {
   email: string | null;
   fullName: string | null;
   avatar: string | null;
+  avatarKey: string | null;
   role: string | null;
   isAuthenticated: boolean;
 }
@@ -22,6 +23,7 @@ export async function getCurrentUser(): Promise<CurrentUserData> {
         email: null,
         fullName: null,
         avatar: null,
+        avatarKey: null,
         role: null,
         isAuthenticated: false,
       };
@@ -32,6 +34,7 @@ export async function getCurrentUser(): Promise<CurrentUserData> {
       email: session.user.email ?? null,
       fullName: session.user.fullName ?? null,
       avatar: session.user.avatar ?? null,
+      avatarKey: session.user.avatarKey ?? null,
       role: session.user.role ?? null,
       isAuthenticated: true,
     };
@@ -42,6 +45,7 @@ export async function getCurrentUser(): Promise<CurrentUserData> {
       email: null,
       fullName: null,
       avatar: null,
+      avatarKey: null,
       role: null,
       isAuthenticated: false,
     };
