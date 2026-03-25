@@ -6,40 +6,40 @@ import { bikes } from "@/db/tables/bikes";
 import { eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { requireAdmin } from "@/lib/auth/requireAdmin";
+import {
+  normalizeBikePrice,
+  validateBikePrice,
+  validateBikeTextField,
+} from "@/lib/bike-validation";
 
 export async function createBike(formData: FormData) {
   await requireAdmin();
 
-  const brand = formData.get("brand") as string;
-  const model = formData.get("model") as string;
-  const description = formData.get("description") as string;
-  const pricePerDayRaw = formData.get("price_per_day") as string;
-  const image = formData.get("image") as string;
-  const bikeCategoryId = formData.get("bike_category_id") as string;
+  const brand = String(formData.get("brand") ?? "").trim();
+  const model = String(formData.get("model") ?? "").trim();
+  const description = String(formData.get("description") ?? "").trim();
+  const pricePerDayRaw = String(formData.get("price_per_day") ?? "").trim();
+  const image = String(formData.get("image") ?? "");
+  const bikeCategoryId = String(formData.get("bike_category_id") ?? "");
 
-  const validateTextField = (name: string, value: string) => {
-    const trimmed = value.trim();
-    if (!trimmed) {
-      return;
-    }
-    const re = /^[a-zA-Z0-9\s.,'"()\-]+$/;
-    if (!re.test(trimmed)) {
-      throw new Error(`${name} contains unsupported special characters`);
-    }
-  };
-
-  validateTextField("Brand", brand);
-  validateTextField("Model", model);
-  validateTextField("Description", description);
-
-  const pricePerDay = Number(pricePerDayRaw);
-
-  if (Number.isNaN(pricePerDay)) {
-    throw new Error("Price per day must be a valid number");
+  const brandError = validateBikeTextField("Brand", brand);
+  if (brandError) {
+    throw new Error(brandError);
   }
 
-  if (pricePerDay < 0) {
-    throw new Error("Price per day must be 0 or greater");
+  const modelError = validateBikeTextField("Model", model);
+  if (modelError) {
+    throw new Error(modelError);
+  }
+
+  const descriptionError = validateBikeTextField("Description", description);
+  if (descriptionError) {
+    throw new Error(descriptionError);
+  }
+
+  const priceError = validateBikePrice(pricePerDayRaw);
+  if (priceError) {
+    throw new Error(priceError);
   }
 
   const category = await db
@@ -56,7 +56,7 @@ export async function createBike(formData: FormData) {
     brand,
     model,
     description,
-    pricePerDay: pricePerDay.toString(),
+    pricePerDay: normalizeBikePrice(pricePerDayRaw),
     image,
     bikeCategoryId,
   });

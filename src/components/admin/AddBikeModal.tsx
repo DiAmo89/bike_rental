@@ -1,7 +1,16 @@
+"use client";
+
 import { useState, ChangeEvent, FormEvent } from "react";
 import { createBike } from "@/app/api/actions-bike/create-bike";
-
 import { Category } from "@/types/Category";
+import BikeImageUpload from "@/components/admin/bikes/BikeImageUpload";
+import BikeSubmitButton from "./bikes/BikeSubmitButton";
+import {
+  isValidBikePriceInput,
+  isValidBikeTextInput,
+  validateBikePrice,
+  validateBikeTextField,
+} from "@/lib/bike-validation";
 
 type AddBikeModalProps = {
   open: boolean;
@@ -24,73 +33,109 @@ export default function AddBikeModal({
     image: "",
     bike_category_id: "",
   });
+
   const [loading, setLoading] = useState(false);
+  const [isUploadingImage, setIsUploadingImage] = useState(false);
   const [error, setError] = useState("");
 
   const handleChange = (
     e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>,
   ) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
-    if (error) {
-      setError("");
+    const { name, value } = e.target;
+
+    if (
+      (name === "brand" || name === "model" || name === "description") &&
+      !isValidBikeTextInput(value)
+    ) {
+      return;
     }
+
+    if (name === "price_per_day" && !isValidBikePriceInput(value)) {
+      return;
+    }
+
+    setForm({ ...form, [name]: value });
+    if (error) setError("");
   };
 
-  const isValidText = (value: string) => {
-    if (!value.trim()) return true;
-    const re = /^[a-zA-Z0-9\s.,'"()\-]+$/;
-    return re.test(value.trim());
+  const getEmptyForm = () => ({
+    brand: "",
+    model: "",
+    description: "",
+    price_per_day: "",
+    image: "",
+    bike_category_id: "",
+  });
+
+  const handleClose = () => {
+    setForm(getEmptyForm());
+    setError("");
+    setIsUploadingImage(false);
+    onClose();
   };
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
+    if (isUploadingImage) return;
+
     setLoading(true);
     setError("");
 
-    if (!isValidText(form.brand)) {
+    const brandError = validateBikeTextField("Brand", form.brand);
+
+    if (brandError) {
       setLoading(false);
-      setError("Brand contains unsupported special characters.");
+      setError(brandError);
       return;
     }
 
-    if (!isValidText(form.model)) {
+    const modelError = validateBikeTextField("Model", form.model);
+
+    if (modelError) {
       setLoading(false);
-      setError("Model contains unsupported special characters.");
+      setError(modelError);
       return;
     }
 
-    if (form.description && !isValidText(form.description)) {
+    const descriptionError = validateBikeTextField(
+      "Description",
+      form.description,
+    );
+
+    if (descriptionError) {
       setLoading(false);
-      setError("Description contains unsupported special characters.");
+      setError(descriptionError);
       return;
     }
 
-    const price = Number(form.price_per_day);
+    const priceError = validateBikePrice(form.price_per_day);
 
-    if (Number.isNaN(price) || price < 0) {
+    if (priceError) {
       setLoading(false);
-      setError("Price per day must be 0 or greater");
+      setError(priceError);
       return;
     }
 
     try {
       const formData = new FormData();
-      Object.entries(form).forEach(([key, value]) =>
-        formData.append(key, value),
-      );
+
+      Object.entries(form).forEach(([key, value]) => {
+        formData.append(key, value);
+      });
 
       await createBike(formData);
 
-      setLoading(false);
       onSuccess();
-      onClose();
+      handleClose();
     } catch (err) {
-      setLoading(false);
       if (err instanceof Error) {
         setError(err.message);
       } else {
         setError("Error creating bike");
       }
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -104,12 +149,20 @@ export default function AddBikeModal({
       >
         <h2 className="text-xl font-bold mb-4">Add Bike</h2>
 
+        {/* 🔥 IMAGE UPLOAD */}
+        <BikeImageUpload
+          value={form.image}
+          onChange={(url) => setForm((prev) => ({ ...prev, image: url }))}
+          onUploadingChange={setIsUploadingImage}
+        />
+
         <input
           name="brand"
           value={form.brand}
           onChange={handleChange}
           placeholder="Brand"
-          className="mb-2 w-full border p-2 rounded"
+          className="mt-3 mb-2 w-full border p-2 rounded"
+          autoComplete="off"
           required
         />
 
@@ -119,6 +172,7 @@ export default function AddBikeModal({
           onChange={handleChange}
           placeholder="Model"
           className="mb-2 w-full border p-2 rounded"
+          autoComplete="off"
           required
         />
 
@@ -135,19 +189,11 @@ export default function AddBikeModal({
           value={form.price_per_day}
           onChange={handleChange}
           placeholder="Price per day"
-          type="number"
-          min="0"
+          type="text"
+          inputMode="decimal"
           step="0.01"
           className="mb-2 w-full border p-2 rounded"
           required
-        />
-
-        <input
-          name="image"
-          value={form.image}
-          onChange={handleChange}
-          placeholder="Image URL"
-          className="mb-2 w-full border p-2 rounded"
         />
 
         <select
@@ -171,19 +217,13 @@ export default function AddBikeModal({
           <button
             type="button"
             className="bg-gray-300 px-4 py-2 rounded"
-            onClick={onClose}
-            disabled={loading}
+            onClick={handleClose}
+            disabled={loading || isUploadingImage}
           >
             Cancel
           </button>
 
-          <button
-            type="submit"
-            className="bg-black text-white px-4 py-2 rounded"
-            disabled={loading}
-          >
-            {loading ? "Saving..." : "Save"}
-          </button>
+          <BikeSubmitButton disabled={loading || isUploadingImage} />
         </div>
       </form>
     </div>

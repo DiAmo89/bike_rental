@@ -1,26 +1,36 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
 
 import AdminHeader from "./AdminHeader";
-import AdminTabs from "./AdminTabs";
 import AdminStats from "./AdminStats";
 import BikesTable from "./BikesTable";
 import AddBikeModal from "./AddBikeModal";
-import AddAccessoryModal from "./AddAccessoryModal";
 import AdminSidebar from "./AdminSidebar";
 import { Bike } from "@/types/admin";
 import { Category } from "@/types/Category";
 
+type BookingItem = {
+  startDate: string;
+  endDate: string;
+};
+
+const toLocalDateString = (date: Date) => {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+};
+
+const isActiveBooking = (booking: BookingItem, today: string) =>
+  booking.startDate <= today && booking.endDate >= today;
+
 export default function AdminPanel() {
-  const [showAddAccessory, setShowAddAccessory] = useState(false);
-  const [activeTab, setActiveTab] = useState<"bikes" | "orders">("bikes");
   const [bikes, setBikes] = useState<Bike[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [accessories, setAccessories] = useState([]);
+  const [activeOrdersCount, setActiveOrdersCount] = useState(0);
   const [showAddBike, setShowAddBike] = useState(false);
-  const router = useRouter();
 
   const loadBikes = async () => {
     const res = await fetch("/api/bikes");
@@ -38,30 +48,29 @@ export default function AdminPanel() {
     setBikes(adminBikes);
   };
 
+  const loadActiveOrders = async () => {
+    const res = await fetch("/api/actions-booking?mode=all");
+    const data = await res.json();
+    const bookings: BookingItem[] = Array.isArray(data) ? data : [];
+    const today = toLocalDateString(new Date());
+
+    setActiveOrdersCount(
+      bookings.filter((booking) => isActiveBooking(booking, today)).length,
+    );
+  };
+
   useEffect(() => {
     loadBikes();
+    loadActiveOrders();
 
     fetch("/api/getCategories")
       .then((res) => res.json())
       .then((cats) => setCategories(cats));
 
-    fetch("/api/actions-accessory/read-all-accessories")
+    fetch("/api/actions-accessory")
       .then((res) => res.json())
       .then((accs) => setAccessories(accs));
   }, []);
-
-  const handleAddAccessory = () => setShowAddAccessory(true);
-
-  const handleAddCategory = () => {
-    router.push("/admin/categories/new");
-  };
-
-  const handleAddAccessorySuccess = () => {
-    setShowAddAccessory(false);
-    fetch("/api/actions-accessory/read-all-accessories")
-      .then((res) => res.json())
-      .then((accs) => setAccessories(accs));
-  };
 
   const handleAddBike = () => setShowAddBike(true);
 
@@ -77,30 +86,19 @@ export default function AdminPanel() {
       </div>
 
       <section className="space-y-6">
-        <AdminHeader
-          onAddBike={handleAddBike}
-          onAddAccessory={handleAddAccessory}
-        />
-
-        <AdminTabs
-          activeTab={activeTab}
-          onChangeTab={setActiveTab}
-          activeOrdersCount={0}
-        />
+        <AdminHeader onAddBike={handleAddBike} />
 
         <AdminStats
           totalBikes={bikes.length}
-          activeOrders={0}
+          activeOrders={activeOrdersCount}
           totalAccessories={accessories.length}
         />
 
-        {activeTab === "bikes" && (
-          <BikesTable
-            bikes={bikes}
-            categories={categories}
-            onDeleteSuccess={loadBikes}
-          />
-        )}
+        <BikesTable
+          bikes={bikes}
+          categories={categories}
+          onDeleteSuccess={loadBikes}
+        />
       </section>
 
       <AddBikeModal
@@ -108,12 +106,6 @@ export default function AdminPanel() {
         onClose={() => setShowAddBike(false)}
         onSuccess={handleAddBikeSuccess}
         categories={categories}
-      />
-
-      <AddAccessoryModal
-        open={showAddAccessory}
-        onClose={() => setShowAddAccessory(false)}
-        onSuccess={handleAddAccessorySuccess}
       />
     </div>
   );

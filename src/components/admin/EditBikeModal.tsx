@@ -3,6 +3,14 @@
 import { useEffect, useState, ChangeEvent, FormEvent } from "react";
 import updateBike from "@/app/api/actions-bike/update-bike";
 import { Category } from "@/types/Category";
+import BikeImageUpload from "@/components/admin/bikes/BikeImageUpload";
+import BikeSubmitButton from "./bikes/BikeSubmitButton";
+import {
+  isValidBikePriceInput,
+  isValidBikeTextInput,
+  validateBikePrice,
+  validateBikeTextField,
+} from "@/lib/bike-validation";
 
 type BikeDetails = {
   id: string;
@@ -37,8 +45,10 @@ export default function EditBikeModal({
     image: "",
     bike_category_id: "",
   });
+
   const [loading, setLoading] = useState(false);
   const [loadingBike, setLoadingBike] = useState(false);
+  const [isUploadingImage, setIsUploadingImage] = useState(false);
   const [error, setError] = useState("");
 
   useEffect(() => {
@@ -82,19 +92,71 @@ export default function EditBikeModal({
   const handleChange = (
     e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>,
   ) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+
+    if (
+      (name === "brand" || name === "model" || name === "description") &&
+      !isValidBikeTextInput(value)
+    ) {
+      return;
+    }
+
+    if (name === "price_per_day" && !isValidBikePriceInput(value)) {
+      return;
+    }
+
+    setForm({ ...form, [name]: value });
+    if (error) {
+      setError("");
+    }
   };
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    if (!bikeId) return;
+    if (!bikeId || isUploadingImage) return;
 
     setLoading(true);
     setError("");
 
+    const brandError = validateBikeTextField("Brand", form.brand);
+
+    if (brandError) {
+      setLoading(false);
+      setError(brandError);
+      return;
+    }
+
+    const modelError = validateBikeTextField("Model", form.model);
+
+    if (modelError) {
+      setLoading(false);
+      setError(modelError);
+      return;
+    }
+
+    const descriptionError = validateBikeTextField(
+      "Description",
+      form.description,
+    );
+
+    if (descriptionError) {
+      setLoading(false);
+      setError(descriptionError);
+      return;
+    }
+
+    const priceError = validateBikePrice(form.price_per_day);
+
+    if (priceError) {
+      setLoading(false);
+      setError(priceError);
+      return;
+    }
+
     try {
       const formData = new FormData();
+
       Object.entries(form).forEach(([key, value]) => {
         formData.append(key, value);
       });
@@ -127,12 +189,19 @@ export default function EditBikeModal({
           <div className="py-6 text-sm text-gray-500">Loading bike...</div>
         ) : (
           <>
+            <BikeImageUpload
+              value={form.image}
+              onChange={(url) => setForm((prev) => ({ ...prev, image: url }))}
+              onUploadingChange={setIsUploadingImage}
+            />
+
             <input
               name="brand"
               value={form.brand}
               onChange={handleChange}
               placeholder="Brand"
-              className="mb-2 w-full border p-2 rounded"
+              className="mt-3 mb-2 w-full border p-2 rounded"
+              autoComplete="off"
               required
             />
 
@@ -142,6 +211,7 @@ export default function EditBikeModal({
               onChange={handleChange}
               placeholder="Model"
               className="mb-2 w-full border p-2 rounded"
+              autoComplete="off"
               required
             />
 
@@ -158,19 +228,11 @@ export default function EditBikeModal({
               value={form.price_per_day}
               onChange={handleChange}
               placeholder="Price per day"
-              type="number"
-              min="0"
+              type="text"
+              inputMode="decimal"
               step="0.01"
               className="mb-2 w-full border p-2 rounded"
               required
-            />
-
-            <input
-              name="image"
-              value={form.image}
-              onChange={handleChange}
-              placeholder="Image URL"
-              className="mb-2 w-full border p-2 rounded"
             />
 
             <select
@@ -197,18 +259,12 @@ export default function EditBikeModal({
             type="button"
             className="bg-gray-300 px-4 py-2 rounded"
             onClick={onClose}
-            disabled={loading || loadingBike}
+            disabled={loading || loadingBike || isUploadingImage}
           >
             Cancel
           </button>
 
-          <button
-            type="submit"
-            className="bg-black text-white px-4 py-2 rounded"
-            disabled={loading || loadingBike}
-          >
-            {loading ? "Saving..." : "Save"}
-          </button>
+          <BikeSubmitButton disabled={loadingBike || isUploadingImage} />
         </div>
       </form>
     </div>

@@ -2,144 +2,225 @@
 import { useEffect, useState } from "react";
 import React from "react";
 import AdminSidebar from "@/components/admin/AdminSidebar";
+import AddAccessoryModal from "@/components/admin/AddAccessoryModal";
+import {
+  isValidAccessoryNameInput,
+  isValidAccessoryPriceInput,
+  validateAccessoryName,
+  validateAccessoryPrice,
+} from "@/lib/accessory-validation";
 
 export default function AdminAccessoriesPage() {
   const [accessories, setAccessories] = useState([]);
+  const [showAddAccessory, setShowAddAccessory] = useState(false);
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [editForm, setEditForm] = useState<any>({});
   const [editId, setEditId] = useState<string | null>(null);
-  const handleDeleteAccessory = async (id: string) => {
-    await fetch(`/api/actions-accessory/delete-accessory?id=${id}`, {
-      method: "POST",
-    });
-    fetch("/api/actions-accessory/read-all-accessories")
+  const [editError, setEditError] = useState("");
+
+  const loadAccessories = () => {
+    fetch("/api/actions-accessory")
       .then((res) => res.json())
       .then((accs) => setAccessories(accs));
   };
+
+  const handleDeleteAccessory = async (id: string) => {
+    await fetch(`/api/actions-accessory?id=${id}`, {
+      method: "DELETE",
+    });
+    loadAccessories();
+  };
+
   const handleEditAccessory = (acc: any) => {
     setEditForm({
       name: acc.name || "",
       price_per_day: acc.pricePerDay || "",
     });
     setEditId(acc.id);
+    setEditError("");
     setEditModalOpen(true);
   };
 
   const handleEditChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setEditForm({ ...editForm, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+
+    if (name === "name" && !isValidAccessoryNameInput(value)) {
+      return;
+    }
+
+    if (name === "price_per_day" && !isValidAccessoryPriceInput(value)) {
+      return;
+    }
+
+    setEditForm({ ...editForm, [name]: value });
+    if (editError) {
+      setEditError("");
+    }
   };
 
   const handleEditSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
+    const nameError = validateAccessoryName(String(editForm.name ?? ""));
+
+    if (nameError) {
+      setEditError(nameError);
+      return;
+    }
+
+    const priceError = validateAccessoryPrice(
+      String(editForm.price_per_day ?? ""),
+    );
+
+    if (priceError) {
+      setEditError(priceError);
+      return;
+    }
+
     const formData = new FormData();
     Object.entries(editForm).forEach(([key, value]) =>
       formData.append(key, String(value)),
     );
-    await fetch(`/api/actions-accessory/update-accessory?id=${editId}`, {
-      method: "POST",
+    const response = await fetch(`/api/actions-accessory?id=${editId}`, {
+      method: "PATCH",
       body: formData,
     });
+
+    if (!response.ok) {
+      const data = await response.json();
+      setEditError(data.error || "Update failed");
+      return;
+    }
+
     setEditModalOpen(false);
-    fetch("/api/actions-accessory/read-all-accessories")
-      .then((res) => res.json())
-      .then((accs) => setAccessories(accs));
+    setEditError("");
+    loadAccessories();
   };
+
+  const handleAddAccessorySuccess = () => {
+    setShowAddAccessory(false);
+    loadAccessories();
+  };
+
   useEffect(() => {
-    fetch("/api/actions-accessory/read-all-accessories")
-      .then((res) => res.json())
-      .then((accs) => setAccessories(accs));
+    loadAccessories();
   }, []);
 
   return (
-    <div>
-      <div className="grid grid-cols-1 gap-8 md:grid-cols-[210px_1fr] items-start m-10 container mx-auto py-10">
-        <div className="self-start">
-          <AdminSidebar />
+    <div className="grid grid-cols-1 gap-8 md:grid-cols-[210px_1fr] items-start">
+      <div className="self-start">
+        <AdminSidebar />
+      </div>
+
+      <section className="space-y-6">
+        <div>
+          <h1 className="text-3xl font-bold">Accessories</h1>
+          <p className="text-gray-500">Create and manage accessories</p>
         </div>
 
-        <div>
-          <div className="flex items-center mb-6">
-            <h1 className="text-3xl font-bold">Accessories</h1>
+        <div className="flex flex-col items-start gap-4">
+          <div className="bg-gray-100 rounded-xl px-6 py-4 text-lg font-semibold">
+            Total Accessories: {accessories.length}
           </div>
-          <div className="mb-6 flex gap-6">
-            <div className="bg-gray-100 rounded-xl px-6 py-4 text-lg font-semibold">
-              Total Accessories: {accessories.length}
-            </div>
-          </div>
-          <table className="w-full text-left border border-gray-200 rounded-xl bg-white">
-            <thead className="bg-gray-50 text-sm text-gray-600">
-              <tr>
-                <th className="px-6 py-4">Name</th>
-                <th className="px-6 py-4">Price/Day</th>
-                <th className="px-6 py-4">Actions</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-200">
-              {accessories.map((acc: any) => (
-                <tr key={acc.id} className="text-sm text-gray-700">
-                  <td className="px-6 py-4">{acc.name}</td>
-                  <td className="px-6 py-4">€{acc.pricePerDay}</td>
-                  <td className="px-6 py-4">
+
+          <button
+            type="button"
+            onClick={() => setShowAddAccessory(true)}
+            className="rounded-lg bg-black px-5 py-3 text-sm font-medium text-white transition hover:opacity-90"
+          >
+            Add Accessory
+          </button>
+        </div>
+
+        <table className="w-full text-left border border-gray-200 rounded-xl bg-white">
+          <thead className="bg-gray-50 text-sm text-gray-600">
+            <tr>
+              <th className="px-6 py-4">Name</th>
+              <th className="px-6 py-4">Price/Day</th>
+              <th className="px-6 py-4">Actions</th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-gray-200">
+            {accessories.map((acc: any) => (
+              <tr key={acc.id} className="text-sm text-gray-700">
+                <td className="px-6 py-4">{acc.name}</td>
+                <td className="px-6 py-4">€{acc.pricePerDay}</td>
+                <td className="px-6 py-4">
+                  <div className="flex items-center gap-3 text-base">
                     <button
-                      className="mr-2 text-blue-600"
+                      type="button"
                       onClick={() => handleEditAccessory(acc)}
                     >
-                      Edit
+                      ✏️
                     </button>
                     <button
-                      className="text-red-600"
+                      type="button"
                       onClick={() => handleDeleteAccessory(acc.id)}
                     >
-                      Delete
+                      🗑️
                     </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+                  </div>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
 
-          {editModalOpen && (
-            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
-              <form
-                className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md"
-                onSubmit={handleEditSubmit}
-              >
-                <h2 className="text-xl font-bold mb-4">Edit Accessory</h2>
-                <input
-                  name="name"
-                  value={editForm.name || ""}
-                  onChange={handleEditChange}
-                  placeholder="Name"
-                  className="mb-2 w-full border p-2 rounded"
-                />
-                <input
-                  name="price_per_day"
-                  value={editForm.price_per_day || ""}
-                  onChange={handleEditChange}
-                  placeholder="Price per day"
-                  type="number"
-                  className="mb-2 w-full border p-2 rounded"
-                />
-                <div className="flex gap-2 mt-4">
-                  <button
-                    type="button"
-                    className="bg-gray-300 px-4 py-2 rounded"
-                    onClick={() => setEditModalOpen(false)}
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    type="submit"
-                    className="bg-black text-white px-4 py-2 rounded"
-                  >
-                    Save
-                  </button>
-                </div>
-              </form>
-            </div>
-          )}
-        </div>
-      </div>
+        {editModalOpen && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
+            <form
+              className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md"
+              onSubmit={handleEditSubmit}
+            >
+              <h2 className="text-xl font-bold mb-4">Edit Accessory</h2>
+              <input
+                name="name"
+                value={editForm.name || ""}
+                onChange={handleEditChange}
+                placeholder="Name"
+                className="mb-2 w-full border p-2 rounded"
+                autoComplete="off"
+              />
+              <input
+                name="price_per_day"
+                value={editForm.price_per_day || ""}
+                onChange={handleEditChange}
+                placeholder="Price per day"
+                type="text"
+                inputMode="decimal"
+                className="mb-2 w-full border p-2 rounded"
+              />
+              {editError && (
+                <div className="mb-2 text-red-500">{editError}</div>
+              )}
+              <div className="flex gap-2 mt-4">
+                <button
+                  type="button"
+                  className="bg-gray-300 px-4 py-2 rounded"
+                  onClick={() => {
+                    setEditModalOpen(false);
+                    setEditError("");
+                  }}
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="bg-black text-white px-4 py-2 rounded"
+                >
+                  Save
+                </button>
+              </div>
+            </form>
+          </div>
+        )}
+
+        <AddAccessoryModal
+          open={showAddAccessory}
+          onClose={() => setShowAddAccessory(false)}
+          onSuccess={handleAddAccessorySuccess}
+        />
+      </section>
     </div>
   );
 }
