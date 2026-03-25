@@ -60,13 +60,13 @@ export default function BikeCard({ bike }: BikeCardProps) {
             <div className="flex flex-col">
               <span className="text-xl font-black text-gray-900">
                 €{bike.pricePerDay} 
-                <span className="text-xs text-black-400 font-normal ml-1">
+                <span className="text-xs text-gray-400 font-normal ml-1">
                   /Day
                 </span>
               </span>
             </div>
 
-           
+       
             <div
               className={`px-4 py-2 rounded font-semibold text-sm transition-colors ${
                 isAvailable
