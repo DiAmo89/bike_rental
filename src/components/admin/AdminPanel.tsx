@@ -67,7 +67,7 @@ export default function AdminPanel() {
       .then((res) => res.json())
       .then((cats) => setCategories(cats));
 
-    fetch("/api/actions-accessory/read-all-accessories")
+    fetch("/api/actions-accessory")
       .then((res) => res.json())
       .then((accs) => setAccessories(accs));
   }, []);

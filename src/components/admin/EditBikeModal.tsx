@@ -5,6 +5,12 @@ import updateBike from "@/app/api/actions-bike/update-bike";
 import { Category } from "@/types/Category";
 import BikeImageUpload from "@/components/admin/bikes/BikeImageUpload";
 import BikeSubmitButton from "./bikes/BikeSubmitButton";
+import {
+  isValidBikePriceInput,
+  isValidBikeTextInput,
+  validateBikePrice,
+  validateBikeTextField,
+} from "@/lib/bike-validation";
 
 type BikeDetails = {
   id: string;
@@ -84,9 +90,25 @@ export default function EditBikeModal({
   }, [open, bikeId]);
 
   const handleChange = (
-    e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
+    e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>,
   ) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+
+    if (
+      (name === "brand" || name === "model" || name === "description") &&
+      !isValidBikeTextInput(value)
+    ) {
+      return;
+    }
+
+    if (name === "price_per_day" && !isValidBikePriceInput(value)) {
+      return;
+    }
+
+    setForm({ ...form, [name]: value });
+    if (error) {
+      setError("");
+    }
   };
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
@@ -96,6 +118,41 @@ export default function EditBikeModal({
 
     setLoading(true);
     setError("");
+
+    const brandError = validateBikeTextField("Brand", form.brand);
+
+    if (brandError) {
+      setLoading(false);
+      setError(brandError);
+      return;
+    }
+
+    const modelError = validateBikeTextField("Model", form.model);
+
+    if (modelError) {
+      setLoading(false);
+      setError(modelError);
+      return;
+    }
+
+    const descriptionError = validateBikeTextField(
+      "Description",
+      form.description,
+    );
+
+    if (descriptionError) {
+      setLoading(false);
+      setError(descriptionError);
+      return;
+    }
+
+    const priceError = validateBikePrice(form.price_per_day);
+
+    if (priceError) {
+      setLoading(false);
+      setError(priceError);
+      return;
+    }
 
     try {
       const formData = new FormData();
@@ -144,6 +201,7 @@ export default function EditBikeModal({
               onChange={handleChange}
               placeholder="Brand"
               className="mt-3 mb-2 w-full border p-2 rounded"
+              autoComplete="off"
               required
             />
 
@@ -153,6 +211,7 @@ export default function EditBikeModal({
               onChange={handleChange}
               placeholder="Model"
               className="mb-2 w-full border p-2 rounded"
+              autoComplete="off"
               required
             />
 
@@ -169,8 +228,8 @@ export default function EditBikeModal({
               value={form.price_per_day}
               onChange={handleChange}
               placeholder="Price per day"
-              type="number"
-              min="0"
+              type="text"
+              inputMode="decimal"
               step="0.01"
               className="mb-2 w-full border p-2 rounded"
               required

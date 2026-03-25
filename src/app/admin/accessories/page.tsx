@@ -3,6 +3,12 @@ import { useEffect, useState } from "react";
 import React from "react";
 import AdminSidebar from "@/components/admin/AdminSidebar";
 import AddAccessoryModal from "@/components/admin/AddAccessoryModal";
+import {
+  isValidAccessoryNameInput,
+  isValidAccessoryPriceInput,
+  validateAccessoryName,
+  validateAccessoryPrice,
+} from "@/lib/accessory-validation";
 
 export default function AdminAccessoriesPage() {
   const [accessories, setAccessories] = useState([]);
@@ -10,16 +16,17 @@ export default function AdminAccessoriesPage() {
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [editForm, setEditForm] = useState<any>({});
   const [editId, setEditId] = useState<string | null>(null);
+  const [editError, setEditError] = useState("");
 
   const loadAccessories = () => {
-    fetch("/api/actions-accessory/read-all-accessories")
+    fetch("/api/actions-accessory")
       .then((res) => res.json())
       .then((accs) => setAccessories(accs));
   };
 
   const handleDeleteAccessory = async (id: string) => {
-    await fetch(`/api/actions-accessory/delete-accessory?id=${id}`, {
-      method: "POST",
+    await fetch(`/api/actions-accessory?id=${id}`, {
+      method: "DELETE",
     });
     loadAccessories();
   };
@@ -30,24 +37,63 @@ export default function AdminAccessoriesPage() {
       price_per_day: acc.pricePerDay || "",
     });
     setEditId(acc.id);
+    setEditError("");
     setEditModalOpen(true);
   };
 
   const handleEditChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setEditForm({ ...editForm, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+
+    if (name === "name" && !isValidAccessoryNameInput(value)) {
+      return;
+    }
+
+    if (name === "price_per_day" && !isValidAccessoryPriceInput(value)) {
+      return;
+    }
+
+    setEditForm({ ...editForm, [name]: value });
+    if (editError) {
+      setEditError("");
+    }
   };
 
   const handleEditSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
+    const nameError = validateAccessoryName(String(editForm.name ?? ""));
+
+    if (nameError) {
+      setEditError(nameError);
+      return;
+    }
+
+    const priceError = validateAccessoryPrice(
+      String(editForm.price_per_day ?? ""),
+    );
+
+    if (priceError) {
+      setEditError(priceError);
+      return;
+    }
+
     const formData = new FormData();
     Object.entries(editForm).forEach(([key, value]) =>
       formData.append(key, String(value)),
     );
-    await fetch(`/api/actions-accessory/update-accessory?id=${editId}`, {
-      method: "POST",
+    const response = await fetch(`/api/actions-accessory?id=${editId}`, {
+      method: "PATCH",
       body: formData,
     });
+
+    if (!response.ok) {
+      const data = await response.json();
+      setEditError(data.error || "Update failed");
+      return;
+    }
+
     setEditModalOpen(false);
+    setEditError("");
     loadAccessories();
   };
 
@@ -133,20 +179,28 @@ export default function AdminAccessoriesPage() {
                 onChange={handleEditChange}
                 placeholder="Name"
                 className="mb-2 w-full border p-2 rounded"
+                autoComplete="off"
               />
               <input
                 name="price_per_day"
                 value={editForm.price_per_day || ""}
                 onChange={handleEditChange}
                 placeholder="Price per day"
-                type="number"
+                type="text"
+                inputMode="decimal"
                 className="mb-2 w-full border p-2 rounded"
               />
+              {editError && (
+                <div className="mb-2 text-red-500">{editError}</div>
+              )}
               <div className="flex gap-2 mt-4">
                 <button
                   type="button"
                   className="bg-gray-300 px-4 py-2 rounded"
-                  onClick={() => setEditModalOpen(false)}
+                  onClick={() => {
+                    setEditModalOpen(false);
+                    setEditError("");
+                  }}
                 >
                   Cancel
                 </button>
