@@ -1,6 +1,7 @@
 "use client";
 import { CarouselSpacing } from "@/components/carousel-homepage";
 import HeroSection from "@/components/hero-section";
+import CategoryList from "@/components/catalog/category-list";
 
 export default function Home() {
   return (
@@ -12,7 +13,35 @@ export default function Home() {
             <CarouselSpacing />
           </div>
         </div>
-        <div className="w-full mx-auto grid md:grid-cols-1 lg:grid-cols-3 gap-8 text-center mt-10">
+
+{/* Разделитель */}
+    <div className="relative flex items-center justify-center mb-20 px-10">
+      <div className="absolute inset-0 flex items-center px-10" aria-hidden="true">
+        <div className="w-full border-t border-gray-100" />
+      </div>
+      <div className="relative bg-white px-8">
+        <div className="w-10 h-[2px] bg-[#e6ff2a]"></div>
+      </div>
+    </div>
+
+    {/* Категории — добавляем небольшие отступы только здесь, чтобы они не прилипали к краям */}
+    <div className="px-6 md:px-12">
+      <div className="text-center mb-16">
+        <h2 className="text-[10px] font-black uppercase tracking-[0.4em] text-gray-400 mb-2">
+          Our Fleet Categories
+        </h2>
+        <div className="w-8 h-[1.5px] bg-[#e6ff2a] mx-auto"></div>
+      </div>
+
+      <CategoryList />
+    </div>
+    
+  
+
+
+
+
+        {/* <div className="w-full mx-auto grid md:grid-cols-1 lg:grid-cols-3 gap-8 text-center mt-10">
           <div className="flex flex-col items-center p-6 md:p-8 bg-white rounded-xl shadow-[0_12px_80px_rgba(230,255,41,0.6)] md:min-h-130 min-h-105 md:overflow-auto overflow-visible">
             <div className="h-30 w-30 border"></div>
             <h3 className="m-5 text-lg md:text-xl font-semibold mb-3 md:mb-4">
@@ -70,7 +99,7 @@ export default function Home() {
               more.
             </p>
           </div>
-        </div>
+        </div> */}
       </section>
     </div>
   );
