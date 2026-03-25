@@ -4,6 +4,7 @@ export interface CurrentUser {
   email: string;
   telephone: string;
   avatar: string | null;
+  avatarKey: string | null;
   role: "CUSTOMER" | "ADMIN";
   created_at: Date;
 }

@@ -6,7 +6,7 @@ type Props = {
   disabled?: boolean;
 };
 
-export default function BikeSubmitButton({ disabled = false }: Props) {
+export default function SubmitButton({ disabled = false }: Props) {
   const { pending } = useFormStatus();
 
   const isDisabled = pending || disabled;
@@ -14,7 +14,6 @@ export default function BikeSubmitButton({ disabled = false }: Props) {
   let label = "Save";
 
   if (pending) label = "Saving...";
-  else if (disabled) label = "Uploading...";
 
   return (
     <button

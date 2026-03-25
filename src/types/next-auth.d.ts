@@ -7,6 +7,7 @@ declare module "next-auth" {
       id?: string | null;
       fullName?: string | null;
       avatar?: string | null;
+      avatarKey?: string | null;
       role?: string | null;
       googleId?: string | null;
     } & DefaultSession["user"];
