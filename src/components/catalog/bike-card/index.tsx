@@ -60,14 +60,14 @@ export default function BikeCard({ bike }: BikeCardProps) {
           <div className="mt-4 pt-4 border-t border-gray-100 flex items-center justify-between">
             <div className="flex flex-col">
               <span className="text-xl font-black text-gray-900">
-                {bike.pricePerDay} €
+                €{bike.pricePerDay} 
                 <span className="text-xs text-gray-400 font-normal ml-1">
                   /Day
                 </span>
               </span>
             </div>
 
-            {/* Вместо кнопки используем div, так как мы уже внутри Link */}
+       
             <div
               className={`px-4 py-2 rounded font-semibold text-sm transition-colors ${
                 isAvailable
