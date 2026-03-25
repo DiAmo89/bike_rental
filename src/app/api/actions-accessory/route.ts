@@ -5,7 +5,6 @@ import getAccessories from "./read-all-accessories";
 import getAccessoryById from "./read-id-accessory";
 import updateAccessory from "./update-accessory";
 
-
 export async function GET(req: NextRequest) {
   try {
     const { searchParams } = new URL(req.url);
@@ -13,16 +12,20 @@ export async function GET(req: NextRequest) {
 
     if (id) {
       const item = await getAccessoryById(id);
-      return item ? NextResponse.json(item) : NextResponse.json({ error: "Not found" }, { status: 404 });
+      return item
+        ? NextResponse.json(item)
+        : NextResponse.json({ error: "Not found" }, { status: 404 });
     }
 
     const data = await getAccessories();
     return NextResponse.json(data);
   } catch (error) {
-    return NextResponse.json({ error: "Failed to fetch accessories" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Failed to fetch accessories" },
+      { status: 500 },
+    );
   }
 }
-
 
 export async function POST(req: NextRequest) {
   try {
@@ -30,10 +33,12 @@ export async function POST(req: NextRequest) {
     await createAccessory(formData);
     return NextResponse.json({ success: true }, { status: 201 });
   } catch (error) {
-    return NextResponse.json({ error: "Create failed" }, { status: 400 });
+    return NextResponse.json(
+      { error: error instanceof Error ? error.message : "Create failed" },
+      { status: 400 },
+    );
   }
 }
-
 
 export async function PATCH(req: NextRequest) {
   try {
@@ -45,10 +50,12 @@ export async function PATCH(req: NextRequest) {
     await updateAccessory(id, formData);
     return NextResponse.json({ success: true });
   } catch (error) {
-    return NextResponse.json({ error: "Update failed" }, { status: 400 });
+    return NextResponse.json(
+      { error: error instanceof Error ? error.message : "Update failed" },
+      { status: 400 },
+    );
   }
 }
-
 
 export async function DELETE(req: NextRequest) {
   try {

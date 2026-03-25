@@ -64,13 +64,10 @@ export default function BookingContainer({ bike }: BookingContainerProps) {
         .replace(/(.{4})/g, "$1 ")
         .trim();
     } else if (name === "expiryDate") {
-      // Прибираємо все, крім цифр
       let cleanValue = value.replace(/\D/g, "");
 
       if (cleanValue.length >= 1) {
         const firstDigit = parseInt(cleanValue[0]);
-        // Якщо перша цифра > 1, це не може бути валідний місяць (01-12)
-        // Автоматично робимо "0" + ця цифра
         if (firstDigit > 1) {
           cleanValue = "0" + cleanValue;
         }
@@ -78,13 +75,10 @@ export default function BookingContainer({ bike }: BookingContainerProps) {
 
       if (cleanValue.length >= 2) {
         const month = parseInt(cleanValue.substring(0, 2));
-        // Якщо місяць > 12, примусово ставимо 12
         if (month > 12) cleanValue = "12" + cleanValue.substring(2);
-        // Якщо місяць "00", ставимо "01"
         if (cleanValue.substring(0, 2) === "00")
           cleanValue = "01" + cleanValue.substring(2);
 
-        // Додаємо слеш
         formattedValue =
           cleanValue.substring(0, 2) +
           (cleanValue.length > 2 ? "/" + cleanValue.substring(2, 4) : "");
@@ -97,18 +91,49 @@ export default function BookingContainer({ bike }: BookingContainerProps) {
 
     setCardData((prev) => ({ ...prev, [name]: formattedValue }));
 
-    // Очищаємо помилки при зміні
-    if (errors.card) {
-      setErrors((prev) => {
-        const newErrors = { ...prev };
+    setErrors((prev) => {
+      const newErrors = { ...prev };
+      const cardValidationErrors: string[] = [];
+
+      // Валідація CVC на "000" в реальному часі
+      if (name === "cvc" && formattedValue === "000") {
+        cardValidationErrors.push("Invalid CVC code (cannot be 000)");
+      }
+
+      if (name === "expiryDate" && formattedValue.length === 5) {
+        const expiryParts = formattedValue.split("/");
+        const month = parseInt(expiryParts[0], 10);
+        const year = parseInt("20" + expiryParts[1], 10);
+
+        const now = new Date();
+        const currentYear = now.getFullYear();
+        const currentMonth = now.getMonth() + 1;
+
+        if (month < 1 || month > 12) {
+          cardValidationErrors.push("Invalid month (01-12)");
+        } else if (year < currentYear) {
+          cardValidationErrors.push("Card has expired (year in the past)");
+        } else if (year === currentYear && month < currentMonth) {
+          cardValidationErrors.push("Card has expired (month in the past)");
+        }
+      }
+
+      if (cardValidationErrors.length > 0) {
+        newErrors.card = cardValidationErrors;
+      } else if (
+        name === "expiryDate" ||
+        name === "cardNumber" ||
+        name === "cvc"
+      ) {
         delete newErrors.card;
-        return newErrors;
-      });
-    }
+      }
+
+      return newErrors;
+    });
   };
 
   useEffect(() => {
-    fetch("/api/actions-accessory/read-all-accessories")
+    fetch("/api/actions-accessory")
       .then((res) => res.json())
       .then((data) => {
         setDbAccessories(data);
@@ -123,7 +148,6 @@ export default function BookingContainer({ bike }: BookingContainerProps) {
 
   const handleConfirmOrder = async () => {
     setIsLoading(true);
-    setErrors({});
 
     const validation = bookingSchema.safeParse({
       ...contactData,
@@ -132,42 +156,38 @@ export default function BookingContainer({ bike }: BookingContainerProps) {
     });
 
     if (!validation.success) {
-      setErrors(
-        validation.error.flatten().fieldErrors as Record<string, string[]>,
-      );
+      setErrors((prev) => ({
+        ...prev,
+        ...(validation.error.flatten().fieldErrors as Record<string, string[]>),
+      }));
       setIsLoading(false);
       return;
     }
 
     if (paymentMethod === "card") {
       const cardErrors: string[] = [];
-
-      if (cardData.cardNumber.replace(/\s/g, "").length < 16) {
-        cardErrors.push("Invalid card number");
-      }
-
       const expiryParts = cardData.expiryDate.split("/");
+
+      if (cardData.cardNumber.replace(/\s/g, "").length < 16)
+        cardErrors.push("Invalid card number");
+
       if (expiryParts.length !== 2 || cardData.expiryDate.length !== 5) {
         cardErrors.push("Expiry date must be MM/YY");
       } else {
         const month = parseInt(expiryParts[0], 10);
-        const year = parseInt("20" + expiryParts[1], 10); // Перетворюємо YY в 20YY
+        const year = parseInt("20" + expiryParts[1], 10);
         const now = new Date();
-        const currentMonth = now.getMonth() + 1;
-        const currentYear = now.getFullYear();
-
-        if (month < 1 || month > 12) {
-          cardErrors.push("Invalid month (01-12)");
-        } else if (
-          year < currentYear ||
-          (year === currentYear && month < currentMonth)
+        if (
+          year < now.getFullYear() ||
+          (year === now.getFullYear() && month < now.getMonth() + 1)
         ) {
           cardErrors.push("Card has expired");
         }
       }
 
-      if (cardData.cvc.length < 3) {
-        cardErrors.push("Invalid CVC");
+      // Фінальна перевірка CVC на довжину та заборону "000"
+      if (cardData.cvc.length < 3 || cardData.cvc === "000") {
+        cardErrors.push("Invalid CVC security code");
       }
 
       if (cardErrors.length > 0) {
@@ -207,13 +227,12 @@ export default function BookingContainer({ bike }: BookingContainerProps) {
       });
 
       const result = await response.json();
-
       if (!response.ok) throw new Error(result.error || "Booking failed");
 
       setShowSuccess(true);
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
-      setErrors({ server: [err.message] });
+      setErrors((prev) => ({ ...prev, server: [err.message] }));
     } finally {
       setIsLoading(false);
     }

@@ -1,10 +1,48 @@
 import { NextRequest, NextResponse } from "next/server";
-import createCategory from "./create-category"; 
+import { createCategoryRecord } from "./create-category";
 import deleteCategory from "./delete-category";
 import getAllCategories from "./read-all-categories";
 import getCategoryById from "./read-id-category";
 import updateCategory from "./update-category";
 
+function getErrorCode(error: unknown): string | null {
+  if (typeof error !== "object" || error === null) {
+    return null;
+  }
+
+  if ("code" in error && typeof error.code === "string") {
+    return error.code;
+  }
+
+  if ("cause" in error) {
+    return getErrorCode(error.cause);
+  }
+
+  return null;
+}
+
+function getErrorMessage(error: unknown): string {
+  if (error instanceof Error) {
+    return error.message;
+  }
+
+  return String(error ?? "");
+}
+
+function isUniqueConstraintError(error: unknown) {
+  const errorCode = getErrorCode(error);
+
+  if (errorCode === "23505") {
+    return true;
+  }
+
+  const errorMessage = getErrorMessage(error).toLowerCase();
+
+  return (
+    errorMessage.includes("duplicate key") ||
+    errorMessage.includes("unique constraint")
+  );
+}
 
 export async function GET(req: NextRequest) {
   try {
@@ -13,7 +51,9 @@ export async function GET(req: NextRequest) {
 
     if (id) {
       const category = await getCategoryById(id);
-      return category ? NextResponse.json(category) : NextResponse.json({ error: "Not found" }, { status: 404 });
+      return category
+        ? NextResponse.json(category)
+        : NextResponse.json({ error: "Not found" }, { status: 404 });
     }
 
     const data = await getAllCategories();
@@ -23,20 +63,26 @@ export async function GET(req: NextRequest) {
   }
 }
 
-
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const formData = new FormData();
-    Object.entries(body).forEach(([key, value]) => formData.append(key, String(value)));
-    
-    await createCategory(formData);
+    await createCategoryRecord({
+      name: String(body.name ?? "").trim(),
+      image: String(body.image ?? "").trim(),
+    });
+
     return NextResponse.json({ message: "Category created" }, { status: 201 });
   } catch (error) {
+    if (isUniqueConstraintError(error)) {
+      return NextResponse.json(
+        { error: "Category already exists" },
+        { status: 409 },
+      );
+    }
+
     return NextResponse.json({ error: "Creation failed" }, { status: 400 });
   }
 }
-
 
 export async function PATCH(req: NextRequest) {
   try {
@@ -46,7 +92,9 @@ export async function PATCH(req: NextRequest) {
 
     const body = await req.json();
     const formData = new FormData();
-    Object.entries(body).forEach(([key, value]) => formData.append(key, String(value)));
+    Object.entries(body).forEach(([key, value]) =>
+      formData.append(key, String(value)),
+    );
 
     await updateCategory(id, formData);
     return NextResponse.json({ message: "Category updated" });
@@ -54,7 +102,6 @@ export async function PATCH(req: NextRequest) {
     return NextResponse.json({ error: "Update failed" }, { status: 400 });
   }
 }
-
 
 export async function DELETE(req: NextRequest) {
   try {
@@ -65,6 +112,9 @@ export async function DELETE(req: NextRequest) {
     await deleteCategory(id);
     return NextResponse.json({ message: "Category deleted" });
   } catch (error) {
-    return NextResponse.json({ error: "Delete failed" }, { status: 400 });
+    const errorMessage =
+      error instanceof Error ? error.message : "Delete failed";
+
+    return NextResponse.json({ error: errorMessage }, { status: 400 });
   }
 }

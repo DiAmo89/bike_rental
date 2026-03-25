@@ -1,4 +1,10 @@
 import { useState, ChangeEvent, FormEvent } from "react";
+import {
+  isValidAccessoryNameInput,
+  isValidAccessoryPriceInput,
+  validateAccessoryName,
+  validateAccessoryPrice,
+} from "@/lib/accessory-validation";
 
 interface AddAccessoryModalProps {
   open: boolean;
@@ -19,28 +25,66 @@ export default function AddAccessoryModal({
   const [error, setError] = useState("");
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+
+    if (name === "name" && !isValidAccessoryNameInput(value)) {
+      return;
+    }
+
+    if (name === "price_per_day" && !isValidAccessoryPriceInput(value)) {
+      return;
+    }
+
+    setForm({ ...form, [name]: value });
+    if (error) setError("");
   };
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
     setError("");
+
+    const nameError = validateAccessoryName(form.name);
+
+    if (nameError) {
+      setLoading(false);
+      setError(nameError);
+      return;
+    }
+
+    const priceError = validateAccessoryPrice(form.price_per_day);
+
+    if (priceError) {
+      setLoading(false);
+      setError(priceError);
+      return;
+    }
+
     try {
       const formData = new FormData();
       Object.entries(form).forEach(([key, value]) =>
         formData.append(key, value),
       );
-      await fetch("/api/actions-accessory/create-accessory", {
+      const response = await fetch("/api/actions-accessory", {
         method: "POST",
         body: formData,
+      });
+
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.error || "Create failed");
+      }
+
+      setForm({
+        name: "",
+        price_per_day: "",
       });
       setLoading(false);
       onSuccess();
       onClose();
     } catch (err) {
       setLoading(false);
-      setError("Error creating accessory");
+      setError(err instanceof Error ? err.message : "Error creating accessory");
     }
   };
 
@@ -59,6 +103,7 @@ export default function AddAccessoryModal({
           onChange={handleChange}
           placeholder="Name"
           className="mb-2 w-full border p-2 rounded"
+          autoComplete="off"
           required
         />
         <input
@@ -66,8 +111,8 @@ export default function AddAccessoryModal({
           value={form.price_per_day}
           onChange={handleChange}
           placeholder="Price per day"
-          type="number"
-          min="0"
+          type="text"
+          inputMode="decimal"
           step="0.01"
           className="mb-2 w-full border p-2 rounded"
           required
