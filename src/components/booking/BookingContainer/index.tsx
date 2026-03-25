@@ -128,7 +128,7 @@ export default function BookingContainer({ bike }: BookingContainerProps) {
   };
 
   useEffect(() => {
-    fetch("/api/actions-accessory/read-all-accessories")
+    fetch("/api/actions-accessory")
       .then((res) => res.json())
       .then((data) => {
         setDbAccessories(data);
