@@ -41,6 +41,36 @@ export default function BookingContainer({ bike }: BookingContainerProps) {
     cvc: "",
   });
 
+  const calculateFinalPrice = () => {
+    const isDatesValid =
+      startDate && endDate && new Date(endDate) > new Date(startDate);
+    if (!isDatesValid) return "0.00";
+
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+    start.setHours(0, 0, 0, 0);
+    end.setHours(0, 0, 0, 0);
+
+    const diffInMs = end.getTime() - start.getTime();
+    const days = Math.ceil(diffInMs / (1000 * 60 * 60 * 24)) || 1;
+
+    const pricePerDay = Number(bike?.pricePerDay) || 0;
+    const serviceFee = 5.0;
+
+    const accessoriesTotal = (dbAccessories || []).reduce((accSum, acc) => {
+      if (options[acc.id]) {
+        return accSum + Number(acc.pricePerDay || 0) * days;
+      }
+      return accSum;
+    }, 0);
+
+    const subtotal = pricePerDay * days + accessoriesTotal;
+    const tax = subtotal * 0.1;
+    const total = subtotal + serviceFee + tax;
+
+    return total.toFixed(2);
+  };
+
   const handleContactChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setContactData((prev) => ({ ...prev, [name]: value }));
@@ -208,22 +238,11 @@ export default function BookingContainer({ bike }: BookingContainerProps) {
       }
     }
 
-    const start = new Date(startDate);
-    const end = new Date(endDate);
-    const days = Math.max(
-      Math.ceil((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24)),
-      1,
+    const finalPrice = calculateFinalPrice();
+
+    const selectedAccessoryIds = Object.keys(options).filter(
+      (id) => options[id],
     );
-
-    const accessoriesPrice = (dbAccessories || []).reduce((sum, acc) => {
-      return options[acc.id] ? sum + Number(acc.pricePerDay) * days : sum;
-    }, 0);
-
-    const finalPrice = (
-      Number(bike.pricePerDay) * days +
-      accessoriesPrice +
-      5
-    ).toFixed(2);
 
     try {
       const response = await fetch("/api/booking/create", {
@@ -234,6 +253,7 @@ export default function BookingContainer({ bike }: BookingContainerProps) {
           bikeId: bike.id,
           totalPrice: finalPrice,
           paymentMethod,
+          bookingAccessories: selectedAccessoryIds,
         }),
       });
 

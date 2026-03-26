@@ -6,6 +6,7 @@ import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth/auth-options";
 import { bookingSchema } from "@/lib/schemas/auth-schema";
 import { NextResponse } from "next/server";
+import { bookingAccessories } from "@/db/tables/booking-accessories";
 
 export async function POST(req: Request) {
   try {
@@ -43,36 +44,7 @@ export async function POST(req: Request) {
 
     const { firstName, lastName, email, phone, startDate, endDate } =
       validation.data;
-    const { bikeId, totalPrice } = body;
-
-    const start = new Date(startDate);
-    const end = new Date(endDate);
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-
-    if (start < today) {
-      return NextResponse.json(
-        { error: "Pick-up date cannot be in the past" },
-        { status: 400 },
-      );
-    }
-
-    const diffInMs = end.getTime() - start.getTime();
-    const diffInDays = diffInMs / (1000 * 60 * 60 * 24);
-
-    if (diffInDays < 1) {
-      return NextResponse.json(
-        { error: "Return date must be at least 1 day after pick-up" },
-        { status: 400 },
-      );
-    }
-
-    if (diffInDays > 30) {
-      return NextResponse.json(
-        { error: "Maximum rental period is 30 days" },
-        { status: 400 },
-      );
-    }
+    const { bikeId, totalPrice, bookingAccessories: selectedIds } = body;
 
     const [newBooking] = await db
       .insert(bookings)
@@ -88,6 +60,20 @@ export async function POST(req: Request) {
         totalPrice: totalPrice.toString(),
       })
       .returning();
+
+    if (
+      newBooking &&
+      selectedIds &&
+      Array.isArray(selectedIds) &&
+      selectedIds.length > 0
+    ) {
+      const accessoryData = selectedIds.map((id: string) => ({
+        bookingId: newBooking.id,
+        accessoryId: id,
+      }));
+
+      await db.insert(bookingAccessories).values(accessoryData);
+    }
 
     return NextResponse.json(
       { success: true, bookingId: newBooking.id },
