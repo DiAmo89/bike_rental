@@ -95,7 +95,13 @@ export default function BookingContainer({ bike }: BookingContainerProps) {
       const newErrors = { ...prev };
       const cardValidationErrors: string[] = [];
 
-      // Валідація CVC на "000" в реальному часі
+      if (name === "cardNumber") {
+        const digitsOnly = formattedValue.replace(/\D/g, "");
+        if (digitsOnly.length === 16 && /^0+$/.test(digitsOnly)) {
+          cardValidationErrors.push("Card number cannot consist of only zeros");
+        }
+      }
+
       if (name === "cvc" && formattedValue === "000") {
         cardValidationErrors.push("Invalid CVC code (cannot be 000)");
       }
@@ -138,10 +144,12 @@ export default function BookingContainer({ bike }: BookingContainerProps) {
       .then((data) => {
         setDbAccessories(data);
         const initialOptions: Record<string, boolean> = {};
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        data.forEach((acc: any) => {
-          initialOptions[acc.id] = false;
-        });
+        data.forEach(
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          (acc: any) => {
+            initialOptions[acc.id] = false;
+          },
+        );
         setOptions(initialOptions);
       });
   }, []);
@@ -167,9 +175,13 @@ export default function BookingContainer({ bike }: BookingContainerProps) {
     if (paymentMethod === "card") {
       const cardErrors: string[] = [];
       const expiryParts = cardData.expiryDate.split("/");
+      const cardDigits = cardData.cardNumber.replace(/\s/g, "");
 
-      if (cardData.cardNumber.replace(/\s/g, "").length < 16)
+      if (cardDigits.length < 16) {
         cardErrors.push("Invalid card number");
+      } else if (/^0+$/.test(cardDigits)) {
+        cardErrors.push("Card number cannot be all zeros");
+      }
 
       if (expiryParts.length !== 2 || cardData.expiryDate.length !== 5) {
         cardErrors.push("Expiry date must be MM/YY");
@@ -185,7 +197,6 @@ export default function BookingContainer({ bike }: BookingContainerProps) {
         }
       }
 
-      // Фінальна перевірка CVC на довжину та заборону "000"
       if (cardData.cvc.length < 3 || cardData.cvc === "000") {
         cardErrors.push("Invalid CVC security code");
       }
