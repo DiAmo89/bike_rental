@@ -36,7 +36,12 @@ export default function RegisterForm() {
     setError(null);
     setIsLoading(true);
 
-    const validation = registerSchema.safeParse(formData);
+    const normalizedData = {
+      ...formData,
+      email: formData.email.toLowerCase().trim(),
+    };
+
+    const validation = registerSchema.safeParse(normalizedData);
 
     if (!validation.success) {
       const errors = validation.error.flatten().fieldErrors;
@@ -46,14 +51,14 @@ export default function RegisterForm() {
       return;
     }
 
-    const result = await registerUser(formData);
+    const result = await registerUser(normalizedData);
 
     if (result.error) {
       setError(result.error);
       setIsLoading(false);
     } else {
       const signInResult = await signIn("credentials", {
-        email: formData.email,
+        email: normalizedData.email,
         password: formData.password,
         redirect: false,
       });
@@ -197,10 +202,7 @@ export default function RegisterForm() {
         onClick={handleGoogleLogin}
         disabled={isLoading}
       >
-        <span className="flex items-center gap-2">
-          {/* Можна додати іконку Google тут */}
-          Google
-        </span>
+        <span className="flex items-center gap-2">Google</span>
       </Button>
 
       <div className="mt-8 text-center text-sm text-zinc-500">

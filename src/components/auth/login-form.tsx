@@ -36,7 +36,12 @@ export default function LoginForm() {
     setError(null);
     setIsLoading(true);
 
-    const validation = loginSchema.safeParse(formData);
+    const normalizedData = {
+      ...formData,
+      email: formData.email.toLowerCase().trim(),
+    };
+
+    const validation = loginSchema.safeParse(normalizedData);
 
     if (!validation.success) {
       const fieldErrors = validation.error.flatten().fieldErrors;
@@ -47,7 +52,7 @@ export default function LoginForm() {
     }
 
     const result = await signIn("credentials", {
-      email: formData.email,
+      email: normalizedData.email,
       password: formData.password,
       redirect: false,
     });
