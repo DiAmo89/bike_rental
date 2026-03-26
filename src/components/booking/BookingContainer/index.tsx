@@ -25,6 +25,8 @@ export default function BookingContainer({ bike }: BookingContainerProps) {
 
   const [errors, setErrors] = useState<Record<string, string[]>>({});
   const [isLoading, setIsLoading] = useState(false);
+  const [isCheckingAvailability, setIsCheckingAvailability] = useState(false);
+  const [isAvailable, setIsAvailable] = useState(true);
   const [showSuccess, setShowSuccess] = useState(false);
 
   const [contactData, setContactData] = useState({
@@ -71,6 +73,43 @@ export default function BookingContainer({ bike }: BookingContainerProps) {
     return total.toFixed(2);
   };
 
+  useEffect(() => {
+    const checkAvailability = async () => {
+      if (startDate && endDate && new Date(endDate) > new Date(startDate)) {
+        setIsCheckingAvailability(true);
+        try {
+          const res = await fetch(
+            `/api/booking/create?bikeId=${bike.id}&startDate=${startDate}&endDate=${endDate}`,
+          );
+          const data = await res.json();
+
+          if (!data.available) {
+            setIsAvailable(false);
+            setErrors((prev) => ({
+              ...prev,
+              server: [
+                "This bike is already booked for these dates. Please choose others.",
+              ],
+            }));
+          } else {
+            setIsAvailable(true);
+            setErrors((prev) => {
+              const newErrors = { ...prev };
+              delete newErrors.server;
+              return newErrors;
+            });
+          }
+        } catch (err) {
+          console.error("Availability check failed:", err);
+        } finally {
+          setIsCheckingAvailability(false);
+        }
+      }
+    };
+
+    checkAvailability();
+  }, [startDate, endDate, bike.id]);
+
   const handleContactChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setContactData((prev) => ({ ...prev, [name]: value }));
@@ -95,20 +134,13 @@ export default function BookingContainer({ bike }: BookingContainerProps) {
         .trim();
     } else if (name === "expiryDate") {
       let cleanValue = value.replace(/\D/g, "");
-
-      if (cleanValue.length >= 1) {
-        const firstDigit = parseInt(cleanValue[0]);
-        if (firstDigit > 1) {
-          cleanValue = "0" + cleanValue;
-        }
-      }
-
+      if (cleanValue.length >= 1 && parseInt(cleanValue[0]) > 1)
+        cleanValue = "0" + cleanValue;
       if (cleanValue.length >= 2) {
         const month = parseInt(cleanValue.substring(0, 2));
         if (month > 12) cleanValue = "12" + cleanValue.substring(2);
         if (cleanValue.substring(0, 2) === "00")
           cleanValue = "01" + cleanValue.substring(2);
-
         formattedValue =
           cleanValue.substring(0, 2) +
           (cleanValue.length > 2 ? "/" + cleanValue.substring(2, 4) : "");
@@ -131,38 +163,28 @@ export default function BookingContainer({ bike }: BookingContainerProps) {
           cardValidationErrors.push("Card number cannot consist of only zeros");
         }
       }
-
       if (name === "cvc" && formattedValue === "000") {
         cardValidationErrors.push("Invalid CVC code (cannot be 000)");
       }
-
       if (name === "expiryDate" && formattedValue.length === 5) {
         const expiryParts = formattedValue.split("/");
         const month = parseInt(expiryParts[0], 10);
         const year = parseInt("20" + expiryParts[1], 10);
-
         const now = new Date();
-        const currentYear = now.getFullYear();
-        const currentMonth = now.getMonth() + 1;
-
-        if (month < 1 || month > 12) {
+        if (month < 1 || month > 12)
           cardValidationErrors.push("Invalid month (01-12)");
-        } else if (year < currentYear) {
-          cardValidationErrors.push("Card has expired (year in the past)");
-        } else if (year === currentYear && month < currentMonth) {
-          cardValidationErrors.push("Card has expired (month in the past)");
+        else if (
+          year < now.getFullYear() ||
+          (year === now.getFullYear() && month < now.getMonth() + 1)
+        ) {
+          cardValidationErrors.push("Card has expired");
         }
       }
 
-      if (cardValidationErrors.length > 0) {
+      if (cardValidationErrors.length > 0)
         newErrors.card = cardValidationErrors;
-      } else if (
-        name === "expiryDate" ||
-        name === "cardNumber" ||
-        name === "cvc"
-      ) {
+      else if (["expiryDate", "cardNumber", "cvc"].includes(name))
         delete newErrors.card;
-      }
 
       return newErrors;
     });
@@ -174,19 +196,16 @@ export default function BookingContainer({ bike }: BookingContainerProps) {
       .then((data) => {
         setDbAccessories(data);
         const initialOptions: Record<string, boolean> = {};
-        data.forEach(
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          (acc: any) => {
-            initialOptions[acc.id] = false;
-          },
-        );
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        data.forEach((acc: any) => {
+          initialOptions[acc.id] = false;
+        });
         setOptions(initialOptions);
       });
   }, []);
 
   const handleConfirmOrder = async () => {
     setIsLoading(true);
-
     const validation = bookingSchema.safeParse({
       ...contactData,
       startDate,
@@ -196,7 +215,8 @@ export default function BookingContainer({ bike }: BookingContainerProps) {
     if (!validation.success) {
       setErrors((prev) => ({
         ...prev,
-        ...(validation.error.flatten().fieldErrors as Record<string, string[]>),
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        ...(validation.error.flatten().fieldErrors as any),
       }));
       setIsLoading(false);
       return;
@@ -204,32 +224,11 @@ export default function BookingContainer({ bike }: BookingContainerProps) {
 
     if (paymentMethod === "card") {
       const cardErrors: string[] = [];
-      const expiryParts = cardData.expiryDate.split("/");
       const cardDigits = cardData.cardNumber.replace(/\s/g, "");
-
-      if (cardDigits.length < 16) {
+      if (cardDigits.length < 16 || /^0+$/.test(cardDigits))
         cardErrors.push("Invalid card number");
-      } else if (/^0+$/.test(cardDigits)) {
-        cardErrors.push("Card number cannot be all zeros");
-      }
-
-      if (expiryParts.length !== 2 || cardData.expiryDate.length !== 5) {
-        cardErrors.push("Expiry date must be MM/YY");
-      } else {
-        const month = parseInt(expiryParts[0], 10);
-        const year = parseInt("20" + expiryParts[1], 10);
-        const now = new Date();
-        if (
-          year < now.getFullYear() ||
-          (year === now.getFullYear() && month < now.getMonth() + 1)
-        ) {
-          cardErrors.push("Card has expired");
-        }
-      }
-
-      if (cardData.cvc.length < 3 || cardData.cvc === "000") {
-        cardErrors.push("Invalid CVC security code");
-      }
+      if (cardData.cvc.length < 3 || cardData.cvc === "000")
+        cardErrors.push("Invalid CVC");
 
       if (cardErrors.length > 0) {
         setErrors((prev) => ({ ...prev, card: cardErrors }));
@@ -239,7 +238,6 @@ export default function BookingContainer({ bike }: BookingContainerProps) {
     }
 
     const finalPrice = calculateFinalPrice();
-
     const selectedAccessoryIds = Object.keys(options).filter(
       (id) => options[id],
     );
@@ -258,7 +256,16 @@ export default function BookingContainer({ bike }: BookingContainerProps) {
       });
 
       const result = await response.json();
-      if (!response.ok) throw new Error(result.error || "Booking failed");
+
+      if (!response.ok) {
+        if (response.status === 409) {
+          setIsAvailable(false);
+          throw new Error(
+            result.error || "This bike is already booked for these dates.",
+          );
+        }
+        throw new Error(result.error || "Booking failed");
+      }
 
       setShowSuccess(true);
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -278,8 +285,8 @@ export default function BookingContainer({ bike }: BookingContainerProps) {
 
       <div className="lg:col-span-2 space-y-12">
         {errors.server && (
-          <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-xl text-sm">
-            {errors.server[0]}
+          <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-xl text-sm font-medium animate-shake">
+            ⚠️ {errors.server[0]}
           </div>
         )}
 
@@ -313,8 +320,13 @@ export default function BookingContainer({ bike }: BookingContainerProps) {
           options={options}
           dbAccessories={dbAccessories}
           onConfirm={handleConfirmOrder}
-          isLoading={isLoading}
+          isLoading={isLoading || isCheckingAvailability}
         />
+        {!isAvailable && startDate && endDate && (
+          <p className="mt-4 text-center text-xs text-red-500 font-bold uppercase tracking-wider">
+            ❌ This bike is already reserved for those dates!
+          </p>
+        )}
       </div>
     </div>
   );
