@@ -5,6 +5,10 @@ import { db } from "@/db/db";
 import { revalidatePath } from "next/cache";
 import { requireAdmin } from "@/lib/auth/requireAdmin";
 import { redirect } from "next/navigation";
+import {
+  validateCategoryName,
+  validateImageUrl,
+} from "@/lib/category-validation";
 
 type CategoryFormValues = {
   name: string;
@@ -76,6 +80,23 @@ export async function createCategoryAction(
   formData: FormData,
 ): Promise<CreateCategoryState> {
   const values = getCategoryFormValues(formData);
+
+  // Client-side validation on server
+  const nameError = validateCategoryName(values.name);
+  if (nameError) {
+    return {
+      error: nameError,
+      values,
+    };
+  }
+
+  const imageError = validateImageUrl(values.image);
+  if (imageError) {
+    return {
+      error: imageError,
+      values,
+    };
+  }
 
   try {
     await createCategoryRecord(values);

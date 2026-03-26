@@ -4,8 +4,8 @@ import { updateProfile } from "@/app/actions/updateProfile";
 import { CurrentUser } from "@/types/CurrentUser";
 import { useActionState, useEffect, useRef, useState } from "react";
 import AvatarUpload from "./AvatarUpload";
-import SubmitButton from "./SubmitButton";
 import { UpdateProfileState } from "./model/profile.types";
+import SubmitButton from "../ui/submit-form-button";
 
 type Props = {
   user: CurrentUser;
@@ -19,6 +19,7 @@ export default function EditProfileForm({ user }: Props) {
     fieldErrors: {},
     values: {
       avatar: user.avatar ?? "",
+      avatarKey: user.avatarKey ?? "",
       full_name: user.full_name,
       telephone: user.telephone ?? "",
     },
@@ -27,15 +28,16 @@ export default function EditProfileForm({ user }: Props) {
   const [state, formAction] = useActionState(updateProfile, initialState);
 
   const [showSuccess, setShowSuccess] = useState(false);
-  const [avatarUrl, setAvatarUrl] = useState(initialState.values.avatar);
+  const [avatar, setAvatar] = useState({
+    url: initialState.values.avatar,
+    key: initialState.values.avatarKey,
+  });
   const [isUploadingAvatar, setIsUploadingAvatar] = useState(false);
   const [isDirty, setIsDirty] = useState(false);
 
-  // refs для input
   const fullNameRef = useRef<HTMLInputElement>(null);
   const telephoneRef = useRef<HTMLInputElement>(null);
 
-  // фиксируем initial values один раз
   const initialValuesRef = useRef(initialState.values);
   const initialValues = initialValuesRef.current;
 
@@ -49,20 +51,21 @@ export default function EditProfileForm({ user }: Props) {
     const changed =
       fullName !== initialValues.full_name ||
       telephone !== initialValues.telephone ||
-      avatarUrl !== initialValues.avatar;
+      avatar.url !== initialValues.avatar ||
+      avatar.key !== initialValues.avatarKey;
 
     setIsDirty(changed);
   }
 
   useEffect(() => {
     checkIsDirty();
-  }, [avatarUrl]);
+  }, [avatar]);
 
   useEffect(() => {
     if (!state?.success || !state?.successMessage) return;
 
     setShowSuccess(true);
-    setIsDirty(false); // сброс dirty после сохранения
+    setIsDirty(false);
 
     const timer = setTimeout(() => {
       setShowSuccess(false);
@@ -83,8 +86,9 @@ export default function EditProfileForm({ user }: Props) {
     >
       <div>
         <AvatarUpload
-          value={avatarUrl}
-          onChange={setAvatarUrl}
+          value={avatar.url}
+          assetKey={avatar.key}
+          onChange={setAvatar}
           onUploadingChange={setIsUploadingAvatar}
         />
 
@@ -117,9 +121,7 @@ export default function EditProfileForm({ user }: Props) {
           />
           <div className="min-h-5">
             {telephoneError && (
-              <p className="mt-1 text-sm text-red-600">
-                {telephoneError}
-              </p>
+              <p className="mt-1 text-sm text-red-600">{telephoneError}</p>
             )}
           </div>
         </div>
@@ -130,9 +132,7 @@ export default function EditProfileForm({ user }: Props) {
 
         <div className="min-h-5">
           {showSuccess && state?.successMessage && (
-            <p className="text-sm text-green-600">
-              {state.successMessage}
-            </p>
+            <p className="text-sm text-green-600">{state.successMessage}</p>
           )}
         </div>
       </div>

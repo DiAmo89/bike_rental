@@ -4,13 +4,8 @@ import { useState, ChangeEvent, FormEvent } from "react";
 import { createBike } from "@/app/api/actions-bike/create-bike";
 import { Category } from "@/types/Category";
 import BikeImageUpload from "@/components/admin/bikes/BikeImageUpload";
-import BikeSubmitButton from "./bikes/BikeSubmitButton";
-import {
-  isValidBikePriceInput,
-  isValidBikeTextInput,
-  validateBikePrice,
-  validateBikeTextField,
-} from "@/lib/bike-validation";
+import SubmitButton from "../ui/submit-form-button";
+import { isValidBikePriceInput, isValidBikeTextInput, validateBikePrice, validateBikeTextField } from "@/lib/bike-validation";
 
 type AddBikeModalProps = {
   open: boolean;
@@ -98,17 +93,6 @@ export default function AddBikeModal({
       return;
     }
 
-    const descriptionError = validateBikeTextField(
-      "Description",
-      form.description,
-    );
-
-    if (descriptionError) {
-      setLoading(false);
-      setError(descriptionError);
-      return;
-    }
-
     const priceError = validateBikePrice(form.price_per_day);
 
     if (priceError) {
@@ -149,7 +133,6 @@ export default function AddBikeModal({
       >
         <h2 className="text-xl font-bold mb-4">Add Bike</h2>
 
-        {/* 🔥 IMAGE UPLOAD */}
         <BikeImageUpload
           value={form.image}
           onChange={(url) => setForm((prev) => ({ ...prev, image: url }))}
@@ -223,9 +206,10 @@ export default function AddBikeModal({
             Cancel
           </button>
 
-          <BikeSubmitButton disabled={loading || isUploadingImage} />
+          <SubmitButton disabled={loading || isUploadingImage} />
         </div>
       </form>
     </div>
   );
 }
+

@@ -9,6 +9,7 @@ export const users = pgTable("users", {
   phone: varchar("phone", { length: 30 }),
   role: userRoleEnum("role").notNull().default("CUSTOMER"),
   avatar: varchar("avatar", { length: 255 }),
+  avatarKey: varchar("avatar_key", { length: 255 }),
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at")
     .notNull()
