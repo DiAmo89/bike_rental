@@ -11,15 +11,24 @@ interface PageProps {
 
 export default async function BikeDetailPage({ params, searchParams }: PageProps) {
   const { id } = await params;
-  const sParams = await searchParams; // Получаем параметры поиска из URL
+  const sParams = await searchParams;
   const bike = await bikesService.getBikeById(id);
 
   if (!bike) {
     notFound();
   }
 
-  // Создаем строку запроса для ссылки "Назад"
-  const queryString = new URLSearchParams(sParams as any).toString();
+ 
+  const urlParams = new URLSearchParams();
+  Object.entries(sParams).forEach(([key, value]) => {
+    if (typeof value === "string") {
+      urlParams.append(key, value);
+    } else if (Array.isArray(value)) {
+      value.forEach((v) => urlParams.append(key, v));
+    }
+  });
+
+  const queryString = urlParams.toString();
   const backUrl = `/catalog${queryString ? `?${queryString}` : ""}`;
 
   const displayPrice = Number(bike.pricePerDay);
@@ -29,7 +38,7 @@ export default async function BikeDetailPage({ params, searchParams }: PageProps
     <div className="min-h-screen bg-[#f8f9fa] py-12 px-4">
       <div className="container mx-auto max-w-6xl">
         <Link
-          href={backUrl} // ТЕПЕРЬ ВЕДЕТ НА КАТАЛОГ С ФИЛЬТРАМИ
+          href={backUrl}
           className="inline-flex items-center text-xs font-bold text-gray-400 hover:text-black transition-colors mb-2 group uppercase tracking-widest"
         >
           <span className="mr-2 transition-transform group-hover:-translate-x-1">
@@ -39,7 +48,7 @@ export default async function BikeDetailPage({ params, searchParams }: PageProps
         </Link>
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-          {/* Левая колонка */}
+         
           <div className="lg:col-span-8 space-y-6">
             <div className="relative w-full rounded-[1.8rem] overflow-hidden">
               {bike.image ? (
@@ -72,7 +81,7 @@ export default async function BikeDetailPage({ params, searchParams }: PageProps
             </div>
           </div>
 
-          {/* Правая колонка */}
+  
           <div className="lg:col-span-4 sticky top-10">
             <div className="bg-white p-8 rounded-[2.5rem] shadow-xl shadow-gray-200/50 border border-gray-100 flex flex-col gap-6">
               <div className="space-y-4">

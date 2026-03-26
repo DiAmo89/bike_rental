@@ -13,7 +13,7 @@ function CatalogContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
 
-  // Получаем текущую строку параметров (например: category=Road&status=Available)
+ 
   const currentQueryParams = searchParams.toString();
 
   const catFilter = searchParams.get("category") || "all";
@@ -25,7 +25,6 @@ function CatalogContent() {
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(6);
 
-  // Сохраняем URL в sessionStorage для "умного" возврата
   useEffect(() => {
     const currentFullUrl = window.location.pathname + window.location.search;
     if (window.location.pathname === '/catalog') {
@@ -33,7 +32,7 @@ function CatalogContent() {
     }
   }, [searchParams]);
 
-  // Загрузка данных при изменении дат
+  
   useEffect(() => {
     const loadData = async () => {
       setLoading(true); 
@@ -54,7 +53,7 @@ function CatalogContent() {
     loadData();
   }, [startDate, endDate]); 
 
-  // Фильтрация и сортировка
+  
   const filteredBikes = useMemo(() => {
     let result = [...allBikes];
 
@@ -78,7 +77,7 @@ function CatalogContent() {
     return result;
   }, [allBikes, catFilter, statusFilter, sortBy]);
 
-  // Пагинация
+  
   const totalPages = Math.ceil(filteredBikes.length / itemsPerPage);
   const safePage = currentPage > totalPages && totalPages > 0 ? 1 : currentPage;
   const startIndex = (safePage - 1) * itemsPerPage;
@@ -108,7 +107,7 @@ function CatalogContent() {
               <BikeCard 
                 key={bike.id} 
                 bike={bike} 
-                // ВАЖНО: передаем текущие фильтры в каждую карточку
+              
                 searchParams={currentQueryParams} 
               />
             ))}

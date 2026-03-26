@@ -3,7 +3,7 @@ import Link from "next/link";
 
 interface BikeCardProps {
   bike: Bike;
-  searchParams?: string; // Добавили возможность принимать строку параметров
+  searchParams?: string; 
 }
 
 export default function BikeCard({ bike, searchParams }: BikeCardProps) {
@@ -11,12 +11,12 @@ export default function BikeCard({ bike, searchParams }: BikeCardProps) {
 
   return (
     <Link
-      // Теперь ссылка включает параметры фильтрации, если они есть
+     
       href={`/catalog/${bike.id}${searchParams ? `?${searchParams}` : ""}`}
       className="group bg-white rounded-2xl border border-gray-100 overflow-hidden hover:shadow-xl transition-all duration-300 flex flex-col h-full"
     >
       <div className="flex flex-col h-full">
-        {/* Изображение */}
+      
         <div className="relative h-56 w-full bg-gray-50 overflow-hidden">
           {bike.image ? (
             <img
@@ -31,7 +31,7 @@ export default function BikeCard({ bike, searchParams }: BikeCardProps) {
             </div>
           )}
 
-          {/* Статус */}
+         
           <div
             className={`absolute top-3 right-3 px-2 py-1 rounded-full text-[10px] font-black uppercase tracking-wider text-white shadow-sm ${
               isAvailable ? "bg-green-500" : "bg-red-500"
@@ -41,7 +41,7 @@ export default function BikeCard({ bike, searchParams }: BikeCardProps) {
           </div>
         </div>
 
-        {/* Контент */}
+      
         <div className="p-4 flex flex-col grow">
           <p className="text-xs text-blue-500 font-bold uppercase tracking-wider">
             {bike.category?.name || "No category"}
@@ -55,7 +55,7 @@ export default function BikeCard({ bike, searchParams }: BikeCardProps) {
             {bike.description || "No description available"}
           </p>
 
-          {/* Цена и кнопка */}
+          
           <div className="mt-4 pt-4 border-t border-gray-100 flex items-center justify-between">
             <div className="flex flex-col">
               <span className="text-xl font-black text-gray-900">
