@@ -28,7 +28,6 @@ export default function PaymentSection({
       </div>
 
       <div className="space-y-4">
-        {/* Card Option */}
         <label
           className={`flex items-center justify-between p-4 rounded-xl border-2 transition-all cursor-pointer ${
             isCard
@@ -57,7 +56,6 @@ export default function PaymentSection({
           <CreditCard className="h-5 w-5 text-zinc-400" />
         </label>
 
-        {/* Spot Option */}
         <label
           className={`flex items-center justify-between p-4 rounded-xl border-2 transition-all cursor-pointer ${
             paymentMethod === "spot"
