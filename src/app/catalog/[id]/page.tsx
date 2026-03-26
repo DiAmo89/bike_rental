@@ -74,13 +74,15 @@ export default async function BikeDetailPage({ params, searchParams }: PageProps
               <h3 className="text-xs font-black uppercase text-gray-400 tracking-widest mb-6">
                 About this bike
               </h3>
-              <p className="text-gray-600 leading-relaxed text-lg">
+              <p className="text-gray-600 leading-relaxed text-lg ">
                 {bike.description ||
                   "This premium model is meticulously maintained and ready for your next adventure."}
               </p>
+               <p className="text-gray-600 leading-relaxed text-lg ">
+               <br /> Pedals are included in the set and can be selected individually.
+              </p>
             </div>
           </div>
-
   
           <div className="lg:col-span-4 sticky top-10">
             <div className="bg-white p-8 rounded-[2.5rem] shadow-xl shadow-gray-200/50 border border-gray-100 flex flex-col gap-6">
