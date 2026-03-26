@@ -84,7 +84,7 @@ export default function HeroSection() {
 
       <h1
         ref={textRef}
-        className="absolute z-20  md:pl-[14vw] pl-[7vw] md:pt-[60vw] pt-[70vw] lg:pl-[16vw] lg:pt-[30vw] text-balance text-[6vw] md:text-[4vw] font-bold leading-tight"
+        className="absolute z-20 text-white md:pl-[14vw] pl-[7vw] md:pt-[60vw] pt-[70vw] lg:pl-[16vw] lg:pt-[30vw] text-balance text-[6vw] md:text-[4vw] font-bold leading-tight"
       >
         Savor the freedom <br />
         and joy of every <br />
