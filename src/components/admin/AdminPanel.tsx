@@ -23,7 +23,7 @@ const toLocalDateString = (date: Date) => {
 };
 
 const isActiveBooking = (booking: BookingItem, today: string) =>
-  booking.startDate <= today && booking.endDate >= today;
+  booking.endDate >= today;
 
 export default function AdminPanel() {
   const [bikes, setBikes] = useState<Bike[]>([]);
@@ -72,6 +72,20 @@ export default function AdminPanel() {
     fetch("/api/actions-accessory")
       .then((res) => res.json())
       .then((accs) => setAccessories(accs));
+
+    const interval = setInterval(loadActiveOrders, 30000);
+
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === "visible") {
+        loadActiveOrders();
+      }
+    };
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+
+    return () => {
+      clearInterval(interval);
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+    };
   }, []);
 
   const handleAddBike = () => setShowAddBike(true);
