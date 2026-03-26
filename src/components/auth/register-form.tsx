@@ -3,7 +3,7 @@
 import { X, Loader2 } from "lucide-react";
 import Link from "next/link";
 import { Button } from "../ui/button";
-import { signIn, useSession } from "next-auth/react"; // Додав useSession
+import { signIn, useSession } from "next-auth/react";
 import { useState, useEffect } from "react";
 import { registerUser } from "@/app/api/auth/register/action";
 import { registerSchema } from "@/lib/schemas/auth-schema";
@@ -11,7 +11,7 @@ import { useRouter } from "next/navigation";
 
 export default function RegisterForm() {
   const router = useRouter();
-  const { status } = useSession(); // Отримуємо статус сесії
+  const { status } = useSession();
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -76,40 +76,40 @@ export default function RegisterForm() {
   if (status === "loading") return null;
 
   return (
-    <div className="relative mx-auto w-full max-w-xl rounded-xl border border-zinc-800 bg-zinc-950 p-6 shadow-xl text-zinc-50">
-      <div className="absolute top-3 right-3">
+    <div className="relative mx-auto w-full max-w-xl rounded-2xl border border-zinc-200 bg-white p-8 shadow-sm text-zinc-900">
+      <div className="absolute top-4 right-4">
         <Link href="/">
           <Button
-            variant="outline"
+            variant="ghost"
             type="button"
             size="icon"
-            className="group border-zinc-800 hover:border-gray-400 bg-transparent h-8 w-8"
+            className="group hover:bg-zinc-100 h-8 w-8 rounded-full"
           >
-            <X className="h-4 w-4 text-amber-50 transition-all duration-500 group-hover:rotate-180 group-hover:text-white group-hover:scale-110" />
+            <X className="h-4 w-4 text-zinc-400 transition-all duration-500 group-hover:rotate-180 group-hover:text-zinc-900" />
           </Button>
         </Link>
       </div>
 
-      <div className="flex flex-col space-y-1.5 pb-6">
-        <h3 className="text-2xl font-semibold tracking-tight text-zinc-50">
+      <div className="flex flex-col space-y-1.5 pb-8">
+        <h3 className="text-2xl font-bold tracking-tight text-zinc-900">
           Create an account
         </h3>
-        <p className="text-sm text-zinc-400">
+        <p className="text-sm text-zinc-500">
           Enter your details below to register for BlablaBike
         </p>
       </div>
 
       {error && (
-        <div className="mb-4 rounded-md bg-red-500/10 p-3 text-sm text-red-500 border border-red-500/20 text-center">
-          {error}
+        <div className="mb-6 rounded-xl bg-red-50 p-4 text-sm text-red-600 border border-red-100 text-center font-medium italic">
+          ⚠️ {error}
         </div>
       )}
 
-      <form className="space-y-4" onSubmit={handleSubmit} noValidate>
-        <div className="space-y-2">
+      <form className="space-y-5" onSubmit={handleSubmit} noValidate>
+        <div className="space-y-1.5">
           <label
             htmlFor="name"
-            className="text-sm font-medium leading-none text-zinc-50"
+            className="text-[10px] font-bold uppercase tracking-widest text-zinc-400 ml-1"
           >
             Full Name
           </label>
@@ -121,14 +121,14 @@ export default function RegisterForm() {
             type="text"
             placeholder="John Doe"
             required
-            className="flex h-10 w-full rounded-md border border-zinc-800 bg-zinc-900/50 px-3 py-2 text-sm transition-colors placeholder:text-zinc-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-300 disabled:opacity-50"
+            className="flex w-full rounded-lg border border-zinc-300 bg-zinc-50/50 px-3 py-3 text-sm transition-all outline-none placeholder:text-zinc-400 focus:ring-2 focus:ring-[#e6ff2a] focus:border-zinc-300 disabled:opacity-50"
           />
         </div>
 
-        <div className="space-y-2">
+        <div className="space-y-1.5">
           <label
             htmlFor="email"
-            className="text-sm font-medium leading-none text-zinc-50"
+            className="text-[10px] font-bold uppercase tracking-widest text-zinc-400 ml-1"
           >
             Email address
           </label>
@@ -140,15 +140,14 @@ export default function RegisterForm() {
             type="email"
             placeholder="name@example.com"
             required
-            className="flex h-10 w-full rounded-md border border-zinc-800 bg-zinc-900/50 px-3 py-2 text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-300"
+            className="flex w-full rounded-lg border border-zinc-300 bg-zinc-50/50 px-3 py-3 text-sm transition-all outline-none placeholder:text-zinc-400 focus:ring-2 focus:ring-[#e6ff2a] focus:border-zinc-300"
           />
         </div>
 
-        <div className="space-y-2">
+        <div className="space-y-1.5">
           <label
             htmlFor="password"
-            title="Password"
-            className="text-sm font-medium leading-none text-zinc-50"
+            className="text-[10px] font-bold uppercase tracking-widest text-zinc-400 ml-1"
           >
             Password
           </label>
@@ -160,19 +159,19 @@ export default function RegisterForm() {
             type="password"
             required
             placeholder="••••••••"
-            className="flex h-10 w-full rounded-md border border-zinc-800 bg-zinc-900/50 px-3 py-2 text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-300"
+            className="flex w-full rounded-lg border border-zinc-300 bg-zinc-50/50 px-3 py-3 text-sm transition-all outline-none placeholder:text-zinc-400 focus:ring-2 focus:ring-[#e6ff2a] focus:border-zinc-300"
           />
         </div>
 
         <button
           type="submit"
           disabled={isLoading}
-          className="inline-flex w-full items-center justify-center rounded-md bg-zinc-50 px-4 py-2 text-sm font-medium text-zinc-950 transition-colors hover:bg-zinc-200 disabled:opacity-50"
+          className="inline-flex w-full items-center justify-center rounded-xl bg-black px-4 py-4 text-sm font-bold text-white transition-all hover:bg-zinc-800 disabled:opacity-50 shadow-lg shadow-zinc-200"
         >
           {isLoading ? (
             <>
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              Processing...
+              Creating account...
             </>
           ) : (
             "Sign Up"
@@ -180,12 +179,12 @@ export default function RegisterForm() {
         </button>
       </form>
 
-      <div className="relative my-6">
+      <div className="relative my-8">
         <div className="absolute inset-0 flex items-center">
-          <span className="w-full border-t border-zinc-800" />
+          <span className="w-full border-t border-zinc-100" />
         </div>
-        <div className="relative flex justify-center text-xs uppercase">
-          <span className="bg-zinc-950 px-2 text-zinc-500 font-mono">
+        <div className="relative flex justify-center text-[10px] uppercase tracking-tighter">
+          <span className="bg-white px-4 text-zinc-400 font-bold">
             Or continue with
           </span>
         </div>
@@ -194,18 +193,21 @@ export default function RegisterForm() {
       <Button
         variant="outline"
         type="button"
-        className="w-full py-2 bg-black border-zinc-800 hover:bg-zinc-900 hover:text-white text-zinc-300 transition-all duration-300 rounded-sm font-mono"
+        className="w-full py-6 bg-white border-zinc-200 hover:bg-zinc-50 text-zinc-900 transition-all duration-300 rounded-xl font-bold shadow-sm"
         onClick={handleGoogleLogin}
         disabled={isLoading}
       >
-        Google
+        <span className="flex items-center gap-2">
+          {/* Можна додати іконку Google тут */}
+          Google
+        </span>
       </Button>
 
-      <div className="mt-4 text-center text-sm text-zinc-400">
+      <div className="mt-8 text-center text-sm text-zinc-500">
         Already have an account?{" "}
         <Link
           href="/login"
-          className="font-medium text-zinc-50 underline underline-offset-4 hover:text-zinc-300"
+          className="font-bold text-zinc-900 underline underline-offset-4 hover:text-black"
         >
           Log in
         </Link>
