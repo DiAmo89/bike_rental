@@ -47,6 +47,7 @@ export default function BikesTable({
       await deleteBike(bikeToDelete);
       setShowDeleteModal(false);
       setBikeToDelete(null);
+      setIsDeleting(false);
       await onDeleteSuccess();
     } catch (error) {
       console.error("Delete failed:", error);
