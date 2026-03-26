@@ -1,22 +1,22 @@
 import { Bike } from "@/types/Bike";
-
 import Link from "next/link";
 
 interface BikeCardProps {
   bike: Bike;
+  searchParams?: string; 
 }
 
-export default function BikeCard({ bike }: BikeCardProps) {
+export default function BikeCard({ bike, searchParams }: BikeCardProps) {
   const isAvailable = bike.isActive;
-  
 
   return (
     <Link
-      href={`/catalog/${bike.id}`}
+     
+      href={`/catalog/${bike.id}${searchParams ? `?${searchParams}` : ""}`}
       className="group bg-white rounded-2xl border border-gray-100 overflow-hidden hover:shadow-xl transition-all duration-300 flex flex-col h-full"
     >
       <div className="flex flex-col h-full">
-     
+      
         <div className="relative h-56 w-full bg-gray-50 overflow-hidden">
           {bike.image ? (
             <img
@@ -41,7 +41,7 @@ export default function BikeCard({ bike }: BikeCardProps) {
           </div>
         </div>
 
-       
+      
         <div className="p-4 flex flex-col grow">
           <p className="text-xs text-blue-500 font-bold uppercase tracking-wider">
             {bike.category?.name || "No category"}
@@ -55,7 +55,7 @@ export default function BikeCard({ bike }: BikeCardProps) {
             {bike.description || "No description available"}
           </p>
 
-    
+          
           <div className="mt-4 pt-4 border-t border-gray-100 flex items-center justify-between">
             <div className="flex flex-col">
               <span className="text-xl font-black text-gray-900">
@@ -66,7 +66,6 @@ export default function BikeCard({ bike }: BikeCardProps) {
               </span>
             </div>
 
-       
             <div
               className={`px-4 py-2 rounded font-semibold text-sm transition-colors ${
                 isAvailable
