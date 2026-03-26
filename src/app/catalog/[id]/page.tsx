@@ -6,25 +6,30 @@ import BikeAvailability from "@/components/catalog/bike-availability";
 
 interface PageProps {
   params: Promise<{ id: string }>;
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }
 
-export default async function BikeDetailPage({ params }: PageProps) {
+export default async function BikeDetailPage({ params, searchParams }: PageProps) {
   const { id } = await params;
+  const sParams = await searchParams; // Получаем параметры поиска из URL
   const bike = await bikesService.getBikeById(id);
 
   if (!bike) {
     notFound();
   }
 
+  // Создаем строку запроса для ссылки "Назад"
+  const queryString = new URLSearchParams(sParams as any).toString();
+  const backUrl = `/catalog${queryString ? `?${queryString}` : ""}`;
+
   const displayPrice = Number(bike.pricePerDay);
   const displayStatus = bike.isActive ? "Available" : "Busy";
 
   return (
-    // Убрали dark:bg-slate-950
     <div className="min-h-screen bg-[#f8f9fa] py-12 px-4">
       <div className="container mx-auto max-w-6xl">
         <Link
-          href="/catalog"
+          href={backUrl} // ТЕПЕРЬ ВЕДЕТ НА КАТАЛОГ С ФИЛЬТРАМИ
           className="inline-flex items-center text-xs font-bold text-gray-400 hover:text-black transition-colors mb-2 group uppercase tracking-widest"
         >
           <span className="mr-2 transition-transform group-hover:-translate-x-1">
@@ -38,7 +43,6 @@ export default async function BikeDetailPage({ params }: PageProps) {
           <div className="lg:col-span-8 space-y-6">
             <div className="relative w-full rounded-[1.8rem] overflow-hidden">
               {bike.image ? (
-                // Убрали dark:bg-slate-900 и dark:border-slate-800
                 <div className="bg-white p-2 rounded-[2.5rem] shadow-sm border border-gray-100 overflow-hidden">
                   <div className="relative h-[400px] md:h-[600px] w-full rounded-[2rem] overflow-hidden">
                     <BikeImage
@@ -61,7 +65,6 @@ export default async function BikeDetailPage({ params }: PageProps) {
               <h3 className="text-xs font-black uppercase text-gray-400 tracking-widest mb-6">
                 About this bike
               </h3>
-              {/* Убрали dark:text-gray-300 */}
               <p className="text-gray-600 leading-relaxed text-lg">
                 {bike.description ||
                   "This premium model is meticulously maintained and ready for your next adventure."}
@@ -71,7 +74,6 @@ export default async function BikeDetailPage({ params }: PageProps) {
 
           {/* Правая колонка */}
           <div className="lg:col-span-4 sticky top-10">
-            {/* Убрали dark-классы и тени для темной темы */}
             <div className="bg-white p-8 rounded-[2.5rem] shadow-xl shadow-gray-200/50 border border-gray-100 flex flex-col gap-6">
               <div className="space-y-4">
                 <h2 className="text-xl font-bold text-gray-900 mb-1">
@@ -139,7 +141,6 @@ export default async function BikeDetailPage({ params }: PageProps) {
               <div className="mt-2">
                 {bike.isActive ? (
                   <Link href={`/catalog/${bike.id}/booking`} className="block">
-                    {/* Убрали dark:hover:bg-white */}
                     <button className="w-full bg-[#e6ff2a] hover:bg-black hover:text-[#e6ff2a] text-black py-6 rounded-2xl font-black transition-all duration-300 uppercase tracking-widest text-sm shadow-lg active:scale-95">
                       Confirm & Book Now
                     </button>

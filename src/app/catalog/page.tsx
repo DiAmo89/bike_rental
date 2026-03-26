@@ -13,7 +13,9 @@ function CatalogContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
 
-  
+  // Получаем текущую строку параметров (например: category=Road&status=Available)
+  const currentQueryParams = searchParams.toString();
+
   const catFilter = searchParams.get("category") || "all";
   const statusFilter = searchParams.get("status") || "all";
   const sortBy = searchParams.get("sort") || "default";
@@ -23,15 +25,7 @@ function CatalogContent() {
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(6);
 
-
-  useEffect(() => {
-    const savedUrl = sessionStorage.getItem("lastCatalogUrl");
-    if (savedUrl && window.location.search === "" && window.location.pathname === "/catalog") {
-      router.replace(savedUrl);
-    }
-  }, [router]);
-
-  
+  // Сохраняем URL в sessionStorage для "умного" возврата
   useEffect(() => {
     const currentFullUrl = window.location.pathname + window.location.search;
     if (window.location.pathname === '/catalog') {
@@ -39,7 +33,7 @@ function CatalogContent() {
     }
   }, [searchParams]);
 
- 
+  // Загрузка данных при изменении дат
   useEffect(() => {
     const loadData = async () => {
       setLoading(true); 
@@ -48,7 +42,6 @@ function CatalogContent() {
         if (startDate) query.set("start", startDate);
         if (endDate) query.set("end", endDate);
 
-        
         const res = await fetch(`/api/bikes?${query.toString()}`);
         const data: Bike[] = await res.json();
         setAllBikes(data);
@@ -61,24 +54,21 @@ function CatalogContent() {
     loadData();
   }, [startDate, endDate]); 
 
- 
+  // Фильтрация и сортировка
   const filteredBikes = useMemo(() => {
     let result = [...allBikes];
 
-    
     if (catFilter !== "all") {
       result = result.filter(
         (b) => b.category?.name?.toLowerCase() === catFilter.toLowerCase()
       );
     }
 
-   
     if (statusFilter !== "all") {
       const isAvail = statusFilter === "Available";
       result = result.filter((b) => b.isActive === isAvail);
     }
 
-    
     if (sortBy === "low") {
       result.sort((a, b) => Number(a.pricePerDay) - Number(b.pricePerDay));
     } else if (sortBy === "high") {
@@ -88,13 +78,12 @@ function CatalogContent() {
     return result;
   }, [allBikes, catFilter, statusFilter, sortBy]);
 
-  
+  // Пагинация
   const totalPages = Math.ceil(filteredBikes.length / itemsPerPage);
   const safePage = currentPage > totalPages && totalPages > 0 ? 1 : currentPage;
   const startIndex = (safePage - 1) * itemsPerPage;
   const paginatedBikes = filteredBikes.slice(startIndex, startIndex + itemsPerPage);
 
-  
   useEffect(() => {
     setCurrentPage(1);
   }, [catFilter, statusFilter, sortBy, startDate, endDate]);
@@ -116,7 +105,12 @@ function CatalogContent() {
         <>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {paginatedBikes.map((bike) => (
-              <BikeCard key={bike.id} bike={bike} />
+              <BikeCard 
+                key={bike.id} 
+                bike={bike} 
+                // ВАЖНО: передаем текущие фильтры в каждую карточку
+                searchParams={currentQueryParams} 
+              />
             ))}
           </div>
           <div className="mt-12">
