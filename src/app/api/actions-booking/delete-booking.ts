@@ -11,15 +11,15 @@ export async function deleteBooking(id: string) {
       throw new Error("Booking ID is required for deletion");
     }
 
-   
     await db.delete(bookings).where(eq(bookings.id, id));
 
-    
+    revalidatePath("/admin");
     revalidatePath("/admin/bookings");
 
     return { success: true };
   } catch (err: unknown) {
-    const errorMessage = err instanceof Error ? err.message : "Failed to delete booking";
+    const errorMessage =
+      err instanceof Error ? err.message : "Failed to delete booking";
     console.error("Delete Booking Error:", errorMessage);
     throw new Error(errorMessage);
   }
