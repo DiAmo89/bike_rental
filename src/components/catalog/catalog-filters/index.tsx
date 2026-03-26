@@ -82,7 +82,7 @@ export default function CatalogFilters({
         >
           <option value="all">Status</option>
           <option value="Available">Available</option>
-          <option value="In Repair">Repair</option>
+          <option value="Busy">Busy</option>
         </select>
       </div>
 
