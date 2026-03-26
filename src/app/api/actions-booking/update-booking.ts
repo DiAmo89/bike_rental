@@ -7,7 +7,6 @@ import { revalidatePath } from "next/cache";
 
 export async function updateBooking(id: string, formData: FormData) {
   try {
-   
     const startDate = formData.get("startDate")?.toString();
     const endDate = formData.get("endDate")?.toString();
     const totalPrice = formData.get("totalPrice")?.toString();
@@ -16,11 +15,9 @@ export async function updateBooking(id: string, formData: FormData) {
     const email = formData.get("email")?.toString();
     const phone = formData.get("phone")?.toString();
 
-    
     if (!id) {
       throw new Error("Booking ID is required for update");
     }
-
 
     await db
       .update(bookings)
@@ -35,12 +32,13 @@ export async function updateBooking(id: string, formData: FormData) {
       })
       .where(eq(bookings.id, id));
 
-    
+    revalidatePath("/admin");
     revalidatePath("/admin/bookings");
-    
+
     return { success: true };
   } catch (err: unknown) {
-    const errorMessage = err instanceof Error ? err.message : "Failed to update booking";
+    const errorMessage =
+      err instanceof Error ? err.message : "Failed to update booking";
     console.error("Update Booking Error:", errorMessage);
     throw new Error(errorMessage);
   }

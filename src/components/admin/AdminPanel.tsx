@@ -49,7 +49,9 @@ export default function AdminPanel() {
   };
 
   const loadActiveOrders = async () => {
-    const res = await fetch("/api/actions-booking?mode=all");
+    const res = await fetch("/api/actions-booking?mode=all", {
+      cache: "no-store",
+    });
     const data = await res.json();
     const bookings: BookingItem[] = Array.isArray(data) ? data : [];
     const today = toLocalDateString(new Date());

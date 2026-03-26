@@ -6,7 +6,6 @@ import { revalidatePath } from "next/cache";
 
 export async function createBooking(formData: FormData) {
   try {
-  
     const userId = formData.get("userId")?.toString() || "";
     const bikeId = formData.get("bikeId")?.toString() || "";
     const firstName = formData.get("firstName")?.toString() || "";
@@ -17,11 +16,19 @@ export async function createBooking(formData: FormData) {
     const endDate = formData.get("endDate")?.toString() || "";
     const totalPrice = formData.get("totalPrice")?.toString() || "";
 
-    
-    if (!userId || !bikeId || !firstName || !lastName || !email || !phone || !startDate || !endDate || !totalPrice) {
+    if (
+      !userId ||
+      !bikeId ||
+      !firstName ||
+      !lastName ||
+      !email ||
+      !phone ||
+      !startDate ||
+      !endDate ||
+      !totalPrice
+    ) {
       throw new Error("Missing required fields");
     }
-
 
     await db.insert(bookings).values({
       userId: userId,
@@ -35,12 +42,12 @@ export async function createBooking(formData: FormData) {
       totalPrice: totalPrice,
     });
 
+    revalidatePath("/admin");
     revalidatePath("/admin/bookings");
     return { success: true };
-
   } catch (err: unknown) {
-   
-    const errorMessage = err instanceof Error ? err.message : "Failed to create booking";
+    const errorMessage =
+      err instanceof Error ? err.message : "Failed to create booking";
     console.error("Create Booking Error:", errorMessage);
     throw new Error(errorMessage);
   }

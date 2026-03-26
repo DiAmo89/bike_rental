@@ -7,6 +7,7 @@ import { authOptions } from "@/lib/auth/auth-options";
 import { bookingSchema } from "@/lib/schemas/auth-schema";
 import { NextResponse } from "next/server";
 import { bookingAccessories } from "@/db/tables/booking-accessories";
+import { revalidatePath } from "next/cache";
 
 export async function GET(req: Request) {
   try {
@@ -125,6 +126,8 @@ export async function POST(req: Request) {
 
       await db.insert(bookingAccessories).values(accessoryData);
     }
+
+    revalidatePath("/admin");
 
     return NextResponse.json(
       { success: true, bookingId: newBooking.id },
