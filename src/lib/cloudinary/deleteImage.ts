@@ -1,6 +1,9 @@
 import { cloudinary } from "@/lib/cloudinary";
 
-const ALLOWED_FOLDERS = ["blablabike/avatars"] as const;
+const ALLOWED_FOLDERS = [
+  "blablabike/avatars",
+  "blablabike/bikes",
+] as const;
 
 function isAllowedPublicId(publicId: string) {
   return ALLOWED_FOLDERS.some(

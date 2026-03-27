@@ -5,12 +5,14 @@ import ImageUploadField from "@/components/common/image-upload-field";
 
 type Props = {
   value: string;
-  onChange: (value: string) => void;
+  assetKey: string;
+  onChange: (value: { url: string; key: string }) => void;
   onUploadingChange?: Dispatch<SetStateAction<boolean>>;
 };
 
 export default function BikeImageUpload({
   value,
+  assetKey,
   onChange,
   onUploadingChange,
 }: Props) {
@@ -20,8 +22,8 @@ export default function BikeImageUpload({
       name="image"
       keyName="imageKey"
       value={value}
-      assetKey=""
-      onChange={(next) => onChange(next.url)}
+      assetKey={assetKey}
+      onChange={(next) => onChange({ url: next.url, key: next.key })}
       folder="blablabike/bikes"
       onUploadingChange={onUploadingChange}
       uploadErrorMessage="Image upload failed"

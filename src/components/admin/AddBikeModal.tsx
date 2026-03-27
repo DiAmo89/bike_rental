@@ -5,7 +5,12 @@ import { createBike } from "@/app/api/actions-bike/create-bike";
 import { Category } from "@/types/Category";
 import BikeImageUpload from "@/components/admin/bikes/BikeImageUpload";
 import SubmitButton from "../ui/submit-form-button";
-import { isValidBikePriceInput, isValidBikeTextInput, validateBikePrice, validateBikeTextField } from "@/lib/bike-validation";
+import {
+  isValidBikePriceInput,
+  isValidBikeTextInput,
+  validateBikePrice,
+  validateBikeTextField,
+} from "@/lib/bike-validation";
 
 type AddBikeModalProps = {
   open: boolean;
@@ -20,15 +25,17 @@ export default function AddBikeModal({
   onSuccess,
   categories,
 }: AddBikeModalProps) {
-  const [form, setForm] = useState({
+  const getEmptyForm = () => ({
     brand: "",
     model: "",
     description: "",
     price_per_day: "",
     image: "",
+    imageKey: "",
     bike_category_id: "",
   });
 
+  const [form, setForm] = useState(getEmptyForm());
   const [loading, setLoading] = useState(false);
   const [isUploadingImage, setIsUploadingImage] = useState(false);
   const [error, setError] = useState("");
@@ -49,18 +56,9 @@ export default function AddBikeModal({
       return;
     }
 
-    setForm({ ...form, [name]: value });
+    setForm((prev) => ({ ...prev, [name]: value }));
     if (error) setError("");
   };
-
-  const getEmptyForm = () => ({
-    brand: "",
-    model: "",
-    description: "",
-    price_per_day: "",
-    image: "",
-    bike_category_id: "",
-  });
 
   const handleClose = () => {
     setForm(getEmptyForm());
@@ -78,7 +76,6 @@ export default function AddBikeModal({
     setError("");
 
     const brandError = validateBikeTextField("Brand", form.brand);
-
     if (brandError) {
       setLoading(false);
       setError(brandError);
@@ -86,7 +83,6 @@ export default function AddBikeModal({
     }
 
     const modelError = validateBikeTextField("Model", form.model);
-
     if (modelError) {
       setLoading(false);
       setError(modelError);
@@ -94,7 +90,6 @@ export default function AddBikeModal({
     }
 
     const priceError = validateBikePrice(form.price_per_day);
-
     if (priceError) {
       setLoading(false);
       setError(priceError);
@@ -135,7 +130,14 @@ export default function AddBikeModal({
 
         <BikeImageUpload
           value={form.image}
-          onChange={(url) => setForm((prev) => ({ ...prev, image: url }))}
+          assetKey={form.imageKey}
+          onChange={({ url, key }) =>
+            setForm((prev) => ({
+              ...prev,
+              image: url,
+              imageKey: key,
+            }))
+          }
           onUploadingChange={setIsUploadingImage}
         />
 
@@ -212,4 +214,3 @@ export default function AddBikeModal({
     </div>
   );
 }
-
