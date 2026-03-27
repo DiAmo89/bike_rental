@@ -4,10 +4,13 @@ import { useEffect, useState, ChangeEvent, FormEvent } from "react";
 import updateBike from "@/app/api/actions-bike/update-bike";
 import { Category } from "@/types/Category";
 import BikeImageUpload from "@/components/admin/bikes/BikeImageUpload";
-
 import SubmitButton from "../ui/submit-form-button";
-import { isValidBikePriceInput, isValidBikeTextInput, validateBikePrice, validateBikeTextField } from "@/lib/bike-validation";
-
+import {
+  isValidBikePriceInput,
+  isValidBikeTextInput,
+  validateBikePrice,
+  validateBikeTextField,
+} from "@/lib/bike-validation";
 
 type BikeDetails = {
   id: string;
@@ -16,6 +19,7 @@ type BikeDetails = {
   description: string | null;
   pricePerDay: string;
   image: string | null;
+  imageKey: string | null;
   bikeCategoryId: string;
 };
 
@@ -40,6 +44,7 @@ export default function EditBikeModal({
     description: "",
     price_per_day: "",
     image: "",
+    imageKey: "",
     bike_category_id: "",
   });
 
@@ -70,6 +75,7 @@ export default function EditBikeModal({
           description: bike.description ?? "",
           price_per_day: bike.pricePerDay ?? "",
           image: bike.image ?? "",
+          imageKey: bike.imageKey ?? "",
           bike_category_id: bike.bikeCategoryId ?? "",
         });
       } catch (err) {
@@ -102,7 +108,7 @@ export default function EditBikeModal({
       return;
     }
 
-    setForm({ ...form, [name]: value });
+    setForm((prev) => ({ ...prev, [name]: value }));
     if (error) {
       setError("");
     }
@@ -117,7 +123,6 @@ export default function EditBikeModal({
     setError("");
 
     const brandError = validateBikeTextField("Brand", form.brand);
-
     if (brandError) {
       setLoading(false);
       setError(brandError);
@@ -125,7 +130,6 @@ export default function EditBikeModal({
     }
 
     const modelError = validateBikeTextField("Model", form.model);
-
     if (modelError) {
       setLoading(false);
       setError(modelError);
@@ -136,7 +140,6 @@ export default function EditBikeModal({
       "Description",
       form.description,
     );
-
     if (descriptionError) {
       setLoading(false);
       setError(descriptionError);
@@ -144,7 +147,6 @@ export default function EditBikeModal({
     }
 
     const priceError = validateBikePrice(form.price_per_day);
-
     if (priceError) {
       setLoading(false);
       setError(priceError);
@@ -188,7 +190,14 @@ export default function EditBikeModal({
           <>
             <BikeImageUpload
               value={form.image}
-              onChange={(url) => setForm((prev) => ({ ...prev, image: url }))}
+              assetKey={form.imageKey}
+              onChange={({ url, key }) =>
+                setForm((prev) => ({
+                  ...prev,
+                  image: url,
+                  imageKey: key,
+                }))
+              }
               onUploadingChange={setIsUploadingImage}
             />
 

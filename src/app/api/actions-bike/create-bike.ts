@@ -20,6 +20,7 @@ export async function createBike(formData: FormData) {
   const description = String(formData.get("description") ?? "").trim();
   const pricePerDayRaw = String(formData.get("price_per_day") ?? "").trim();
   const image = String(formData.get("image") ?? "");
+  const imageKey = String(formData.get("imageKey") ?? "");
   const bikeCategoryId = String(formData.get("bike_category_id") ?? "");
 
   const brandError = validateBikeTextField("Brand", brand);
@@ -58,6 +59,7 @@ export async function createBike(formData: FormData) {
     description,
     pricePerDay: normalizeBikePrice(pricePerDayRaw),
     image,
+    imageKey,
     bikeCategoryId,
   });
 

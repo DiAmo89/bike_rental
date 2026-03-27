@@ -16,6 +16,7 @@ export const bikes = pgTable("bikes", {
   description: text("description"),
   pricePerDay: decimal("price_per_day", { precision: 10, scale: 2 }).notNull(),
   image: varchar("image", { length: 255 }),
+  imageKey: varchar("image_key", { length: 255 }),
   isActive: boolean("is_active").notNull().default(true),
   bikeCategoryId: uuid("bike_category_id")
     .notNull()

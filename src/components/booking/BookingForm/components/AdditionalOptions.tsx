@@ -56,7 +56,7 @@ export const AdditionalOptions = ({
           )}
         </div>
         {/* shadow effect */}
-        <div className="absolute bottom-0 left-0 right-0 h-12 bg-gradient-to-t from-white to-transparent pointer-events-none" />
+        <div className="absolute bottom-0 left-0 right-0 h-12 bg-linear-to-t from-white to-transparent pointer-events-none" />
       </div>
     </div>
   );

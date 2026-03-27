@@ -1,0 +1,1 @@
+ALTER TABLE "bikes" ADD COLUMN "image_key" varchar(255);
